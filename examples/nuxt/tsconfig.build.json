@@ -1,0 +1,25 @@
+{
+  "extends": "../../tsconfig.build.json",
+
+  "compilerOptions": {
+    "target": "ES2018",
+    "module": "ESNext",
+    "lib": [
+      "ESNext",
+      "ESNext.AsyncIterable",
+      "DOM"
+    ],
+    "sourceMap": true,
+    "noEmit": true,
+    "outDir": "./dist"
+  },
+
+  "include": [
+    "./*"
+  ],
+  "exclude": [
+    "node_modules",
+    ".nuxt",
+    "dist"
+  ]
+}

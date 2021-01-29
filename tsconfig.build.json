@@ -1,0 +1,15 @@
+{
+  "compilerOptions": {
+    "module": "CommonJS",
+    "target": "ES6",
+    "declaration": true,
+    "sourceMap": false,
+    "noEmitOnError": true
+  },
+
+  "exclude": [
+    "node_modules",
+    "dist",
+    "packages/**/dist"
+  ]
+}

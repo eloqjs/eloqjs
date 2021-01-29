@@ -1,0 +1,41 @@
+# Dependencies
+node_modules
+
+# Only keep yarn.lock in the root
+package-lock.json
+*/**/yarn.lock
+
+# Logs
+*.log
+
+# Packages
+packages/*/LICENSE
+
+# Distributions
+distributions/*/LICENSE
+
+# Dist folders
+dist
+
+# Junit reports
+reports
+
+# Coverage reports
+coverage
+*.lcov
+.nyc_output
+
+# VSCode
+.vscode
+
+# Intellij idea
+*.iml
+.idea
+
+# OSX
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Other
+CHANGELOG.md
