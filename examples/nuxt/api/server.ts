@@ -80,10 +80,15 @@ app.get('/users/:id/posts', (req, res) => {
   }
 
   const user = collect(users.data).find(Number(req.params.id))
-  const data = collect(posts.data)
-    .where('user.id', Number(req.params.id))
-    .where('title', 'LIKE', filter.title)
-    .take(Number(req.query.limit))
+  let data = collect(posts.data).where('user.id', Number(req.params.id))
+
+  if (filter.title) {
+    data = data.where('title', 'LIKE', filter.title)
+  }
+
+  if (req.query.limit) {
+    data = data.take(Number(req.query.limit))
+  }
 
   if (user) {
     res.json({ data })
