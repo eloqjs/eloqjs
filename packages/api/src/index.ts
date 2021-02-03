@@ -22,7 +22,7 @@ export * as Relations from './relations'
 // export * as RelationsAPI from './relations/api'
 
 export { ModelAPIInstance, ModelAPIStatic } from './model/api'
-export { HasManyAPI, HasOneAPI, RelationAPI } from './relations/api'
+export { RelationAPI } from './relations/api'
 
 /**
  * HTTP Client

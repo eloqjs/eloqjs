@@ -2,8 +2,9 @@ import { Model, PluginComponents, Relations } from '@eloqjs/core'
 
 import { Config } from './contracts/Config'
 import { Model as ModelMixin } from './mixins/model/Model'
-import { HasMany as HasManyMixin } from './mixins/relations/HasMany'
-import { HasOne as HasOneMixin } from './mixins/relations/HasOne'
+// import { HasMany as HasManyMixin } from './mixins/relations/HasMany'
+// import { HasOne as HasOneMixin } from './mixins/relations/HasOne'
+import { Relation as RelationMixin } from './mixins/relations/Relation'
 
 export class ELOQJSAPI {
   /**
@@ -35,7 +36,8 @@ export class ELOQJSAPI {
    */
   public plugin(): void {
     ModelMixin(this.model, this.config)
-    HasOneMixin(this.relations.HasOne)
-    HasManyMixin(this.relations.HasMany)
+    // HasOneMixin(this.relations.HasOne)
+    // HasManyMixin(this.relations.HasMany)
+    RelationMixin(this.relations.Relation)
   }
 }

@@ -1,27 +1,20 @@
 import { Model } from '../../model/Model'
-import { HasOne as HasOneClass } from '../../relations/HasOne'
+import { Relation as CRelation } from '../../relations'
 import { Element, Item } from '../../types/Data'
 import { Relation } from './Relation'
 
 export class HasOne extends Relation {
-  /**
-   * The related model.
-   */
-  protected related: typeof Model
-
   public constructor(model: typeof Model, related: typeof Model) {
-    super(model)
-
-    this.related = related
+    super(model, related)
   }
 
   /**
    * Convert given value to the appropriate value for the attribute.
    */
-  public make(value: Element, parent: Model, key: string): HasOneClass {
+  public make(value: Element, parent: Model, key: string): CRelation {
     const data = this.mutate(value)
 
-    return new HasOneClass(this.related, parent, data, key)
+    return new CRelation(this.related, parent, data, key, true)
   }
 
   protected mutate(record: Element): Item {

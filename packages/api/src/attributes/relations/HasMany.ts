@@ -1,6 +1,6 @@
 import { Attributes, Element, Model } from '@eloqjs/core'
 
-import { HasMany as HasManyClass } from '../../relations/HasMany'
+import { Relation as CRelation } from '../../relations'
 
 export class HasMany extends Attributes.HasMany {
   public constructor(model: typeof Model, related: typeof Model) {
@@ -10,12 +10,12 @@ export class HasMany extends Attributes.HasMany {
   /**
    * Convert given value to the appropriate value for the attribute.
    */
-  public make(value: Element[], parent: Model, key: string): HasManyClass {
+  public make(value: Element[], parent: Model, key: string): CRelation {
     // Ensure that the value is an array of records.
-    value = Array.isArray(value) ? value : []
+    value = this.fix(value)
 
     const data = this.mutate(value)
 
-    return new HasManyClass(this.related, parent, data, key)
+    return new CRelation(this.related, parent, data, key, false)
   }
 }

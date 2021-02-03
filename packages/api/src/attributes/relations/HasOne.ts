@@ -1,6 +1,6 @@
 import { Attributes, Element, Model } from '@eloqjs/core'
 
-import { HasOne as HasOneClass } from '../../relations/HasOne'
+import { Relation as CRelation } from '../../relations'
 
 export class HasOne extends Attributes.HasOne {
   public constructor(model: typeof Model, related: typeof Model) {
@@ -10,9 +10,9 @@ export class HasOne extends Attributes.HasOne {
   /**
    * Convert given value to the appropriate value for the attribute.
    */
-  public make(value: Element, parent: Model, key: string): HasOneClass {
+  public make(value: Element, parent: Model, key: string): CRelation {
     const data = this.mutate(value)
 
-    return new HasOneClass(this.related, parent, data, key)
+    return new CRelation(this.related, parent, data, key, true)
   }
 }

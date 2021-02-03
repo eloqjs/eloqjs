@@ -1,30 +1,28 @@
 import { Model } from '../../model/Model'
-import { HasMany as HasManyClass } from '../../relations/HasMany'
+import { Relation as CRelation } from '../../relations'
 import { Collection, Element } from '../../types/Data'
 import { Relation } from './Relation'
 
 export class HasMany extends Relation {
-  /**
-   * The related model.
-   */
-  protected related: typeof Model
-
   public constructor(model: typeof Model, related: typeof Model) {
-    super(model)
-
-    this.related = related
+    super(model, related)
   }
 
   /**
    * Convert given value to the appropriate value for the attribute.
    */
-  public make(value: Element[], parent: Model, key: string): HasManyClass {
+  public make(value: Element[], parent: Model, key: string): CRelation {
     // Ensure that the value is an array of records.
-    value = Array.isArray(value) ? value : []
+    value = this.fix(value)
 
     const data = this.mutate(value)
 
-    return new HasManyClass(this.related, parent, data, key)
+    return new CRelation(this.related, parent, data, key, false)
+  }
+
+  protected fix(value: Element): Element[] {
+    // Ensure that the value is an array of records.
+    return Array.isArray(value) ? value : []
   }
 
   protected mutate(records: Element[]): Collection {

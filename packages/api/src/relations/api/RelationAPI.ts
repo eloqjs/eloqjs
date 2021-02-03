@@ -7,14 +7,12 @@ import { PluralPromise } from '../../response/PluralPromise'
 import { Response } from '../../response/Response'
 import { SingularPromise } from '../../response/SingularPromise'
 
-export abstract class RelationAPI<M extends Model, S extends boolean> {
-  /**
-   * If true, then this function will in all cases return a {@link SingularResponse}. This is used by HasOne relation, which
-   * when queried spawn a Builder with this property set to true.
-   */
-  protected static forceSingular: boolean = false
-
-  public abstract data: Item<M> | Collection<M>
+export class RelationAPI<
+  M extends Model = Model,
+  D extends Item<M> | Collection<M> = Item<M> | Collection<M>,
+  S extends boolean = boolean
+> {
+  public data: D
 
   protected model: typeof Model
 
@@ -22,20 +20,26 @@ export abstract class RelationAPI<M extends Model, S extends boolean> {
 
   protected key: string
 
+  protected forceSingular: S
+
   /**
    * Get a {@link Builder} instance from {@link RelationAPI}
    * so you can start querying.
    */
   protected query: Builder<M, boolean>
 
-  protected constructor(
+  public constructor(
     model: typeof Model,
     belongsToModel: Model,
-    key: string
+    data: D,
+    key: string,
+    forceSingular: S
   ) {
     this.model = model
     this.belongsToModel = belongsToModel
+    this.data = data
     this.key = key
+    this.forceSingular = forceSingular
 
     const typeOfBelongsToModel = this.belongsToModel.constructor as typeof Model
     const belongsToModelId =
@@ -45,16 +49,8 @@ export abstract class RelationAPI<M extends Model, S extends boolean> {
       this.model,
       typeOfBelongsToModel,
       belongsToModelId,
-      this.$forceSingular
+      forceSingular
     )
-  }
-
-  /**
-   * If true, then this function will in all cases return a {@link SingularResponse}. This is used by HasOne relation, which
-   * when queried spawn a Builder with this property set to true.
-   */
-  private get $forceSingular(): boolean {
-    return (this.constructor as typeof RelationAPI).forceSingular
   }
 
   /**
@@ -68,7 +64,7 @@ export abstract class RelationAPI<M extends Model, S extends boolean> {
   public get(): Promise<Response> {
     const response = this.query.get()
 
-    this.updateRelation(response, this.$forceSingular)
+    this.updateRelation(response, this.forceSingular)
 
     return response
   }

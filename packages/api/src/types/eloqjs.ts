@@ -1,6 +1,8 @@
+import { Collection, Item } from '@eloqjs/core'
+
 import { HttpClient } from '../httpclient/HttpClient'
 import { ModelAPIInstance, ModelAPIStatic } from '../model/api'
-import { HasManyAPI, HasOneAPI } from '../relations/api'
+import { RelationAPI } from '../relations/api'
 
 declare module '@eloqjs/core' {
   namespace Model {
@@ -36,12 +38,20 @@ declare module '@eloqjs/core' {
   }
 
   namespace Relations {
+    interface Relation<
+      M extends Model = Model,
+      D extends Item<M> | Collection<M> = Item<M> | Collection<M>,
+      S extends boolean = boolean
+    > {
+      api(): RelationAPI<M, D, S>
+    }
+
     interface HasOne<M extends Model = Model> {
-      api(): HasOneAPI<M>
+      api(): RelationAPI<M, Item<M>, true>
     }
 
     interface HasMany<M extends Model = Model> {
-      api(): HasManyAPI<M>
+      api(): RelationAPI<M, Collection<M>, false>
     }
   }
 }
