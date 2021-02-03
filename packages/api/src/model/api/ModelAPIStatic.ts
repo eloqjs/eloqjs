@@ -1,15 +1,15 @@
 import { Element, Model } from '@eloqjs/core'
 
-import { Builder } from '../builder/Builder'
-import { HttpClient } from '../httpclient/HttpClient'
-import { FilterValue } from '../query/specs/FilterSpec'
-import { OptionValue } from '../query/specs/OptionSpec'
-import { PluralPromise } from '../response/PluralPromise'
-import { SingularPromise } from '../response/SingularPromise'
-import { SingularResponse } from '../response/SingularResponse'
-import { assert } from '../support/Utils'
+import { Builder } from '../../builder/Builder'
+import { HttpClient } from '../../httpclient/HttpClient'
+import { FilterValue } from '../../query/specs/FilterSpec'
+import { OptionValue } from '../../query/specs/OptionSpec'
+import { PluralPromise } from '../../response/PluralPromise'
+import { SingularPromise } from '../../response/SingularPromise'
+import { SingularResponse } from '../../response/SingularResponse'
+import { assert } from '../../support/Utils'
 
-export class API<M extends typeof Model = typeof Model> {
+export class ModelAPIStatic<M extends typeof Model = typeof Model> {
   /**
    * The http client of the model.
    */
@@ -228,14 +228,14 @@ export class API<M extends typeof Model = typeof Model> {
   }
 
   /**
-   * Get a {@link Builder} instance from {@link API}
+   * Get a {@link Builder} instance from {@link ModelAPIStatic}
    * so you can start querying.
    */
   private _query(): Builder<InstanceType<M>> {
     return new Builder(this.model)
   }
 
-  private _self(): typeof API {
-    return this.constructor as typeof API
+  private _self(): typeof ModelAPIStatic {
+    return this.constructor as typeof ModelAPIStatic
   }
 }

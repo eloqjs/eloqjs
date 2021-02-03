@@ -6,10 +6,23 @@ import './types/eloqjs'
 export { Model } from './model/Model'
 
 /**
+ * Attributes
+ */
+export * as Attributes from './attributes'
+
+/**
+ * Relationships
+ */
+export * as Relations from './relations'
+
+/**
  * API
  */
-export { API } from './api/API'
-export { InstanceAPI } from './api/InstanceAPI'
+// export * as ModelAPI from './model/api'
+// export * as RelationsAPI from './relations/api'
+
+export { ModelAPIInstance, ModelAPIStatic } from './model/api'
+export { HasManyAPI, HasOneAPI, RelationAPI } from './relations/api'
 
 /**
  * HTTP Client

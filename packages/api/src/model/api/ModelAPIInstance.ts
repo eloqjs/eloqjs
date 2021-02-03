@@ -1,10 +1,10 @@
 import { Item, Model } from '@eloqjs/core'
 
-import { Builder } from '../builder/Builder'
-import { SingularPromise } from '../response/SingularPromise'
-import { API } from './API'
+import { Builder } from '../../builder/Builder'
+import { SingularPromise } from '../../response/SingularPromise'
+import { ModelAPIStatic } from './ModelAPIStatic'
 
-export class InstanceAPI<M extends Model = Model> {
+export class ModelAPIInstance<M extends Model = Model> {
   /**
    * The type of the model.
    */
@@ -18,7 +18,7 @@ export class InstanceAPI<M extends Model = Model> {
   }
 
   /**
-   * Get a {@link Builder} instance from {@link InstanceAPI}
+   * Get a {@link Builder} instance from {@link ModelAPIInstance}
    * so you can start querying.
    */
   public query(): Builder<M> {
@@ -72,7 +72,7 @@ export class InstanceAPI<M extends Model = Model> {
     return this._api().delete(id)
   }
 
-  private _api(): API {
-    return new API(this.model.constructor as typeof Model)
+  private _api(): ModelAPIStatic {
+    return new ModelAPIStatic(this.model.constructor as typeof Model)
   }
 }

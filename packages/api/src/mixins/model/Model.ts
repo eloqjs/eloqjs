@@ -1,14 +1,13 @@
 import { Model as BaseModel } from '@eloqjs/core'
 
-import { API } from '../../api/API'
-import { InstanceAPI } from '../../api/InstanceAPI'
 import { Config } from '../../contracts/Config'
 import { HttpClient } from '../../httpclient/HttpClient'
+import * as API from '../../model/api'
 import { assert } from '../../support/Utils'
 
 export function Model(model: typeof BaseModel, config: Config): void {
   // @ts-ignore
-  API._httpClient = config.httpClient || null
+  API.ModelAPIStatic._httpClient = config.httpClient || null
 
   model.httpClient = config.httpClient || null
 
@@ -31,21 +30,25 @@ export function Model(model: typeof BaseModel, config: Config): void {
    */
   model.setHttpClient = function (httpClient: HttpClient): void {
     // @ts-ignore
-    API._httpClient = httpClient
+    API.ModelAPIStatic._httpClient = httpClient
     this.httpClient = httpClient
   }
 
   /**
-   * Get an {@link API} instance from a static {@link Model}.
+   * Get an [Static API]{@link API.ModelAPIStatic} instance from a static {@link Model}.
    */
-  model.api = function <M extends typeof BaseModel>(this: M): API<M> {
-    return new API(this)
+  model.api = function <M extends typeof BaseModel>(
+    this: M
+  ): API.ModelAPIStatic<M> {
+    return new API.ModelAPIStatic(this)
   }
 
   /**
-   * Get an {@link InstanceAPI} instance from a {@link Model} instance.
+   * Get an [Instance API]{@link API.ModelAPIInstance} instance from a {@link Model} instance.
    */
-  model.prototype.$api = function <M extends BaseModel>(): InstanceAPI<M> {
-    return new InstanceAPI(this as M)
+  model.prototype.$api = function <
+    M extends BaseModel
+  >(): API.ModelAPIInstance<M> {
+    return new API.ModelAPIInstance(this as M)
   }
 }

@@ -1,7 +1,6 @@
-import { API } from '../api/API'
-import { InstanceAPI } from '../api/InstanceAPI'
 import { HttpClient } from '../httpclient/HttpClient'
-// import { Model as ModelAPI } from '../model/Model'
+import { ModelAPIInstance, ModelAPIStatic } from '../model/api'
+import { HasManyAPI, HasOneAPI } from '../relations/api'
 
 declare module '@eloqjs/core' {
   namespace Model {
@@ -24,15 +23,25 @@ declare module '@eloqjs/core' {
     export function setHttpClient(httpClient: HttpClient): void
 
     /**
-     * Get an {@link API} instance from a static {@link Model}.
+     * Get an [Static API]{@link ModelAPIStatic} instance from a static {@link Model}.
      */
-    export function api<M extends typeof Model>(this: M): API<M>
+    export function api<M extends typeof Model>(this: M): ModelAPIStatic<M>
   }
 
   interface Model {
     /**
-     * Get an {@link InstanceAPI} instance from a {@link Model} instance.
+     * Get an [Instance API]{@link ModelAPIInstance} instance from a {@link Model} instance.
      */
-    $api<M extends this>(): InstanceAPI<M>
+    $api<M extends this>(): ModelAPIInstance<M>
+  }
+
+  namespace Relations {
+    interface HasOne<M extends Model = Model> {
+      api(): HasOneAPI<M>
+    }
+
+    interface HasMany<M extends Model = Model> {
+      api(): HasManyAPI<M>
+    }
   }
 }

@@ -24,7 +24,7 @@ export class HasOne extends Relation {
     return new HasOneClass(this.related, parent, data, key)
   }
 
-  private mutate(record: Element): Item {
+  protected mutate(record: Element): Item {
     return record ? new this.related(record) : null
   }
 }

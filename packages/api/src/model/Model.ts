@@ -1,5 +1,6 @@
 import { Element, Item, Model as BaseModel } from '@eloqjs/core'
 
+import * as Attributes from '../attributes'
 import { PluralPromise } from '../response/PluralPromise'
 import { SingularPromise } from '../response/SingularPromise'
 
@@ -48,6 +49,20 @@ export class Model extends BaseModel {
    */
   public static delete(id: string | number): Promise<void> {
     return this.api().delete(id)
+  }
+
+  /**
+   * Create a has one relationship.
+   */
+  protected static hasOne(related: typeof Model): Attributes.HasOne {
+    return new Attributes.HasOne(this, related)
+  }
+
+  /**
+   * Create a has many relationship.
+   */
+  protected static hasMany(related: typeof Model): Attributes.HasMany {
+    return new Attributes.HasMany(this, related)
   }
 
   /**

@@ -27,7 +27,7 @@ export class HasMany extends Relation {
     return new HasManyClass(this.related, parent, data, key)
   }
 
-  private mutate(records: Element[]): Collection {
+  protected mutate(records: Element[]): Collection {
     // Remove duplicates, by model primary key.
     // collection = collection.unique(this.related.primaryKey)
 
