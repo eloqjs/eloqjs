@@ -4,11 +4,11 @@ import { Collection, Item } from '../types/Data'
 export abstract class Relation<M extends Model = Model> {
   public abstract data: Item<M> | Collection<M>
 
-  protected model: typeof Model
+  public model: typeof Model
 
-  protected belongsToModel: Model
+  public belongsToModel: Model
 
-  protected key: string
+  public key: string
 
   protected constructor(
     model: typeof Model,
