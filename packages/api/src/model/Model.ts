@@ -1,6 +1,7 @@
 import { Element, Item, Model as BaseModel } from '@eloqjs/core'
 
 import * as Attributes from '../attributes'
+import { Builder } from '../builder/Builder'
 import { PluralPromise } from '../response/PluralPromise'
 import { SingularPromise } from '../response/SingularPromise'
 
@@ -63,6 +64,15 @@ export class Model extends BaseModel {
    */
   protected static hasMany(related: typeof Model): Attributes.HasMany {
     return new Attributes.HasMany(this, related)
+  }
+
+  /**
+   * Get a {@link Builder} instance from a {@link Model} instance
+   * so you can query without having a static reference to your specific {@link Model}
+   * class.
+   */
+  public $query(): Builder<this> {
+    return this.$api().query() as Builder<this>
   }
 
   /**
