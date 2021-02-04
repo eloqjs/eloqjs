@@ -1,4 +1,4 @@
-import { User } from './user'
-import { Users } from './users'
-
-export { User, Users }
+export * from './post'
+export * from './posts'
+export * from './user'
+export * from './users'
