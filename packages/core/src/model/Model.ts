@@ -2,7 +2,7 @@ import * as Attributes from '../attributes'
 import { Mutator, Mutators } from '../attributes/Contracts'
 import { Map } from '../support/Map'
 import { assert } from '../support/Utils'
-import { Collection, Element, Item } from '../types/Data'
+import { Element } from '../types/Data'
 import * as Serialize from './Serialize'
 
 export type ModelFields = Record<string, Attributes.Attribute>
@@ -176,7 +176,10 @@ export class Model {
     record: InstanceType<M> | Element
   ): string | number | null {
     // Get the primary key value from attributes.
-    const value = this.getAttribute(record, this.primaryKey)
+    const value =
+      record instanceof Model
+        ? record.$attributes.get(this.primaryKey)
+        : record[this.primaryKey]
 
     return this.getIdFromValue(value)
   }
@@ -280,7 +283,7 @@ export class Model {
    */
   public static serialize<M extends typeof Model>(
     this: M,
-    record: InstanceType<M> | Element,
+    model: InstanceType<M>,
     options: ModelOptions = {}
   ): Element {
     const defaultOption: ModelOptions = {
@@ -302,11 +305,11 @@ export class Model {
       switch (true) {
         default:
         case field instanceof Attributes.Type: {
-          if (_option.isPatch && !this.isAttributeModified(record, key)) {
+          if (_option.isPatch && !model.$attributes.isModified(key)) {
             continue
           }
 
-          const value = this.getAttribute(record, key)
+          const value = model.$attributes.get(key)
 
           // Exclude read-only attributes.
           if (!this.readOnlyAttributes.includes(key)) {
@@ -316,11 +319,11 @@ export class Model {
           break
         }
         case field instanceof Attributes.Relation: {
-          if (_option.isPatch && !this.isRelationModified(record, key)) {
+          if (_option.isPatch && !model.$relationships.isModified(key)) {
             continue
           }
 
-          const value = this.getRelation(record, key)
+          const value = model.$relationships.get(key).data
 
           result[key] = _option.relations
             ? Serialize.relation(value, _option.isPayload)
@@ -360,50 +363,6 @@ export class Model {
 
       this.initializeSchema()
     }
-  }
-
-  /**
-   * Get an attribute from the record. If the record is an instance of {@link Model}, then get the attribute from {@link $attributes}.
-   * Otherwise, get the attribute directly from record.
-   */
-  private static getAttribute<M extends typeof Model>(
-    this: M,
-    record: InstanceType<M> | Element,
-    key: string
-  ): unknown {
-    return record instanceof Model ? record.$attributes.get(key) : record[key]
-  }
-
-  private static isAttributeModified<M extends typeof Model>(
-    this: M,
-    record: InstanceType<M> | Element,
-    key: string
-  ): unknown {
-    return record instanceof Model ? record.$attributes.isModified(key) : false
-  }
-
-  /**
-   * Get a relationship from the record. If the record is an instance of {@link Model}, then get the relationship from {@link $relationships}.
-   * Otherwise, get the relationship directly from record.
-   */
-  private static getRelation<M extends typeof Model>(
-    this: M,
-    record: InstanceType<M> | Element,
-    key: string
-  ): Item | Collection {
-    return record instanceof Model
-      ? record.$relationships.get(key).data
-      : record[key]
-  }
-
-  private static isRelationModified<M extends typeof Model>(
-    this: M,
-    record: InstanceType<M> | Element,
-    key: string
-  ): unknown {
-    return record instanceof Model
-      ? record.$relationships.isModified(key)
-      : false
   }
 
   /**
