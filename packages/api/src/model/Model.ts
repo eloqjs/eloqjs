@@ -92,4 +92,32 @@ export class Model extends BaseModel {
   public $delete(): Promise<void> {
     return this.$api().delete()
   }
+
+  /**
+   * Create a related record and attach it to this {@link Model}.
+   */
+  public $attach<R extends Model>(relationship: R): SingularPromise<R> {
+    return this.$api().attach(relationship)
+  }
+
+  /**
+   * Delete a related record and detach it from this {@link Model}.
+   */
+  public $detach<R extends Model>(relationship: R): Promise<void> {
+    return this.$api().detach(relationship)
+  }
+
+  /**
+   * Update a related record and sync it to this {@link Model}.
+   */
+  public $sync<R extends Model>(relationship: R): SingularPromise<R> {
+    return this.$api().sync(relationship)
+  }
+
+  /**
+   * Create a related record for the provided {@link Model}.
+   */
+  public $for<T extends Model>(model: T): SingularPromise<this> {
+    return this.$api().for(model)
+  }
 }

@@ -1,7 +1,10 @@
 import { Item, Model } from '@eloqjs/core'
 
 import { Builder } from '../../builder/Builder'
+import { HttpClient } from '../../httpclient'
 import { SingularPromise } from '../../response/SingularPromise'
+import { SingularResponse } from '../../response/SingularResponse'
+import { assert } from '../../support/Utils'
 import { ModelAPIStatic } from './ModelAPIStatic'
 
 export class ModelAPIInstance<M extends Model = Model> {
@@ -72,7 +75,104 @@ export class ModelAPIInstance<M extends Model = Model> {
     return this._api().delete(id)
   }
 
+  /**
+   * Create a related record and attach it to this {@link Model}.
+   */
+  public attach<R extends Model>(relationship: R): SingularPromise<R> {
+    const selfId = this.model.$id
+
+    assert(selfId !== null, [
+      'Cannot attach a related model to a parent that has no ID.'
+    ])
+
+    const relationConstructor = relationship.constructor as typeof Model
+    const record = relationConstructor.serialize(relationship, {
+      isPayload: true
+    })
+    const isEmpty = Object.keys(record).length === 0
+
+    assert(!isEmpty, [
+      'Cannot create a new record, because no data was provided.'
+    ])
+
+    return this._getHttpClient()
+      .post(
+        `${this.model.$resource}/${selfId}/${relationship.$resource}`,
+        record
+      )
+      .then((response) => {
+        return new SingularResponse<R>(
+          response,
+          relationship.constructor as typeof Model
+        )
+      })
+  }
+
+  /**
+   * Delete a related record and detach it from this {@link Model}.
+   */
+  public detach<R extends Model>(relationship: R): Promise<void> {
+    const selfId = this.model.$id
+
+    assert(selfId !== null, [
+      'Cannot detach a related model from a parent that has no ID.'
+    ])
+
+    const relationId = relationship.$id
+
+    assert(relationId !== null, ['Cannot detach a related model with no ID.'])
+
+    return this._getHttpClient()
+      .delete(
+        `${this.model.$resource}/${selfId}/${relationship.$resource}/${relationId}`
+      )
+      .then(() => {}) // eslint-disable-line @typescript-eslint/no-empty-function
+  }
+
+  /**
+   * Update a related record and sync it to this {@link Model}.
+   */
+  public sync<R extends Model>(relationship: R): SingularPromise<R> {
+    const selfId = this.model.$id
+
+    assert(selfId !== null, [
+      'Cannot sync a related model to a parent that has no ID.'
+    ])
+
+    const relationConstructor = relationship.constructor as typeof Model
+
+    // Get ID before serialize, otherwise the ID may not be available.
+    const relationId = relationship.$id
+
+    assert(relationId !== null, ['Cannot sync a related model with no ID.'])
+
+    const record = relationConstructor.serialize(relationship, {
+      isPayload: true,
+      isPatch: true
+    })
+
+    return this._getHttpClient()
+      .patch(
+        `${this.model.$resource}/${selfId}/${relationship.$resource}/${relationId}`,
+        record
+      )
+      .then((response) => {
+        return new SingularResponse<R>(response, relationConstructor)
+      })
+  }
+
+  /**
+   * Create a related record for the provided {@link Model}.
+   */
+  public for<T extends Model>(model: T): SingularPromise<M> {
+    return model.$api().attach(this.model)
+  }
+
   private _api(): ModelAPIStatic {
     return new ModelAPIStatic(this.model.constructor as typeof Model)
+  }
+
+  private _getHttpClient(): HttpClient {
+    return (this._api().constructor as typeof ModelAPIStatic).getHttpClient()
   }
 }

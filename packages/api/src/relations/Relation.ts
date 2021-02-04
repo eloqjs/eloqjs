@@ -1,4 +1,4 @@
-import { Collection, Item, Model, Relations } from '@eloqjs/core'
+import { Collection, Element, Item, Model, Relations } from '@eloqjs/core'
 
 import { FilterValue } from '../query/specs/FilterSpec'
 import { OptionValue } from '../query/specs/OptionSpec'
@@ -138,5 +138,26 @@ export class Relation<
    */
   public custom(...resources: (string | Model)[]): RelationAPI<M, D, S> {
     return this.api().custom(...resources)
+  }
+
+  /**
+   * Create a record of this relation and attach it to the parent {@link Model}.
+   */
+  public attach(record: M | Element): SingularPromise<M> {
+    return this.api().attach(record)
+  }
+
+  /**
+   * Delete a record of this relation and detach it from the parent {@link Model}.
+   */
+  public detach(id: string | number): Promise<void> {
+    return this.api().detach(id)
+  }
+
+  /**
+   * Update a record of this relation and sync it to the parent {@link Model}.
+   */
+  public sync(record: M | Element): SingularPromise<M> {
+    return this.api().sync(record)
   }
 }

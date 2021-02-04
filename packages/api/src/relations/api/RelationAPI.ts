@@ -1,4 +1,4 @@
-import { Collection, Item, Model } from '@eloqjs/core'
+import { Collection, Element, Item, Model } from '@eloqjs/core'
 
 import { Builder } from '../../builder/Builder'
 import { FilterValue } from '../../query/specs/FilterSpec'
@@ -200,6 +200,40 @@ export class RelationAPI<
     this.query.custom(...resources)
 
     return this
+  }
+
+  /**
+   * Create a record of this relation and attach it to the parent {@link Model}.
+   */
+  public attach(record: M | Element): SingularPromise<M> {
+    let relationship = record as M
+
+    if (!(record instanceof Model)) {
+      relationship = new this.model(record) as M
+    }
+
+    return this.belongsToModel.$api().attach(relationship)
+  }
+
+  /**
+   * Delete a record of this relation and detach it from the parent {@link Model}.
+   */
+  public detach(id: string | number): Promise<void> {
+    const relationship = new this.model({ [this.model.primaryKey]: id }) as M
+    return this.belongsToModel.$api().detach(relationship)
+  }
+
+  /**
+   * Update a record of this relation and sync it to the parent {@link Model}.
+   */
+  public sync(record: M | Element): SingularPromise<M> {
+    let relationship = record as M
+
+    if (!(record instanceof Model)) {
+      relationship = new this.model(record) as M
+    }
+
+    return this.belongsToModel.$api().sync(relationship)
   }
 
   private updateRelation(
