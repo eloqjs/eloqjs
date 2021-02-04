@@ -85,8 +85,7 @@ export class ModelAPIInstance<M extends Model = Model> {
       'Cannot attach a related model to a parent that has no ID.'
     ])
 
-    const relationConstructor = relationship.constructor as typeof Model
-    const record = relationConstructor.serialize(relationship, {
+    const record = relationship.$serialize({
       isPayload: true
     })
     const isEmpty = Object.keys(record).length === 0
@@ -139,14 +138,12 @@ export class ModelAPIInstance<M extends Model = Model> {
       'Cannot sync a related model to a parent that has no ID.'
     ])
 
-    const relationConstructor = relationship.constructor as typeof Model
-
     // Get ID before serialize, otherwise the ID may not be available.
     const relationId = relationship.$id
 
     assert(relationId !== null, ['Cannot sync a related model with no ID.'])
 
-    const record = relationConstructor.serialize(relationship, {
+    const record = relationship.$serialize({
       isPayload: true,
       // TODO: Add option to disable `isPatch` when creating the model instance.
       // For now we can't deduce modified fields of relationships, so setting this to `false`.
@@ -159,7 +156,10 @@ export class ModelAPIInstance<M extends Model = Model> {
         record
       )
       .then((response) => {
-        return new SingularResponse<R>(response, relationConstructor)
+        return new SingularResponse<R>(
+          response,
+          relationship.constructor as typeof Model
+        )
       })
   }
 

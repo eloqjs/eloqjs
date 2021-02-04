@@ -248,6 +248,6 @@ export class ModelAPIStatic<M extends typeof Model = typeof Model> {
         ? record
         : (new this.model(record) as InstanceType<M>)
 
-    return this.model.serialize(model, options)
+    return model.$serialize(options)
   }
 }

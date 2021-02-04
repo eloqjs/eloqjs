@@ -279,63 +279,6 @@ export class Model {
   }
 
   /**
-   * Serialize given model POJO.
-   */
-  public static serialize<M extends typeof Model>(
-    this: M,
-    model: InstanceType<M>,
-    options: ModelOptions = {}
-  ): Element {
-    const defaultOption: ModelOptions = {
-      relations: true,
-      isPayload: false,
-      isPatch: false
-    }
-    const _option = {
-      ...defaultOption,
-      ...options
-    } as Required<ModelOptions>
-
-    const fields = this.getFields()
-    const result: Element = {}
-
-    for (const key in fields) {
-      const field = fields[key]
-
-      switch (true) {
-        default:
-        case field instanceof Attributes.Type: {
-          if (_option.isPatch && !model.$attributes.isModified(key)) {
-            continue
-          }
-
-          const value = model.$attributes.get(key)
-
-          // Exclude read-only attributes.
-          if (!this.readOnlyAttributes.includes(key)) {
-            result[key] = Serialize.value(value)
-          }
-
-          break
-        }
-        case field instanceof Attributes.Relation: {
-          if (_option.isPatch && !model.$relationships.isModified(key)) {
-            continue
-          }
-
-          const value = model.$relationships.get(key).data
-
-          result[key] = _option.relations
-            ? Serialize.relation(value, _option.isPayload)
-            : Serialize.emptyRelation(value)
-        }
-      }
-    }
-
-    return result
-  }
-
-  /**
    * Build the schema by evaluating fields and registry.
    */
   private static initializeSchema(): void {
@@ -415,17 +358,70 @@ export class Model {
   }
 
   /**
+   * Serialize given model POJO.
+   */
+  public $serialize(options: ModelOptions = {}): Element {
+    const defaultOption: ModelOptions = {
+      relations: true,
+      isPayload: false,
+      isPatch: false
+    }
+    const _option = {
+      ...defaultOption,
+      ...options
+    } as Required<ModelOptions>
+
+    const fields = this.$fields()
+    const result: Element = {}
+
+    for (const key in fields) {
+      const field = fields[key]
+
+      switch (true) {
+        default:
+        case field instanceof Attributes.Type: {
+          if (_option.isPatch && !this.$attributes.isModified(key)) {
+            continue
+          }
+
+          const value = this.$attributes.get(key)
+
+          // Exclude read-only attributes.
+          if (!this.$self().readOnlyAttributes.includes(key)) {
+            result[key] = Serialize.value(value)
+          }
+
+          break
+        }
+        case field instanceof Attributes.Relation: {
+          if (_option.isPatch && !this.$relationships.isModified(key)) {
+            continue
+          }
+
+          const value = this.$relationships.get(key).data
+
+          result[key] = _option.relations
+            ? Serialize.relation(value, _option.isPayload)
+            : Serialize.emptyRelation(value)
+        }
+      }
+    }
+
+    return result
+  }
+
+  /**
    * Get all of the current attributes on the model. This method is mainly used when saving a model.
    */
   public $getAttributes(): Element {
-    return this.$self().serialize(this, { relations: false })
+    return this.$serialize({ relations: false })
   }
 
   /**
    * Serialize this model, or the given model, as POJO.
    */
   public $toJson(model?: Model, options: ModelOptions = {}): Element {
-    return this.$self().serialize(model ?? this, options)
+    return (model ?? this).$serialize(options)
   }
 
   /**
