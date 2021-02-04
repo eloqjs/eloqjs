@@ -425,7 +425,7 @@ export class Model {
   }
 
   /**
-   * Serialize given model POJO.
+   * Serialize this model as POJO.
    */
   protected toJSON(): Element {
     return this.$toJson()
