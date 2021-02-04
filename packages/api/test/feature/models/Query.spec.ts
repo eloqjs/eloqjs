@@ -8,9 +8,7 @@ describe('Feature – Models – Query', () => {
       return [200, Data.Users]
     })
 
-    const users = await User.api()
-      .all()
-      .then((response) => response.data)
+    const users = await User.all().then((response) => response.data)
 
     for (const user of users) {
       const expected = Data.Users.find((record) => record.id === user.id)
@@ -26,8 +24,7 @@ describe('Feature – Models – Query', () => {
     })
 
     const user = await new User()
-      .$api()
-      .query()
+      .$query()
       .find(1)
       .then((response) => response.data!)
 
