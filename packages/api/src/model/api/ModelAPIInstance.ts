@@ -148,7 +148,9 @@ export class ModelAPIInstance<M extends Model = Model> {
 
     const record = relationConstructor.serialize(relationship, {
       isPayload: true,
-      isPatch: true
+      // TODO: Add option to disable `isPatch` when creating the model instance.
+      // For now we can't deduce modified fields of relationships, so setting this to `false`.
+      isPatch: false
     })
 
     return this._getHttpClient()
