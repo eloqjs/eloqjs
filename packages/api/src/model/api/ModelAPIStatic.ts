@@ -1,4 +1,4 @@
-import { Element, Model } from '@eloqjs/core'
+import { Element, Model, ModelOptions } from '@eloqjs/core'
 
 import { Builder } from '../../builder/Builder'
 import { HttpClient } from '../../httpclient/HttpClient'
@@ -194,7 +194,7 @@ export class ModelAPIStatic<M extends typeof Model = typeof Model> {
   private _create(
     record: InstanceType<M> | Element
   ): SingularPromise<InstanceType<M>> {
-    record = this.model.serialize(record, { isPayload: true })
+    record = this._serialize(record, { isPayload: true })
     const isEmpty = Object.keys(record).length === 0
 
     assert(!isEmpty, [
@@ -217,7 +217,7 @@ export class ModelAPIStatic<M extends typeof Model = typeof Model> {
   ): SingularPromise<InstanceType<M>> {
     // Get ID before serialize, otherwise the ID may not be available.
     const id = this.model.getIdFromRecord(record)
-    record = this.model.serialize(record, { isPayload: true, isPatch: true })
+    record = this._serialize(record, { isPayload: true, isPatch: true })
 
     return this._self()
       .getHttpClient()
@@ -237,5 +237,17 @@ export class ModelAPIStatic<M extends typeof Model = typeof Model> {
 
   private _self(): typeof ModelAPIStatic {
     return this.constructor as typeof ModelAPIStatic
+  }
+
+  private _serialize(
+    record: InstanceType<M> | Element,
+    options: ModelOptions = {}
+  ): Element {
+    const model =
+      record instanceof Model
+        ? record
+        : (new this.model(record) as InstanceType<M>)
+
+    return this.model.serialize(model, options)
   }
 }
