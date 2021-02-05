@@ -2,6 +2,8 @@ import { Element, Item, Model as BaseModel } from '@eloqjs/core'
 
 import * as Attributes from '../attributes'
 import { Builder } from '../builder/Builder'
+import { FilterValue } from '../query/specs/FilterSpec'
+import { OptionValue } from '../query/specs/OptionSpec'
 import { PluralPromise } from '../response/PluralPromise'
 import { SingularPromise } from '../response/SingularPromise'
 
@@ -43,6 +45,125 @@ export class Model extends BaseModel {
     record: InstanceType<M> | Element
   ): SingularPromise<InstanceType<M>> {
     return this.api().save(record)
+  }
+
+  public static where<M extends typeof Model>(
+    this: M,
+    attribute: string | string[],
+    value: FilterValue
+  ): Builder<InstanceType<M>> {
+    return this.api().where(attribute, value)
+  }
+
+  /**
+   * Add a "where in" clause to the query.
+   *
+   * @param {string | string[]} attribute - The attribute being tested.
+   * @param {string} values - The values the attribute should be equal.
+   */
+  public static whereIn<M extends typeof Model>(
+    this: M,
+    attribute: string | string[],
+    values: FilterValue[]
+  ): Builder<InstanceType<M>> {
+    return this.api().whereIn(attribute, values)
+  }
+
+  /**
+   * Specify a relation that should be eager loaded in the returned object graph.
+   * @param {string | string[]} relationship - The relationship that should be eager loaded.
+   */
+  public static with<M extends typeof Model>(
+    this: M,
+    relationship: string | string[]
+  ): Builder<InstanceType<M>> {
+    return this.api().with(relationship)
+  }
+
+  /**
+   * Specify an attribute that should be eager loaded in the returned object graph.
+   *
+   * @param {string | string[]} attribute - The attribute that should be eager loaded.
+   */
+  public static append<M extends typeof Model>(
+    this: M,
+    attribute: string | string[]
+  ): Builder<InstanceType<M>> {
+    return this.api().append(attribute)
+  }
+
+  /**
+   * Specify the fields that should be included in the returned object graph.
+   */
+  public static select<M extends typeof Model>(
+    this: M,
+    field: string | string[]
+  ): Builder<InstanceType<M>> {
+    return this.api().select(field)
+  }
+
+  /**
+   * Specify an attribute to sort by and the direction to sort in.
+   *
+   * @param {string} attribute - The attribute to sort by.
+   * @param {string} [direction] - The direction to sort in.
+   */
+  public static orderBy<M extends typeof Model>(
+    this: M,
+    attribute: string,
+    direction?: 'asc' | 'desc'
+  ): Builder<InstanceType<M>> {
+    return this.api().orderBy(attribute, direction)
+  }
+
+  /**
+   * Specify a custom query parameter to add to the resulting HTTP request URL.
+   *
+   * @param {string} parameter - The name of the parameter, e.g. 'bar' in "http://foo.com?bar=baz"
+   * @param {string} value - The value of the parameter, e.g. 'baz' in "http://foo.com?bar=baz"
+   */
+  public static option<M extends typeof Model>(
+    this: M,
+    parameter: string,
+    value: OptionValue | OptionValue[]
+  ): Builder<InstanceType<M>> {
+    return this.api().option(parameter, value)
+  }
+
+  /**
+   * Specify the page that should be fetched.
+   *
+   * @param {number} page - The number of the page.
+   */
+  public static page<M extends typeof Model>(
+    this: M,
+    page: number
+  ): Builder<InstanceType<M>> {
+    return this.api().page(page)
+  }
+
+  /**
+   * Specify the limit of records that should be fetched.
+   *
+   * @param {number} limit - The limit of records.
+   */
+  public static limit<M extends typeof Model>(
+    this: M,
+    limit: number
+  ): Builder<InstanceType<M>> {
+    return this.api().limit(limit)
+  }
+
+  /**
+   * Build a custom endpoint for the resulting HTTP request URL.
+   *
+   * @param {...(string|Model)} resources - The resources to be built into a custom endpoint.
+   */
+  public static custom<M extends typeof Model>(
+    this: M,
+    ...resources: (string | Model)[]
+  ): Builder<InstanceType<M>> {
+    return this.api().custom(...resources)
   }
 
   /**
