@@ -25,7 +25,7 @@ export class ModelAPIInstance<M extends Model = Model> {
    * so you can start querying.
    */
   public query(): Builder<M> {
-    return new Builder(this.model.constructor as typeof Model)
+    return new Builder(this.model.$self())
   }
 
   /**
@@ -100,10 +100,7 @@ export class ModelAPIInstance<M extends Model = Model> {
         record
       )
       .then((response) => {
-        return new SingularResponse<R>(
-          response,
-          relationship.constructor as typeof Model
-        )
+        return new SingularResponse<R>(response, relationship.$self())
       })
   }
 
@@ -160,10 +157,7 @@ export class ModelAPIInstance<M extends Model = Model> {
         record
       )
       .then((response) => {
-        return new SingularResponse<R>(
-          response,
-          relationship.constructor as typeof Model
-        )
+        return new SingularResponse<R>(response, relationship.$self())
       })
   }
 
@@ -175,7 +169,7 @@ export class ModelAPIInstance<M extends Model = Model> {
   }
 
   private _api(): ModelAPIStatic {
-    return new ModelAPIStatic(this.model.constructor as typeof Model)
+    return new ModelAPIStatic(this.model.$self())
   }
 
   private _getHttpClient(): HttpClient {

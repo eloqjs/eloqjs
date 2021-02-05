@@ -41,14 +41,10 @@ export class RelationAPI<
     this.key = key
     this.forceSingular = forceSingular
 
-    const typeOfBelongsToModel = this.belongsToModel.constructor as typeof Model
-    const belongsToModelId =
-      this.belongsToModel.$id !== null ? this.belongsToModel.$id : undefined
-
     this.query = new Builder<M, boolean>(
       this.model,
-      typeOfBelongsToModel,
-      belongsToModelId,
+      this.belongsToModel.$self(),
+      this.belongsToModel.$id ?? undefined,
       forceSingular
     )
   }
