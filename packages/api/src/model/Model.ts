@@ -6,6 +6,8 @@ import { FilterValue } from '../query/specs/FilterSpec'
 import { OptionValue } from '../query/specs/OptionSpec'
 import { PluralPromise } from '../response/PluralPromise'
 import { SingularPromise } from '../response/SingularPromise'
+import { assert } from '../support/Utils'
+import { ModelAPIInstance, ModelAPIStatic } from './api'
 
 export class Model extends BaseModel {
   /**
@@ -14,7 +16,7 @@ export class Model extends BaseModel {
   public static all<M extends typeof Model>(
     this: M
   ): PluralPromise<InstanceType<M>> {
-    return this.api().all()
+    return this._api().all()
   }
 
   /**
@@ -23,7 +25,7 @@ export class Model extends BaseModel {
   public static first<M extends typeof Model>(
     this: M
   ): SingularPromise<InstanceType<M>> {
-    return this.api().first()
+    return this._api().first()
   }
 
   /**
@@ -33,7 +35,7 @@ export class Model extends BaseModel {
     this: M,
     id: string | number
   ): SingularPromise<InstanceType<M>> {
-    return this.api().find(id)
+    return this._api().find(id)
   }
 
   /**
@@ -44,7 +46,7 @@ export class Model extends BaseModel {
     this: M,
     record: InstanceType<M> | Element
   ): SingularPromise<InstanceType<M>> {
-    return this.api().save(record)
+    return this._api().save(record)
   }
 
   public static where<M extends typeof Model>(
@@ -52,7 +54,7 @@ export class Model extends BaseModel {
     attribute: string | string[],
     value: FilterValue
   ): Builder<InstanceType<M>> {
-    return this.api().where(attribute, value)
+    return this._api().where(attribute, value)
   }
 
   /**
@@ -66,7 +68,7 @@ export class Model extends BaseModel {
     attribute: string | string[],
     values: FilterValue[]
   ): Builder<InstanceType<M>> {
-    return this.api().whereIn(attribute, values)
+    return this._api().whereIn(attribute, values)
   }
 
   /**
@@ -77,7 +79,7 @@ export class Model extends BaseModel {
     this: M,
     relationship: string | string[]
   ): Builder<InstanceType<M>> {
-    return this.api().with(relationship)
+    return this._api().with(relationship)
   }
 
   /**
@@ -89,7 +91,7 @@ export class Model extends BaseModel {
     this: M,
     attribute: string | string[]
   ): Builder<InstanceType<M>> {
-    return this.api().append(attribute)
+    return this._api().append(attribute)
   }
 
   /**
@@ -99,7 +101,7 @@ export class Model extends BaseModel {
     this: M,
     field: string | string[]
   ): Builder<InstanceType<M>> {
-    return this.api().select(field)
+    return this._api().select(field)
   }
 
   /**
@@ -113,7 +115,7 @@ export class Model extends BaseModel {
     attribute: string,
     direction?: 'asc' | 'desc'
   ): Builder<InstanceType<M>> {
-    return this.api().orderBy(attribute, direction)
+    return this._api().orderBy(attribute, direction)
   }
 
   /**
@@ -127,7 +129,7 @@ export class Model extends BaseModel {
     parameter: string,
     value: OptionValue | OptionValue[]
   ): Builder<InstanceType<M>> {
-    return this.api().option(parameter, value)
+    return this._api().option(parameter, value)
   }
 
   /**
@@ -139,7 +141,7 @@ export class Model extends BaseModel {
     this: M,
     page: number
   ): Builder<InstanceType<M>> {
-    return this.api().page(page)
+    return this._api().page(page)
   }
 
   /**
@@ -151,7 +153,7 @@ export class Model extends BaseModel {
     this: M,
     limit: number
   ): Builder<InstanceType<M>> {
-    return this.api().limit(limit)
+    return this._api().limit(limit)
   }
 
   /**
@@ -163,14 +165,14 @@ export class Model extends BaseModel {
     this: M,
     ...resources: (string | Model)[]
   ): Builder<InstanceType<M>> {
-    return this.api().custom(...resources)
+    return this._api().custom(...resources)
   }
 
   /**
    * Delete a record.
    */
   public static delete(id: string | number): Promise<void> {
-    return this.api().delete(id)
+    return this._api().delete(id)
   }
 
   /**
@@ -188,12 +190,21 @@ export class Model extends BaseModel {
   }
 
   /**
+   * Get an [Static API]{@link ModelAPIStatic} instance from a static {@link Model}.
+   */
+  private static _api<M extends typeof Model>(this: M): ModelAPIStatic<M> {
+    assert(!!this.api, ['API is not registered.'])
+
+    return this.api()
+  }
+
+  /**
    * Get a {@link Builder} instance from a {@link Model} instance
    * so you can query without having a static reference to your specific {@link Model}
    * class.
    */
   public $query(): Builder<this> {
-    return this.$api().query() as Builder<this>
+    return this._$api().query() as Builder<this>
   }
 
   /**
@@ -206,7 +217,7 @@ export class Model extends BaseModel {
    * * `null` if this {@link Model} instance has no ID or if there _is_ an ID, but a {@link Model} with this ID cannot be found in the backend.
    */
   public $fresh(): Promise<Item<this>> {
-    return this.$api().fresh()
+    return this._$api().fresh()
   }
 
   /**
@@ -214,41 +225,50 @@ export class Model extends BaseModel {
    * If the record doesn't have an ID, a new record will be created, otherwise the record will be updated.
    */
   public $save(): SingularPromise<this> {
-    return this.$api().save()
+    return this._$api().save()
   }
 
   /**
    * Delete the record.
    */
   public $delete(): Promise<void> {
-    return this.$api().delete()
+    return this._$api().delete()
   }
 
   /**
    * Create a related record and attach it to this {@link Model}.
    */
   public $attach<R extends Model>(relationship: R): SingularPromise<R> {
-    return this.$api().attach(relationship)
+    return this._$api().attach(relationship)
   }
 
   /**
    * Delete a related record and detach it from this {@link Model}.
    */
   public $detach<R extends Model>(relationship: R): Promise<void> {
-    return this.$api().detach(relationship)
+    return this._$api().detach(relationship)
   }
 
   /**
    * Update a related record and sync it to this {@link Model}.
    */
   public $sync<R extends Model>(relationship: R): SingularPromise<R> {
-    return this.$api().sync(relationship)
+    return this._$api().sync(relationship)
   }
 
   /**
    * Create a related record for the provided {@link Model}.
    */
   public $for<T extends Model>(model: T): SingularPromise<this> {
-    return this.$api().for(model)
+    return this._$api().for(model)
+  }
+
+  /**
+   * Get an [Instance API]{@link ModelAPIInstance} instance from a {@link Model}.
+   */
+  private _$api(): ModelAPIInstance<this> {
+    assert(!!this.$api, ['API is not registered.'])
+
+    return this.$api()
   }
 }
