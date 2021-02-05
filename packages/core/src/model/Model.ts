@@ -3,7 +3,8 @@ import { Mutator, Mutators } from '../attributes/Contracts'
 import * as Relations from '../relations'
 import { Map } from '../support/Map'
 import { assert } from '../support/Utils'
-import { Element } from '../types/Data'
+import { Element, Item } from '../types/Data'
+import * as Contracts from './Contracts'
 import * as Serialize from './Serialize'
 
 export type ModelFields = Record<string, Attributes.Attribute>
@@ -58,6 +59,16 @@ export class Model {
    * The array of booted models.
    */
   private static booted: Record<string, boolean> = {}
+
+  /**
+   * The global lifecycle hook registries.
+   */
+  private static hooks: Contracts.GlobalHooks = {}
+
+  /**
+   * The counter to generate the UID for global hooks.
+   */
+  private static lastHookId: number = 0
 
   /**
    * The saved state of attributes.
@@ -329,6 +340,79 @@ export class Model {
 
       this.initializeSchema()
     }
+  }
+
+  /**
+   * Register a global hook. It will return ID for the hook that users may use
+   * it to unregister hooks.
+   */
+  public static on(on: string, callback: Contracts.HookableClosure): number {
+    const id = ++this.lastHookId
+
+    if (!this.hooks[on]) {
+      this.hooks[on] = []
+    }
+
+    this.hooks[on].push({ id, callback })
+
+    return id
+  }
+
+  /**
+   * Unregister global hook with the given id.
+   */
+  public static off(id: number): boolean {
+    return Object.keys(this.hooks).some((on) => {
+      const hooks = this.hooks[on]
+
+      const index = hooks.findIndex((h) => h.id === id)
+
+      if (index === -1) {
+        return false
+      }
+
+      hooks.splice(index, 1)
+
+      return true
+    })
+  }
+
+  /**
+   * Build executable hook collection for the given hook.
+   */
+  private static buildHooks(on: string): Contracts.HookableClosure[] {
+    const hooks = this.getGlobalHookAsArray(on)
+    const localHook = this[on] as Contracts.HookableClosure | undefined
+
+    localHook && hooks.push(localHook.bind(this))
+
+    return hooks
+  }
+
+  /**
+   * Get global hook of the given name as array by stripping id key and keep
+   * only hook functions.
+   */
+  private static getGlobalHookAsArray(on: string): Contracts.HookableClosure[] {
+    const hooks = this.hooks[on]
+
+    return hooks ? hooks.map((h) => h.callback.bind(this)) : []
+  }
+
+  /**
+   * Execute mutation hooks to the given model.
+   */
+  public static executeMutationHooks<M extends Item>(on: string, model: M): M {
+    const hooks = this.buildHooks(on) as Contracts.MutationHook[]
+
+    if (hooks.length === 0 || model === null) {
+      return model
+    }
+
+    return hooks.reduce((m, hook) => {
+      hook(m as Model, this.entity)
+      return m
+    }, model)
   }
 
   /**
