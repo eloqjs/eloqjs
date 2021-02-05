@@ -77,6 +77,8 @@ export class ModelAPIInstance<M extends Model = Model> {
    * Create a related record and attach it to this {@link Model}.
    */
   public attach<R extends Model>(relationship: R): SingularPromise<R> {
+    this._hasRelation(relationship)
+
     const selfId = this.model.$id
 
     assert(selfId !== null, [
@@ -109,6 +111,8 @@ export class ModelAPIInstance<M extends Model = Model> {
    * Delete a related record and detach it from this {@link Model}.
    */
   public detach<R extends Model>(relationship: R): Promise<void> {
+    this._hasRelation(relationship)
+
     const selfId = this.model.$id
 
     assert(selfId !== null, [
@@ -130,6 +134,8 @@ export class ModelAPIInstance<M extends Model = Model> {
    * Update a related record and sync it to this {@link Model}.
    */
   public sync<R extends Model>(relationship: R): SingularPromise<R> {
+    this._hasRelation(relationship)
+
     const selfId = this.model.$id
 
     assert(selfId !== null, [
@@ -174,5 +180,14 @@ export class ModelAPIInstance<M extends Model = Model> {
 
   private _getHttpClient(): HttpClient {
     return (this._api().constructor as typeof ModelAPIStatic).getHttpClient()
+  }
+
+  private _hasRelation<R extends Model>(relationship: R): void {
+    const modelName = this.model.$self().name
+    const relationName = relationship.$self().name
+
+    assert(this.model.$self().hasRelation(relationship.$self()), [
+      `The ${modelName} model does not have a relationship with the ${relationName} model.`
+    ])
   }
 }
