@@ -1,5 +1,6 @@
 import * as Attributes from '../attributes'
 import { Mutator, Mutators } from '../attributes/Contracts'
+import * as Relations from '../relations'
 import { Map } from '../support/Map'
 import { assert } from '../support/Utils'
 import { Element } from '../types/Data'
@@ -71,7 +72,7 @@ export class Model {
   /**
    * The unmutated relationships of the record.
    */
-  private $relationships: Map<any> = new Map<any>()
+  private $relationships: Map<Relations.Relation> = new Map<Relations.Relation>()
 
   /**
    * Create a new model instance.
