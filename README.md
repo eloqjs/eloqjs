@@ -28,7 +28,16 @@ Or locally:
 
 ## Credits
 
-- ❤️ Whoever contributes to this project!
+Whoever contributes to this project! ❤️
+
+This package was based and inspired by some amazing packages!
+
+- [Laravel Eloquent][laravel-eloquent-src]
+- [Vuex ORM][vuex-orm-src] by [Kia King Ishii][vuex-orm-author]
+- [Vue MC][vue-mc-src] by [Rudi Theunissen][vue-mc-author] 
+- [Vue API Query][vue-api-query-src] by [Robson Tenório][vue-api-query-author]
+- [Coloquent][coloquent-src] by [David Duwaer][coloquent-author]
+- [Sarala][sarala-src] by [Milroy E. Fraser][sarala-author]
 
 ## 📑 License
 
@@ -61,3 +70,22 @@ Copyright (c) João Pedro Antunes Silva
 
 [license-src]: https://img.shields.io/github/license/eloqjs/eloqjs?style=flat-square
 [license-href]: https://github.com/eloqjs/eloqjs/blob/dev/LICENSE.md
+
+<!-- Credits -->
+
+[laravel-eloquent-src]: https://laravel.com/docs/eloquent
+
+[vuex-orm-src]: https://github.com/vuex-orm/vuex-orm
+[vuex-orm-author]: https://github.com/kiaking
+
+[vue-mc-src]: https://github.com/FiguredLimited/vue-mc
+[vue-mc-author]: https://github.com/rtheunissen
+
+[vue-api-query-src]: https://github.com/robsontenorio/vue-api-query
+[vue-api-query-author]: https://github.com/robsontenorio
+
+[coloquent-src]: https://github.com/DavidDuwaer/Coloquent
+[coloquent-author]: https://github.com/DavidDuwaer
+
+[sarala-src]: https://github.com/milroyfraser/sarala
+[sarala-author]: https://github.com/milroyfraser
