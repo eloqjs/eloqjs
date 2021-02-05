@@ -226,6 +226,28 @@ export class Model {
   }
 
   /**
+   * Determines whether the model has the given relationship.
+   */
+  public static hasRelation(relationship: typeof Model): boolean {
+    const fields = this.getFields()
+    let flag = false
+
+    for (const key in fields) {
+      const field = fields[key]
+
+      if (field instanceof Attributes.Relation) {
+        flag = field.related === relationship
+
+        if (flag) {
+          break
+        }
+      }
+    }
+
+    return flag
+  }
+
+  /**
    * Create an attr attribute.
    */
   protected static attr(

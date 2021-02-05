@@ -7,7 +7,7 @@ export abstract class Relation extends Attribute {
   /**
    * The related model.
    */
-  protected related: typeof Model
+  public related: typeof Model
 
   protected constructor(model: typeof Model, related: typeof Model) {
     super(model)
