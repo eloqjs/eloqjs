@@ -74,7 +74,7 @@ describe('Feature – Models – Sync', () => {
     )
   })
 
-  it('should throw an error when relationship do not have an ID', async () => {
+  it('should throw an error when relationship do not have an ID', () => {
     const error = () => {
       new User(Data.User).posts.sync({
         title: 'My awesome post!'

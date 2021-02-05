@@ -24,7 +24,7 @@ describe('Feature – Models – Delete', () => {
       expect(response).toBeUndefined()
     })
 
-    it('should throw an error when the record do not have an ID', async () => {
+    it('should throw an error when the record do not have an ID', () => {
       const error = () => {
         new User({ name: 'John Doe' }).$delete()
       }

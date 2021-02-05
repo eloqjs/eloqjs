@@ -36,7 +36,7 @@ describe('Feature – Models – Detach', () => {
     )
   })
 
-  it('should throw an error when relationship do not have an ID', async () => {
+  it('should throw an error when relationship do not have an ID', () => {
     const error = () => {
       new User(Data.User).$detach(
         new Post({

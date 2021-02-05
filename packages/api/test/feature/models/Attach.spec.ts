@@ -54,7 +54,7 @@ describe('Feature – Models – Attach', () => {
     expect(post).toBeInstanceOf(Post)
   })
 
-  it('should throw an error when parent model do not have an ID', async () => {
+  it('should throw an error when parent model do not have an ID', () => {
     const error = () => {
       new User({ name: 'John Doe' }).posts.attach({
         title: 'My awesome post!'
