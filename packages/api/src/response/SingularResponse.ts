@@ -32,14 +32,14 @@ export class SingularResponse<M extends Model = Model> extends Response {
     >()
 
     if (!data || !(data = unwrap(data)) || !(data = variadic(data))) {
-      return null
+      data = null
+    } else {
+      data = this.mutate(data)
     }
 
-    data = this.mutate(data)
-
-    return this.hooks.reduce<Item<M>>((model, on) => {
+    return this.hooks.reduce((model, on) => {
       this.model.executeMutationHooks(on, model)
       return model
-    }, data)
+    }, data as Item<M>)
   }
 }
