@@ -68,9 +68,7 @@ export class ModelAPIInstance<M extends Model = Model> {
   public delete(): Promise<void> {
     const id = this.model.$id
 
-    if (id === null) {
-      throw new Error('Cannot delete a model with no ID.')
-    }
+    assert(id !== null, ['Cannot delete a model with no ID.'])
 
     return this._api().delete(id)
   }

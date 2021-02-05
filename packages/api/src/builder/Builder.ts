@@ -49,9 +49,7 @@ export class Builder<M extends Model = Model, S extends boolean = false> {
     this.httpClient = model.getHttpClient()
     this.forceSingular = !!forceSingular
 
-    if (!this.httpClient) {
-      throw new Error('You must define the HTTP Client')
-    }
+    assert(!!this.httpClient, ['You must define the HTTP Client'])
   }
 
   /**
