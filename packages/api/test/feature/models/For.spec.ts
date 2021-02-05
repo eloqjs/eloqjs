@@ -27,4 +27,17 @@ describe('Feature – Models – Attach', () => {
     expect(post.$toJson()).toEqual(Data.Post)
     expect(post).toBeInstanceOf(Post)
   })
+
+  it('should throw an error when parent model do not have an ID', async () => {
+    const error = () => {
+      const user = new User({ name: 'John Doe' })
+      new Post({
+        title: 'My awesome post!'
+      }).$for(user)
+    }
+
+    expect(error).toThrow(
+      '[ELOQJS] Cannot attach a related model to a parent that has no ID.'
+    )
+  })
 })

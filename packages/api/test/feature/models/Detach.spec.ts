@@ -25,4 +25,26 @@ describe('Feature – Models – Detach', () => {
     const response = await new User(Data.User).posts.detach(Data.Post.slug)
     expect(response).toBeUndefined()
   })
+
+  it('should throw an error when parent model do not have an ID', async () => {
+    const error = () => {
+      new User({ name: 'John Doe' }).posts.detach('my-awesome-post')
+    }
+
+    expect(error).toThrow(
+      '[ELOQJS] Cannot detach a related model from a parent that has no ID.'
+    )
+  })
+
+  it('should throw an error when relationship do not have an ID', async () => {
+    const error = () => {
+      new User(Data.User).$detach(
+        new Post({
+          title: 'My awesome post!'
+        })
+      )
+    }
+
+    expect(error).toThrow('[ELOQJS] Cannot detach a related model with no ID.')
+  })
 })

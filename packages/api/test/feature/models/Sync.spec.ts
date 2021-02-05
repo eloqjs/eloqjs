@@ -61,4 +61,26 @@ describe('Feature – Models – Sync', () => {
     expect(post.$toJson()).toEqual(Data.Post)
     expect(post).toBeInstanceOf(Post)
   })
+
+  it('should throw an error when parent model do not have an ID', async () => {
+    const error = () => {
+      new User({ name: 'John Doe' }).posts.sync({
+        title: 'My awesome post!'
+      })
+    }
+
+    expect(error).toThrow(
+      '[ELOQJS] Cannot sync a related model to a parent that has no ID.'
+    )
+  })
+
+  it('should throw an error when relationship do not have an ID', async () => {
+    const error = () => {
+      new User(Data.User).posts.sync({
+        title: 'My awesome post!'
+      })
+    }
+
+    expect(error).toThrow('[ELOQJS] Cannot sync a related model with no ID.')
+  })
 })
