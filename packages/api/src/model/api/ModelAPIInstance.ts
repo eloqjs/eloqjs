@@ -100,7 +100,10 @@ export class ModelAPIInstance<M extends Model = Model> {
         record
       )
       .then((response) => {
-        return new SingularResponse<R>(response, relationship.$self())
+        return new SingularResponse<R>(response, relationship.$self(), [
+          'afterCreate',
+          'afterSave'
+        ])
       })
   }
 
@@ -157,7 +160,10 @@ export class ModelAPIInstance<M extends Model = Model> {
         record
       )
       .then((response) => {
-        return new SingularResponse<R>(response, relationship.$self())
+        return new SingularResponse<R>(response, relationship.$self(), [
+          'afterUpdate',
+          'afterSave'
+        ])
       })
   }
 

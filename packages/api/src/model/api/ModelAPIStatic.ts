@@ -173,9 +173,10 @@ export class ModelAPIStatic<M extends typeof Model = typeof Model> {
   public save(
     record: InstanceType<M> | Element
   ): SingularPromise<InstanceType<M>> {
-    return this.model.hasId(record)
-      ? this._update(record)
-      : this._create(record)
+    let model = this._instantiate(record)
+    model = this.model.executeMutationHooks('beforeSave', model)
+
+    return this.model.hasId(model) ? this._update(model) : this._create(model)
   }
 
   /**
@@ -191,10 +192,10 @@ export class ModelAPIStatic<M extends typeof Model = typeof Model> {
   /**
    * Create a record.
    */
-  private _create(
-    record: InstanceType<M> | Element
-  ): SingularPromise<InstanceType<M>> {
-    record = this._serialize(record, { isPayload: true })
+  private _create(model: InstanceType<M>): SingularPromise<InstanceType<M>> {
+    model = this.model.executeMutationHooks('beforeCreate', model)
+
+    const record = this._serialize(model, { isPayload: true })
     const isEmpty = Object.keys(record).length === 0
 
     assert(!isEmpty, [
@@ -205,25 +206,31 @@ export class ModelAPIStatic<M extends typeof Model = typeof Model> {
       .getHttpClient()
       .post(this.model.getResource(), record)
       .then((response) => {
-        return new SingularResponse<InstanceType<M>>(response, this.model)
+        return new SingularResponse<InstanceType<M>>(response, this.model, [
+          'afterCreate',
+          'afterSave'
+        ])
       })
   }
 
   /**
    * Update a record.
    */
-  private _update(
-    record: InstanceType<M> | Element
-  ): SingularPromise<InstanceType<M>> {
+  private _update(model: InstanceType<M>): SingularPromise<InstanceType<M>> {
+    model = this.model.executeMutationHooks('beforeUpdate', model)
+
     // Get ID before serialize, otherwise the ID may not be available.
-    const id = this.model.getIdFromRecord(record)
-    record = this._serialize(record, { isPayload: true, isPatch: true })
+    const id = model.$id
+    const record = this._serialize(model, { isPayload: true, isPatch: true })
 
     return this._self()
       .getHttpClient()
       .patch(this.model.getResource() + '/' + id, record)
       .then((response) => {
-        return new SingularResponse<InstanceType<M>>(response, this.model)
+        return new SingularResponse<InstanceType<M>>(response, this.model, [
+          'afterUpdate',
+          'afterSave'
+        ])
       })
   }
 
@@ -239,15 +246,16 @@ export class ModelAPIStatic<M extends typeof Model = typeof Model> {
     return this.constructor as typeof ModelAPIStatic
   }
 
+  private _instantiate(record: InstanceType<M> | Element): InstanceType<M> {
+    return record instanceof Model
+      ? record
+      : (new this.model(record) as InstanceType<M>)
+  }
+
   private _serialize(
-    record: InstanceType<M> | Element,
+    model: InstanceType<M>,
     options: ModelOptions = {}
   ): Element {
-    const model =
-      record instanceof Model
-        ? record
-        : (new this.model(record) as InstanceType<M>)
-
     return model.$serialize(options)
   }
 }
