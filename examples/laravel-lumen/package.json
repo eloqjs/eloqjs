@@ -1,0 +1,23 @@
+{
+  "name": "example-laravel-lumen",
+  "version": "1.0.0",
+  "scripts": {
+    "watch": "cross-env NODE_ENV=development ../../node_modules/webpack/bin/webpack.js --progress --hide-modules --config=../../node_modules/laravel-mix/setup/webpack.config.js --watch"
+  },
+  "dependencies": {
+    "@eloqjs/api": "0.0.0-development",
+    "@eloqjs/core": "0.0.0-development",
+    "axios": "^0.21.1",
+    "cross-env": "^5.2.0",
+    "element-theme-default": "^1.4.13",
+    "element-ui": "^2.11.1",
+    "laravel-mix": "4.1.2",
+    "lodash": "^4.17.19",
+    "node-sass": "^4.12.0",
+    "sass-loader": "^7.2.0",
+    "vue": "^2.6.10"
+  },
+  "devDependencies": {
+    "vue-template-compiler": "^2.6.10"
+  }
+}
