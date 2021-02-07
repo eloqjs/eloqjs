@@ -299,6 +299,13 @@ export class Model {
   }
 
   /**
+   * Create an uid attribute.
+   */
+  protected static uid(value?: () => string | number): Attributes.Uid {
+    return new Attributes.Uid(this, value)
+  }
+
+  /**
    * Create a has one relationship.
    */
   protected static hasOne(related: typeof Model): Attributes.HasOne {
