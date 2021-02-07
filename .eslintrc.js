@@ -47,6 +47,9 @@ module.exports = {
     'simple-import-sort/imports': 'warn',
     'simple-import-sort/exports': 'warn',
 
+    /* Jest */
+    'jest/expect-expect': 'off',
+
     /* Others */
     'no-console': 'error'
   },
