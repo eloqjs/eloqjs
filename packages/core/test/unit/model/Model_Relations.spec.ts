@@ -1,3 +1,5 @@
+import { assertInstanceOf } from '@eloqjs/test-utils'
+
 import { Relations } from '../../../src'
 import BaseModel from '../../dummy/models/BaseModel'
 
@@ -81,9 +83,8 @@ describe('Unit - Model – Relations', () => {
 
     expect(post.id).toBe(1)
 
+    assertInstanceOf(post.comments.data, Comment)
     expect(post.comments.data).toHaveLength(2)
-    expect(post.comments.data[0]).toBeInstanceOf(Comment)
-    expect(post.comments.data[1]).toBeInstanceOf(Comment)
     expect(post.comments.data[0].id).toBe(1)
     expect(post.comments.data[1].id).toBe(2)
   })

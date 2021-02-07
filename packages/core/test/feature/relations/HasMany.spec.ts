@@ -1,3 +1,5 @@
+import { assertInstanceOf, assertModel } from '@eloqjs/test-utils'
+
 import { Relations } from '../../../src'
 import BaseModel from '../../dummy/models/BaseModel'
 
@@ -53,11 +55,8 @@ describe('Features – Relations – Has Many', () => {
     }
     const user = new User(data)
 
-    expect(user.$toJson()).toEqual(data)
-
-    for (const post of user.posts.data) {
-      expect(post).toBeInstanceOf(Post)
-    }
+    assertModel(user, data)
+    assertInstanceOf(user.posts.data, Post)
   })
 
   it('can create data when the has many relation is empty', async () => {
@@ -72,7 +71,7 @@ describe('Features – Relations – Has Many', () => {
       posts: []
     }
 
-    expect(user.$toJson()).toEqual(expected)
+    assertModel(user, expected)
     expect(user.posts.data).toStrictEqual([])
   })
 
@@ -85,7 +84,7 @@ describe('Features – Relations – Has Many', () => {
 
     const user = new User(data)
 
-    expect(user.$toJson()).toEqual(data)
+    assertModel(user, data)
     expect(user.posts.data).toStrictEqual([])
   })
 })

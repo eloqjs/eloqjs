@@ -1,3 +1,5 @@
+import { assertModel } from '@eloqjs/test-utils'
+
 import { Relations } from '../../../src'
 import BaseModel from '../../dummy/models/BaseModel'
 
@@ -42,7 +44,7 @@ describe('Features – Relations – Has One', () => {
     }
     const user = new User(data)
 
-    expect(user.$toJson()).toEqual(data)
+    assertModel(user, data)
     expect(user.phone.data).toBeInstanceOf(Phone)
   })
 
@@ -58,7 +60,7 @@ describe('Features – Relations – Has One', () => {
       phone: null
     }
 
-    expect(user.$toJson()).toEqual(expected)
+    assertModel(user, expected)
     expect(user.phone.data).toBeNull()
   })
 
@@ -71,7 +73,7 @@ describe('Features – Relations – Has One', () => {
 
     const user = new User(data)
 
-    expect(user.$toJson()).toEqual(data)
+    assertModel(user, data)
     expect(user.phone.data).toBeNull()
   })
 })
