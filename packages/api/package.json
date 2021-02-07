@@ -32,6 +32,7 @@
   },
   "devDependencies": {
     "@eloqjs/core": "0.0.0-development",
+    "@eloqjs/test-utils": "0.0.0-development",
     "axios": "^0.21.1",
     "axios-mock-adapter": "^1.19.0"
   }
