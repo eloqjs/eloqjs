@@ -2,6 +2,7 @@ import * as Attributes from '../attributes'
 import { Mutator, Mutators } from '../attributes/Contracts'
 import * as Relations from '../relations'
 import { Map } from '../support/Map'
+import { Uid as UidGenerator } from '../support/Uid'
 import { assert } from '../support/Utils'
 import { Element, Item } from '../types/Data'
 import * as Contracts from './Contracts'
@@ -69,6 +70,11 @@ export class Model {
    * The counter to generate the UID for global hooks.
    */
   private static lastHookId: number = 0
+
+  /**
+   * The unique ID for the model.
+   */
+  public readonly $uid!: string
 
   /**
    * The saved state of attributes.
@@ -550,6 +556,19 @@ export class Model {
    */
   private $boot(): void {
     this.$self().boot()
+    this._generateUid()
+  }
+
+  /**
+   * Generate an unique ID for the model.
+   */
+  private _generateUid(): void {
+    Object.defineProperty(this, '$uid', {
+      value: UidGenerator.make('model'),
+      enumerable: false,
+      configurable: false,
+      writable: false
+    })
   }
 
   /**
