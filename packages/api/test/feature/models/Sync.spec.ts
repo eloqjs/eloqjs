@@ -1,3 +1,5 @@
+import { assertModel } from '@eloqjs/test-utils'
+
 import { axiosMock } from '../../setup'
 import * as Data from './dummy/data'
 import Post from './dummy/models/Post'
@@ -29,8 +31,8 @@ describe('Feature – Models – Sync', () => {
       .$sync(new Post(Data.Post))
       .then((response) => response.data!)
 
-    expect(post.$toJson()).toEqual(Data.Post)
     expect(post).toBeInstanceOf(Post)
+    assertModel(post, Data.Post)
   })
 
   it('should update a new record via relation method', async () => {
@@ -58,8 +60,8 @@ describe('Feature – Models – Sync', () => {
       .sync(new Post(Data.Post))
       .then((response) => response.data!)
 
-    expect(post.$toJson()).toEqual(Data.Post)
     expect(post).toBeInstanceOf(Post)
+    assertModel(post, Data.Post)
   })
 
   it('should throw an error when parent model do not have an ID', async () => {

@@ -1,3 +1,5 @@
+import { assertInstanceOf, assertModels } from '@eloqjs/test-utils'
+
 import { axiosMock } from '../../setup'
 import * as Data from './dummy/data'
 import User from './dummy/models/User'
@@ -10,11 +12,7 @@ describe('Feature – Models – All', () => {
 
     const users = await User.all().then((response) => response.data)
 
-    for (const user of users) {
-      const expected = Data.Users.find((record) => record.id === user.id)
-
-      expect(user.$toJson()).toEqual(expected)
-      expect(user).toBeInstanceOf(User)
-    }
+    assertInstanceOf(users, User)
+    assertModels(users, Data.Users)
   })
 })

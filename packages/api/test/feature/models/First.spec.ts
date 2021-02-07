@@ -1,3 +1,5 @@
+import { assertModel } from '@eloqjs/test-utils'
+
 import { axiosMock } from '../../setup'
 import * as Data from './dummy/data'
 import User from './dummy/models/User'
@@ -10,7 +12,7 @@ describe('Feature – Models – First', () => {
 
     const user = await User.first().then((response) => response.data!)
 
-    expect(user.$toJson()).toEqual(Data.User)
     expect(user).toBeInstanceOf(User)
+    assertModel(user, Data.User)
   })
 })

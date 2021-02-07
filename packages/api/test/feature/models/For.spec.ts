@@ -1,3 +1,5 @@
+import { assertModel } from '@eloqjs/test-utils'
+
 import { axiosMock } from '../../setup'
 import * as Data from './dummy/data'
 import Post from './dummy/models/Post'
@@ -24,8 +26,8 @@ describe('Feature – Models – Attach', () => {
       .$for(user)
       .then((response) => response.data!)
 
-    expect(post.$toJson()).toEqual(Data.Post)
     expect(post).toBeInstanceOf(Post)
+    assertModel(post, Data.Post)
   })
 
   it('should throw an error when parent model do not have an ID', async () => {

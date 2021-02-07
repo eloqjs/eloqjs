@@ -1,3 +1,5 @@
+import { assertModel } from '@eloqjs/test-utils'
+
 import { axiosMock } from '../../setup'
 import * as Data from './dummy/data'
 import User from './dummy/models/User'
@@ -13,8 +15,8 @@ describe('Feature – Models – Save', () => {
         name: 'John Doe'
       }).then((response) => response.data!)
 
-      expect(user.$toJson()).toEqual(Data.User)
       expect(user).toBeInstanceOf(User)
+      assertModel(user, Data.User)
     })
 
     it('should update a record by passing in the id', async () => {
@@ -30,8 +32,8 @@ describe('Feature – Models – Save', () => {
         name: 'Mary Doe'
       }).then((response) => response.data!)
 
-      expect(user.$toJson()).toEqual(expected)
       expect(user).toBeInstanceOf(User)
+      assertModel(user, expected)
     })
   })
 
@@ -47,8 +49,8 @@ describe('Feature – Models – Save', () => {
         .$save()
         .then((response) => response.data!)
 
-      expect(user.$toJson()).toEqual(Data.User)
       expect(user).toBeInstanceOf(User)
+      assertModel(user, Data.User)
     })
 
     it('should update a record by passing in the id', async () => {
@@ -66,8 +68,8 @@ describe('Feature – Models – Save', () => {
         .$save()
         .then((response) => response.data!)
 
-      expect(user.$toJson()).toEqual(expected)
       expect(user).toBeInstanceOf(User)
+      assertModel(user, expected)
     })
   })
 })
