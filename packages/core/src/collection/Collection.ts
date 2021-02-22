@@ -1,4 +1,5 @@
 import { Model } from '../model/Model'
+import { Uid as UidGenerator } from '../support/Uid'
 import { assert, forceArray, isFunction } from '../support/Utils'
 import { Element } from '../types/Data'
 
@@ -6,10 +7,15 @@ export interface CollectionOptions {
   model?: typeof Model
 }
 
-export class Collection<M extends Model> {
+export class Collection<M extends Model = Model> {
   protected static model: typeof Model
 
   public models: M[] = []
+
+  /**
+   * The unique ID for the collection.
+   */
+  public readonly $uid!: string
 
   private readonly _options: CollectionOptions
 
@@ -20,6 +26,8 @@ export class Collection<M extends Model> {
     options: CollectionOptions = {}
   ) {
     this._options = options
+
+    this._boot()
 
     if (models) {
       this.add(models)
@@ -286,5 +294,25 @@ export class Collection<M extends Model> {
    */
   private _self(): typeof Collection {
     return this.constructor as typeof Collection
+  }
+
+  /**
+   * Bootstrap this collection.
+   */
+  private _boot(): void {
+    this._generateUid()
+  }
+
+  /**
+   * Generate an unique ID for the collection.
+   */
+  private _generateUid(): void {
+    // Define the $uid property.
+    Object.defineProperty(this, '$uid', {
+      value: UidGenerator.make('collection'),
+      enumerable: false,
+      configurable: true,
+      writable: false
+    })
   }
 }
