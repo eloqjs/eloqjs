@@ -1,7 +1,6 @@
-import { assertInstanceOf } from '@eloqjs/test-utils'
-
 import { Collection } from '../../../src/collection/Collection'
 import BaseModel from '../../dummy/models/BaseModel'
+import { assertInstanceOf } from '../../Helpers'
 
 describe('Unit – Collection', () => {
   class User extends BaseModel {
@@ -32,7 +31,7 @@ describe('Unit – Collection', () => {
     const collection = new UserCollection([user])
 
     expect(collection).toBeInstanceOf(UserCollection)
-    assertInstanceOf(collection.models, User)
+    assertInstanceOf(collection, User)
   })
 
   it('should throw an error when trying to instantiate without model type', () => {

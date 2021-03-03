@@ -1,7 +1,6 @@
-import { assertModel } from '@eloqjs/test-utils'
-
 import { Relations } from '../../../src'
 import BaseModel from '../../dummy/models/BaseModel'
+import { assertModel } from '../../Helpers'
 
 describe('Features – Relations – Has One', () => {
   class User extends BaseModel {

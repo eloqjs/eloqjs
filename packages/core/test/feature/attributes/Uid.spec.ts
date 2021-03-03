@@ -1,7 +1,7 @@
-import { assertModel, assertModels } from '@eloqjs/test-utils'
-
+import { Collection } from '../../../src/collection/Collection'
 import { Uid } from '../../../src/support/Uid'
 import BaseModel from '../../dummy/models/BaseModel'
+import { assertCollection, assertModel } from '../../Helpers'
 
 describe('Feature – Attributes – Uid', () => {
   beforeEach(() => {
@@ -25,11 +25,9 @@ describe('Feature – Attributes – Uid', () => {
 
     it('should generate uid as a default value', async () => {
       const data = [{}, {}, {}]
-      const users = []
-
-      for (const record of data) {
-        users.push(new User(record))
-      }
+      const users = new Collection(data, {
+        model: User
+      })
 
       const expected = [
         { id: '$uid1', id2: '$uid2' },
@@ -37,7 +35,7 @@ describe('Feature – Attributes – Uid', () => {
         { id: '$uid5', id2: '$uid6' }
       ]
 
-      assertModels(users, expected)
+      assertCollection(users, expected)
     })
 
     it('should do nothing if the value exists', async () => {
@@ -45,13 +43,11 @@ describe('Feature – Attributes – Uid', () => {
         { id: 1, id2: 'id1' },
         { id: 2, id2: 'id2' }
       ]
-      const users = []
+      const users = new Collection(data, {
+        model: User
+      })
 
-      for (const record of data) {
-        users.push(new User(record))
-      }
-
-      assertModels(users, data)
+      assertCollection(users, data)
     })
   })
 

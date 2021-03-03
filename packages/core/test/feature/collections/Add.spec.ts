@@ -1,6 +1,5 @@
-import { assertInstanceOf } from '@eloqjs/test-utils'
-
 import { Collection } from '../../../src/collection/Collection'
+import { assertInstanceOf } from '../../Helpers'
 import User from './dummy/models/User'
 
 describe('Feature – Collections – Add', () => {
@@ -23,7 +22,7 @@ describe('Feature – Collections – Add', () => {
 
     collection.add(user)
 
-    assertInstanceOf(collection.models, User)
+    assertInstanceOf(collection, User)
   })
 
   it('should add model on initialize', () => {

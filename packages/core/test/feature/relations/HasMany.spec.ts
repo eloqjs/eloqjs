@@ -1,7 +1,6 @@
-import { assertInstanceOf, assertModel } from '@eloqjs/test-utils'
-
-import { Relations } from '../../../src'
+import { Collection, Relations } from '../../../src'
 import BaseModel from '../../dummy/models/BaseModel'
+import { assertInstanceOf, assertModel } from '../../Helpers'
 
 describe('Features – Relations – Has Many', () => {
   class User extends BaseModel {
@@ -72,7 +71,8 @@ describe('Features – Relations – Has Many', () => {
     }
 
     assertModel(user, expected)
-    expect(user.posts.data).toStrictEqual([])
+    expect(user.posts.data).toBeInstanceOf(Collection)
+    expect(user.posts.data.models).toStrictEqual([])
   })
 
   it('can create data when the has many relation is `[]`', async () => {
@@ -85,6 +85,7 @@ describe('Features – Relations – Has Many', () => {
     const user = new User(data)
 
     assertModel(user, data)
-    expect(user.posts.data).toStrictEqual([])
+    expect(user.posts.data).toBeInstanceOf(Collection)
+    expect(user.posts.data.models).toStrictEqual([])
   })
 })

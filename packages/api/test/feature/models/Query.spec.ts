@@ -1,4 +1,8 @@
-import { assertInstanceOf, assertModel, assertModels } from '@eloqjs/test-utils'
+import {
+  assertCollection,
+  assertInstanceOf,
+  assertModel
+} from '@eloqjs/test-utils'
 
 import { axiosMock } from '../../setup'
 import * as Data from './dummy/data'
@@ -13,7 +17,7 @@ describe('Feature – Models – Query', () => {
     const users = await User.all().then((response) => response.data)
 
     assertInstanceOf(users, User)
-    assertModels(users, Data.Users)
+    assertCollection(users, Data.Users)
   })
 
   it('should begin query chain via instance method', async () => {
