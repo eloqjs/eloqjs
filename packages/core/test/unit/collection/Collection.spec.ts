@@ -1,6 +1,6 @@
 import { Collection } from '../../../src/collection/Collection'
 import BaseModel from '../../dummy/models/BaseModel'
-import { assertInstanceOf } from '../../Helpers'
+import { assertCollection, assertInstanceOf } from '../../Helpers'
 
 describe('Unit – Collection', () => {
   class User extends BaseModel {
@@ -19,7 +19,7 @@ describe('Unit – Collection', () => {
     const collection = new Collection()
 
     expect(collection).toBeInstanceOf(Collection)
-    expect(collection.models).toEqual([])
+    assertCollection(collection, [])
   })
 
   it('can extend collection', () => {

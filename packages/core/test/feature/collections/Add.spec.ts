@@ -1,5 +1,5 @@
 import { Collection } from '../../../src/collection/Collection'
-import { assertInstanceOf } from '../../Helpers'
+import { assertCollection, assertInstanceOf } from '../../Helpers'
 import User from './dummy/models/User'
 
 describe('Feature – Collections – Add', () => {
@@ -9,7 +9,7 @@ describe('Feature – Collections – Add', () => {
 
     collection.add(user)
 
-    expect(collection.models).toEqual([user])
+    assertCollection(collection, [user])
   })
 
   it('should convert an object into model on add', () => {
@@ -29,6 +29,6 @@ describe('Feature – Collections – Add', () => {
     const user = new User()
     const collection = new Collection<User>([user])
 
-    expect(collection.models).toEqual([user])
+    assertCollection(collection, [user])
   })
 })

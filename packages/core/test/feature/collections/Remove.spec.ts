@@ -1,4 +1,5 @@
 import { Collection } from '../../../src/collection/Collection'
+import { assertCollection } from '../../Helpers'
 import User from './dummy/models/User'
 
 describe('Feature – Collections – Remove', () => {
@@ -8,7 +9,7 @@ describe('Feature – Collections – Remove', () => {
 
     collection.remove(user)
 
-    expect(collection.models).toEqual([])
+    assertCollection(collection, [])
   })
 
   it('should remove by passing an object with ID', () => {
@@ -19,7 +20,7 @@ describe('Feature – Collections – Remove', () => {
 
     collection.remove({ id: 1 })
 
-    expect(collection.models).toEqual([])
+    assertCollection(collection, [])
   })
 
   it('should remove by filtering', () => {
@@ -43,6 +44,6 @@ describe('Feature – Collections – Remove', () => {
 
     collection.remove([user2, { id: 3 }])
 
-    expect(collection.models).toEqual([user1])
+    assertCollection(collection, [user1])
   })
 })
