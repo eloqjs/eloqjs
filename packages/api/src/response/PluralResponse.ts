@@ -15,25 +15,27 @@ export class PluralResponse<M extends Model = Model> extends Response {
   ) {
     super(httpClientResponse, model)
 
-    this.data = this._resolveData()
+    this.data = new Collection<M>([], {
+      model: this.model
+    })
+
+    this._resolveData()
   }
 
-  private _mutate(records: Element[]): Collection<M> {
-    return records.map((record) => {
-      record = 'data' in record ? (record.data as Element) : record
-      return new this.model(record)
-    }) as Collection<M>
-  }
-
-  private _resolveData(): Collection<M> {
+  private _resolveData(): void {
     let data = this.httpClientResponse.getData<
       PluralData | Wrapped<PluralData>
     >()
 
     if (!data || !(data = unwrap(data))) {
-      return []
+      return
     }
 
-    return this._mutate(data)
+    for (let record of data) {
+      // TODO: Improve format support
+      record = 'data' in record ? (record.data as Element) : record
+
+      this.data.add(record)
+    }
   }
 }

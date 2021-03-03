@@ -4,12 +4,18 @@ export function assertModel<M extends Model>(model: M, record: Element): void {
   expect(model.$toJson()).toEqual(record)
 }
 
-export function assertModels<M extends Model>(
-  models: Collection<M>,
-  record: Element[]
+export function assertCollection<M extends Model>(
+  collection: Collection<M>,
+  records: M[] | Element[]
 ): void {
-  models.forEach((model, index) => {
-    expect(model.$toJson()).toEqual(record[index])
+  collection.models.forEach((model, index) => {
+    const record = records[index]
+
+    if (record instanceof Model) {
+      expect(model).toEqual(record)
+    } else {
+      expect(model.$toJson()).toEqual(record)
+    }
   })
 }
 
@@ -17,7 +23,7 @@ export function assertInstanceOf(
   collection: Collection<any>,
   model: typeof Model
 ): void {
-  collection.forEach((item) => {
+  collection.models.forEach((item) => {
     expect(item).toBeInstanceOf(model)
   })
 }

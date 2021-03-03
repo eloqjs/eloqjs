@@ -12,6 +12,11 @@ export {
 } from './model/Model'
 
 /**
+ * Collection
+ */
+export { Collection, CollectionOptions } from './collection/Collection'
+
+/**
  * Attributes
  */
 export * as Attributes from './attributes'
@@ -24,7 +29,7 @@ export * as Relations from './relations'
 /**
  * Types
  */
-export { Collection, Element, Instance, Item } from './types/Data'
+export { Element, Instance, Item } from './types/Data'
 
 /**
  * Plugin

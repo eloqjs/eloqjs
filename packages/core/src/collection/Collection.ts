@@ -114,16 +114,16 @@ export class Collection<M extends Model = Model> {
       'Expected a model, plain object, or array of either.'
     ])
 
-    model = this._self()._instantiate(model, this._options.model)
-
-    const models: M[] = forceArray(model)
+    // Instantiate the object
+    const _model = this._self()._instantiate<M>(model, this._options.model)
+    const models: M[] = forceArray(_model)
 
     for (const model of models) {
       this.models.push(model)
       this.onAdd(model)
     }
 
-    return model
+    return _model
   }
 
   /**
@@ -195,9 +195,9 @@ export class Collection<M extends Model = Model> {
     }
 
     // Instantiate the object
-    model = this._self()._instantiate(model, this._options.model)
+    const _model = this._self()._instantiate<M>(model, this._options.model)
 
-    return this._removeModel(model)
+    return this._removeModel(_model)
   }
 
   /**

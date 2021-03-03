@@ -1,7 +1,8 @@
+import { Collection } from '../../collection/Collection'
 import { Model } from '../../model/Model'
 import { Relation as CRelation } from '../../relations'
 import { isArray } from '../../support/Utils'
-import { Collection, Element } from '../../types/Data'
+import { Element } from '../../types/Data'
 import { Relation } from './Relation'
 
 export class HasMany extends Relation {
@@ -27,12 +28,17 @@ export class HasMany extends Relation {
   }
 
   protected mutate(records: Element[]): Collection {
-    // Remove duplicates, by model primary key.
-    // collection = collection.unique(this.related.primaryKey)
+    const collection = new Collection([], {
+      model: this.related
+    })
 
-    return records.map((record) => {
+    for (let record of records) {
+      // TODO: Improve format support
       record = 'data' in record ? (record.data as Element) : record
-      return new this.related(record)
-    }) as Collection
+
+      collection.add(record)
+    }
+
+    return collection
   }
 }
