@@ -1,5 +1,6 @@
 import * as Attributes from '../attributes'
 import { Mutator, Mutators } from '../attributes/Contracts'
+import { Collection } from '../collection/Collection'
 import * as Relations from '../relations'
 import { Map } from '../support/Map'
 import { Uid as UidGenerator } from '../support/Uid'
@@ -89,12 +90,14 @@ export class Model {
    * The saved state of attributes.
    */
   public readonly $: ModelReference<this> = {} as ModelReference<this>
-
+  /**
+   * The collections of the record.
+   */
+  private _collections: Record<string, Collection<this>> = {}
   /**
    * The unmutated attributes of the record.
    */
   private readonly _attributes: Map<unknown> = new Map<unknown>()
-
   /**
    * The unmutated relationships of the record.
    */
@@ -103,8 +106,19 @@ export class Model {
   /**
    * Create a new model instance.
    */
-  public constructor(attributes?: Element, options: ModelOptions = {}) {
+  public constructor(
+    attributes?: Element,
+    collection: Collection | Collection[] | null = null,
+    options: ModelOptions = {}
+  ) {
     this._boot()
+
+    // Register the given collection (if any) to the model. This is so that
+    // the model can be added to the collection automatically when it is
+    // created on save, or removed on delete.
+    if (collection) {
+      this.$registerCollection(collection as Collection<this>)
+    }
 
     const fill = options.fill ?? true
 
@@ -130,6 +144,10 @@ export class Model {
    */
   public get $entity(): string {
     return this.$self().entity
+  }
+
+  public get $collections(): Collection<this>[] {
+    return Object.values(this._collections)
   }
 
   /**
@@ -440,6 +458,36 @@ export class Model {
   }
 
   /**
+   * Adds this model to all registered collections.
+   */
+  // TODO: Use this method on save hook
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
+  private static _addFromAllCollections<M extends typeof Model>(
+    model: InstanceType<M>,
+    collections: Record<string, Collection<InstanceType<M>>>
+  ): void {
+    for (const collection in collections) {
+      collections[collection].add(model)
+    }
+  }
+
+  /**
+   * Removes this model from all registered collections.
+   */
+  // TODO: Use this method on delete hook
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
+  private static _removeFromAllCollections<M extends typeof Model>(
+    model: InstanceType<M>,
+    collections: Record<string, Collection<InstanceType<M>>>
+  ): void {
+    for (const collection in collections) {
+      collections[collection].remove(model)
+    }
+  }
+
+  /**
    * Get the constructor of this model.
    */
   public $self(): typeof Model {
@@ -451,6 +499,64 @@ export class Model {
    */
   public $primaryKey(): string {
     return this.$self().primaryKey
+  }
+
+  /**
+   * Registers a collection on this model. When this model is created it will
+   * automatically be added to the collection. Similarly, when this model is
+   * delete it will be remove from the collection. Registering the same
+   * collection more than once has no effect.
+   *
+   * @param {Collection} collection
+   */
+  public $registerCollection(
+    collection: Collection<this> | Collection<this>[]
+  ): void {
+    if (Array.isArray(collection)) {
+      for (const c of collection) {
+        this.$registerCollection(c)
+      }
+
+      return
+    }
+
+    assert(
+      collection !== undefined &&
+        collection !== null &&
+        collection.$uid !== undefined,
+      ['Collection is not valid.']
+    )
+
+    this._collections[collection.$uid] = collection
+  }
+
+  /**
+   * Removes a collection from this model's collection registry, removing all
+   * effects that would occur when creating or deleting this model.
+   *
+   * Unregistering a collection that isn't registered has no effect.
+   *
+   * @param {Collection} collection
+   */
+  public $unregisterCollection(
+    collection: Collection<this> | Collection<this>[]
+  ): void {
+    if (Array.isArray(collection)) {
+      for (const c of collection) {
+        this.$unregisterCollection(c)
+      }
+
+      return
+    }
+
+    assert(
+      collection !== undefined &&
+        collection !== null &&
+        collection.$uid !== undefined,
+      ['Collection is not valid.']
+    )
+
+    delete this._collections[collection.$uid]
   }
 
   /**
