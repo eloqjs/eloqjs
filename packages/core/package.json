@@ -26,8 +26,5 @@
     "test": "jest",
     "test:watch": "jest --watch",
     "coverage": "jest --collect-coverage"
-  },
-  "devDependencies": {
-    "@eloqjs/test-utils": "0.0.0-development"
   }
 }
