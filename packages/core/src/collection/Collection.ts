@@ -110,7 +110,7 @@ export class Collection<M extends Model = Model> {
    * @returns The added model or array of added models.
    */
   public add(model: M | Element | (M | Element)[]): M | M[] {
-    assert(typeof model === 'object', [
+    assert(model && typeof model === 'object', [
       'Expected a model, plain object, or array of either.'
     ])
 
@@ -181,7 +181,7 @@ export class Collection<M extends Model = Model> {
       | (M | Element)[]
       | ((model: M, index: number, array: M[]) => boolean)
   ): M | M[] | undefined {
-    assert(typeof model === 'object' || isFunction(model), [
+    assert(model && (typeof model === 'object' || isFunction(model)), [
       'Expected function, object, array, or model to remove.'
     ])
 
