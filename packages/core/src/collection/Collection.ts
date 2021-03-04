@@ -206,6 +206,7 @@ export class Collection<M extends Model = Model> {
    * @param {Model} model
    */
   protected onRemove(model: Model): void {
+    model.$unregisterCollection(this)
     this._removeModelFromRegistry(model)
   }
 
@@ -215,6 +216,7 @@ export class Collection<M extends Model = Model> {
    * @param {Model} model
    */
   protected onAdd(model: Model): void {
+    model.$registerCollection(this)
     this._addModelToRegistry(model)
   }
 
