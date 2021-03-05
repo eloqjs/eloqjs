@@ -242,6 +242,9 @@ export class Collection<M extends Model = Model> {
     return !this.isEmpty()
   }
 
+  /**
+   * Returns the last model of this collection.
+   */
   public last(): Item<M> {
     if (this.isNotEmpty()) {
       return this.models[this.size() - 1]
