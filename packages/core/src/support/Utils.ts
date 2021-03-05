@@ -1,6 +1,7 @@
 import { Model } from '../model/Model'
 
 export type Wrapped<T> = { data: T }
+export type ValueOf<T, V extends keyof T = keyof T> = T[V]
 
 /**
  * Variadic helper function.
