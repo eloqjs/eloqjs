@@ -212,14 +212,12 @@ export class Collection<M extends Model = Model> {
   /**
    * Creates a copy of this collection. Model references are preserved so
    * changes to the models inside the clone will also affect the subject.
-   *
-   * @returns {Collection}
    */
-  public clone(): Collection<M> {
+  public clone(): this {
     return new (this.constructor as typeof Collection)(
       this.models,
       this._options
-    )
+    ) as this
   }
 
   /**
