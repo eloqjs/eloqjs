@@ -241,7 +241,7 @@ export class Collection<M extends Model = Model> {
    * @returns `true` if the collection is empty, `false` otherwise.
    */
   public isEmpty(): boolean {
-    return !this.size()
+    return !this.models.length
   }
 
   /**
