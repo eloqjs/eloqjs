@@ -522,6 +522,28 @@ export class Collection<M extends Model = Model> {
   }
 
   /**
+   * Returns the sum of a property of all models in the collection.
+   *
+   * @param {string|string[]|Function} key
+   * @return {number}
+   */
+  public sum<K extends keyof ModelReference<M>>(
+    key: K | string | ((model: M) => string | number)
+  ): number {
+    let total = 0
+
+    for (const model of this.models) {
+      const value = isFunction(key)
+        ? key(model)
+        : ((model[key as K] as unknown) as string | number)
+
+      total += isString(value) ? parseFloat(value) : value
+    }
+
+    return parseFloat(total.toPrecision(12))
+  }
+
+  /**
    * @returns A native representation of this collection that will
    * determine the contents of JSON.stringify(collection).
    */
