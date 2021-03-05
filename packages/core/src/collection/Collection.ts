@@ -160,25 +160,29 @@ export class Collection<M extends Model = Model> {
 
   /**
    * Returns the first model that matches the given criteria.
-   * If `predicate` is a `string`, `number` or {@link Model}, `find` will attempt to return a model matching the primary key.
+   * If `predicate` is a `string`, `number` or {@link Model}, `find` will attempt to return a model matching the
+   * primary key.
    */
   public find(key: string | number): Item<M>
 
   /**
    * Returns the first model that matches the given criteria.
-   * If `predicate` is a `string`, `number` or {@link Model}, `find` will attempt to return a model matching the primary key.
+   * If `predicate` is a `string`, `number` or {@link Model}, `find` will attempt to return a model matching the
+   * primary key.
    */
   public find(model: M): Item<M>
 
   /**
    * Returns the first model that matches the given criteria.
-   * If `predicate` is a `string`, `number` or {@link Model}, `find` will attempt to return a model matching the primary key.
+   * If `predicate` is a `string`, `number` or {@link Model}, `find` will attempt to return a model matching the
+   * primary key.
    */
   public find<T = boolean>(predicate: (model: M) => T): Item<M>
 
   /**
    * Returns the first model that matches the given criteria.
-   * If `predicate` is a `string`, `number` or {@link Model}, `find` will attempt to return a model matching the primary key.
+   * If `predicate` is a `string`, `number` or {@link Model}, `find` will attempt to return a model matching the
+   * primary key.
    */
   public find<T = boolean>(
     predicate: string | number | M | ((model: M) => T)
