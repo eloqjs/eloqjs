@@ -136,80 +136,6 @@ export class Collection<M extends Model = Model> {
   }
 
   /**
-   * Remove the given {@link Model} from this {@link Collection}.
-   *
-   * @param models Model to remove, which can be a model instance, an object to filter by, a function to filter by,
-   * or an array of model instances and objects to remove multiple.
-   *
-   * @return The deleted model or an array of models if a filter or array type was given.
-   *
-   * @throws {Error} If the model is an invalid type.
-   */
-  public remove(models: (M | Element)[]): M[] | undefined
-
-  /**
-   * Remove the given {@link Model} from this {@link Collection}.
-   *
-   * @param predicate Model to remove, which can be a model instance, an object to filter by, a function to filter by,
-   * or an array of model instances and objects to remove multiple.
-   *
-   * @return The deleted model or an array of models if a filter or array type was given.
-   *
-   * @throws {Error} If the model is an invalid type.
-   */
-  public remove(
-    predicate: (model: M, index: number, array: M[]) => boolean
-  ): M[] | undefined
-
-  /**
-   * Remove the given {@link Model} from this {@link Collection}.
-   *
-   * @param model Model to remove, which can be a model instance, an object to filter by, a function to filter by,
-   * or an array of model instances and objects to remove multiple.
-   *
-   * @return The deleted model or an array of models if a filter or array type was given.
-   *
-   * @throws {Error} If the model is an invalid type.
-   */
-  public remove(model: M | Element): M | undefined
-
-  /**
-   * Remove the given {@link Model} from this {@link Collection}.
-   *
-   * @param model Model to remove, which can be a model instance, an object, a function to filter by,
-   * or an array of model instances and objects to remove multiple.
-   *
-   * @return The deleted model or an array of models if a filter or array type was given.
-   *
-   * @throws {Error} If the model is an invalid type.
-   */
-  public remove(
-    model:
-      | M
-      | Element
-      | (M | Element)[]
-      | ((model: M, index: number, array: M[]) => boolean)
-  ): M | M[] | undefined {
-    assert(isObject(model) || isArray(model) || isFunction(model), [
-      'Expected function, object, array, or model to remove.'
-    ])
-
-    // Support using a predicate to remove all models it returns true for.
-    if (isFunction(model)) {
-      return this.remove(this.models.filter(model))
-    }
-
-    if (isArray(model)) {
-      return model.map((m) => this.remove(m)).filter((m): m is M => !!m)
-    }
-
-    // Instantiate the object
-    const _model = this._self()._instantiate<M>(model, this._options.model)
-
-    return this._removeModel(_model)
-  }
-
-  /**
    * Creates a copy of this collection. Model references are preserved so
    * changes to the models inside the clone will also affect the subject.
    */
@@ -221,14 +147,15 @@ export class Collection<M extends Model = Model> {
   }
 
   /**
-   * Returns the first model of this collection.
+   * Iterates through all models, calling a given callback for each one.
    */
-  public first(): Item<M> {
-    if (this.isNotEmpty()) {
-      return this.models[0]
-    }
-
-    return null
+  public each(
+    callback: (model: M, index: number, array: M[]) => unknown
+  ): boolean {
+    return this.models.every((model, index) => {
+      return callback(model, index, this.models) !== false
+    })
+    // return this.models.every(callback)
   }
 
   /**
@@ -278,12 +205,41 @@ export class Collection<M extends Model = Model> {
   }
 
   /**
+   * Returns the first model of this collection.
+   */
+  public first(): Item<M> {
+    if (this.isNotEmpty()) {
+      return this.models[0]
+    }
+
+    return null
+  }
+
+  /**
    * Determines whether this collection has the given model.
    *
    * @returns `true` if the collection contains the given model, `false` otherwise.
    */
   public has(model: M): boolean {
     return this._indexOf(model) >= 0
+  }
+
+  /**
+   * Determines whether this collection is empty.
+   *
+   * @returns `true` if the collection is empty, `false` otherwise.
+   */
+  public isEmpty(): boolean {
+    return !this.size()
+  }
+
+  /**
+   * Determines whether this collection is not empty.
+   *
+   * @returns `true` if the collection is not empty, `false` otherwise.
+   */
+  public isNotEmpty(): boolean {
+    return !this.isEmpty()
   }
 
   public last(): Item<M> {
@@ -322,15 +278,16 @@ export class Collection<M extends Model = Model> {
   }
 
   /**
-   * Iterates through all models, calling a given callback for each one.
+   * Removes and returns the last model of this collection, if there was one.
+   *
+   * @returns {Model|undefined} Removed model or undefined if there were none.
    */
-  public each(
-    callback: (model: M, index: number, array: M[]) => unknown
-  ): boolean {
-    return this.models.every((model, index) => {
-      return callback(model, index, this.models) !== false
-    })
-    // return this.models.every(callback)
+  public pop(): Item<M> {
+    if (this.isNotEmpty()) {
+      return this._removeModelAtIndex(this.size() - 1) || null
+    }
+
+    return null
   }
 
   /**
@@ -414,6 +371,80 @@ export class Collection<M extends Model = Model> {
   }
 
   /**
+   * Remove the given {@link Model} from this {@link Collection}.
+   *
+   * @param models Model to remove, which can be a model instance, an object to filter by, a function to filter by,
+   * or an array of model instances and objects to remove multiple.
+   *
+   * @return The deleted model or an array of models if a filter or array type was given.
+   *
+   * @throws {Error} If the model is an invalid type.
+   */
+  public remove(models: (M | Element)[]): M[] | undefined
+
+  /**
+   * Remove the given {@link Model} from this {@link Collection}.
+   *
+   * @param predicate Model to remove, which can be a model instance, an object to filter by, a function to filter by,
+   * or an array of model instances and objects to remove multiple.
+   *
+   * @return The deleted model or an array of models if a filter or array type was given.
+   *
+   * @throws {Error} If the model is an invalid type.
+   */
+  public remove(
+    predicate: (model: M, index: number, array: M[]) => boolean
+  ): M[] | undefined
+
+  /**
+   * Remove the given {@link Model} from this {@link Collection}.
+   *
+   * @param model Model to remove, which can be a model instance, an object to filter by, a function to filter by,
+   * or an array of model instances and objects to remove multiple.
+   *
+   * @return The deleted model or an array of models if a filter or array type was given.
+   *
+   * @throws {Error} If the model is an invalid type.
+   */
+  public remove(model: M | Element): M | undefined
+
+  /**
+   * Remove the given {@link Model} from this {@link Collection}.
+   *
+   * @param model Model to remove, which can be a model instance, an object, a function to filter by,
+   * or an array of model instances and objects to remove multiple.
+   *
+   * @return The deleted model or an array of models if a filter or array type was given.
+   *
+   * @throws {Error} If the model is an invalid type.
+   */
+  public remove(
+    model:
+      | M
+      | Element
+      | (M | Element)[]
+      | ((model: M, index: number, array: M[]) => boolean)
+  ): M | M[] | undefined {
+    assert(isObject(model) || isArray(model) || isFunction(model), [
+      'Expected function, object, array, or model to remove.'
+    ])
+
+    // Support using a predicate to remove all models it returns true for.
+    if (isFunction(model)) {
+      return this.remove(this.models.filter(model))
+    }
+
+    if (isArray(model)) {
+      return model.map((m) => this.remove(m)).filter((m): m is M => !!m)
+    }
+
+    // Instantiate the object
+    const _model = this._self()._instantiate<M>(model, this._options.model)
+
+    return this._removeModel(_model)
+  }
+
+  /**
    * Removes and returns the first model of this collection, if there was one.
    *
    * @returns Removed model or undefined if there were none.
@@ -427,41 +458,10 @@ export class Collection<M extends Model = Model> {
   }
 
   /**
-   * Removes and returns the last model of this collection, if there was one.
-   *
-   * @returns {Model|undefined} Removed model or undefined if there were none.
-   */
-  public pop(): Item<M> {
-    if (this.isNotEmpty()) {
-      return this._removeModelAtIndex(this.size() - 1) || null
-    }
-
-    return null
-  }
-
-  /**
    * Returns the number of models in this collection.
    */
   public size(): number {
     return this.models.length
-  }
-
-  /**
-   * Determines whether this collection is empty.
-   *
-   * @returns `true` if the collection is empty, `false` otherwise.
-   */
-  public isEmpty(): boolean {
-    return !this.size()
-  }
-
-  /**
-   * Determines whether this collection is not empty.
-   *
-   * @returns `true` if the collection is not empty, `false` otherwise.
-   */
-  public isNotEmpty(): boolean {
-    return !this.isEmpty()
   }
 
   /**
