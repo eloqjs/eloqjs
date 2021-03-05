@@ -44,6 +44,13 @@ export class Collection<M extends Model = Model> {
   }
 
   /**
+   * Accessor to support Array.length semantics.
+   */
+  public get length(): number {
+    return this.size()
+  }
+
+  /**
    * Instantiate the given records.
    */
   private static _instantiate<T extends Model>(
