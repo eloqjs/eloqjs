@@ -1,7 +1,16 @@
-import { Model } from '../model/Model'
+import { Model, ModelReference } from '../model/Model'
 import { Uid as UidGenerator } from '../support/Uid'
-import { assert, forceArray, isFunction } from '../support/Utils'
-import { Element } from '../types/Data'
+import {
+  assert,
+  forceArray,
+  isArray,
+  isFunction,
+  isNumber,
+  isObject,
+  isString,
+  ValueOf
+} from '../support/Utils'
+import { Element, Item } from '../types/Data'
 
 export interface CollectionOptions {
   model?: typeof Model
@@ -190,14 +199,279 @@ export class Collection<M extends Model = Model> {
       return this.remove(this.models.filter(model))
     }
 
-    if (Array.isArray(model)) {
-      return model.filter((m) => !!this.remove(m))
+    if (isArray(model)) {
+      return model.map((m) => this.remove(m)).filter((m): m is M => !!m)
     }
 
     // Instantiate the object
     const _model = this._self()._instantiate<M>(model, this._options.model)
 
     return this._removeModel(_model)
+  }
+
+  /**
+   * Creates a copy of this collection. Model references are preserved so
+   * changes to the models inside the clone will also affect the subject.
+   *
+   * @returns {Collection}
+   */
+  public clone(): Collection<M> {
+    return new (this.constructor as typeof Collection)(
+      this.models,
+      this._options
+    )
+  }
+
+  /**
+   * Returns the first model of this collection.
+   */
+  public first(): Item<M> {
+    if (this.isNotEmpty()) {
+      return this.models[0]
+    }
+
+    return null
+  }
+
+  /**
+   * Returns the first model that matches the given criteria.
+   * If `predicate` is a `string`, `number` or {@link Model}, `find` will attempt to return a model matching the primary key.
+   */
+  public find(key: string | number): Item<M>
+
+  /**
+   * Returns the first model that matches the given criteria.
+   * If `predicate` is a `string`, `number` or {@link Model}, `find` will attempt to return a model matching the primary key.
+   */
+  public find(model: M): Item<M>
+
+  /**
+   * Returns the first model that matches the given criteria.
+   * If `predicate` is a `string`, `number` or {@link Model}, `find` will attempt to return a model matching the primary key.
+   */
+  public find<T = boolean>(predicate: (model: M) => T): Item<M>
+
+  /**
+   * Returns the first model that matches the given criteria.
+   * If `predicate` is a `string`, `number` or {@link Model}, `find` will attempt to return a model matching the primary key.
+   */
+  public find<T = boolean>(
+    predicate: string | number | M | ((model: M) => T)
+  ): Item<M> {
+    assert(
+      isString(predicate) ||
+        isNumber(predicate) ||
+        (typeof predicate === 'object' && predicate instanceof Model) ||
+        isFunction(predicate),
+      ['Invalid type of `predicate` on `find`.']
+    )
+
+    if (isFunction(predicate)) {
+      return this.models.find(predicate) || null
+    }
+
+    if (typeof predicate === 'object') {
+      return (predicate.$id && this.find(predicate.$id)) || null
+    }
+
+    return this.find((model) => {
+      return model.$id === predicate
+    })
+  }
+
+  /**
+   * Determines whether this collection has the given model.
+   *
+   * @returns `true` if the collection contains the given model, `false` otherwise.
+   */
+  public has(model: M): boolean {
+    return this._indexOf(model) >= 0
+  }
+
+  public last(): Item<M> {
+    if (this.isNotEmpty()) {
+      return this.models[this.size() - 1]
+    }
+
+    return null
+  }
+
+  /**
+   * Returns an array that contains the returned result after applying a
+   * function to each model in this collection.
+   */
+  public map<U = M>(callback: (model: M, index: number, array: M[]) => U): U[] {
+    return this.models.map(callback)
+  }
+
+  /**
+   * Returns an array that contains the values for a given key for each model in this collection.
+   */
+  public pluck<K extends keyof ModelReference<M>>(key: K): ValueOf<M, K>[]
+
+  /**
+   * Returns an array that contains the values for a given key for each model in this collection.
+   */
+  public pluck(key: string): unknown[]
+
+  /**
+   * Returns an array that contains the values for a given key for each model in this collection.
+   */
+  public pluck<K extends keyof ModelReference<M>>(
+    key: K | string
+  ): ValueOf<M, K>[] | unknown[] {
+    return this.models.map((model) => model[key as K])
+  }
+
+  /**
+   * Iterates through all models, calling a given callback for each one.
+   */
+  public each(
+    callback: (model: M, index: number, array: M[]) => unknown
+  ): boolean {
+    return this.models.every((model, index) => {
+      return callback(model, index, this.models) !== false
+    })
+    // return this.models.every(callback)
+  }
+
+  /**
+   * Reduces this collection to a value which is the accumulated result of
+   * running each model through `iteratee`, where each successive invocation
+   * is supplied the return value of the previous.
+   *
+   * If `initial` is not given, the first model of the collection is used
+   * as the initial value.
+   *
+   * @param iteratee Invoked with three arguments: (result, model, index)
+   *
+   * @returns The final value of result, after the last iteration.
+   */
+  public reduce(
+    iteratee: (result: M, model: M, index: number, array: M[]) => M
+  ): M
+
+  /**
+   * Reduces this collection to a value which is the accumulated result of
+   * running each model through `iteratee`, where each successive invocation
+   * is supplied the return value of the previous.
+   *
+   * If `initial` is not given, the first model of the collection is used
+   * as the initial value.
+   *
+   * @param iteratee Invoked with three arguments: (result, model, index)
+   *
+   * @param [initial] The initial value to use for the `result`.
+   *
+   * @returns The final value of result, after the last iteration.
+   */
+  public reduce(
+    iteratee: (result: M, model: M, index: number, array: M[]) => M,
+    initial: M
+  ): M
+
+  /**
+   * Reduces this collection to a value which is the accumulated result of
+   * running each model through `iteratee`, where each successive invocation
+   * is supplied the return value of the previous.
+   *
+   * If `initial` is not given, the first model of the collection is used
+   * as the initial value.
+   *
+   * @param iteratee Invoked with three arguments: (result, model, index)
+   *
+   * @param [initial] The initial value to use for the `result`.
+   *
+   * @returns The final value of result, after the last iteration.
+   */
+  public reduce<U = M>(
+    iteratee: (result: U, model: M, index: number, array: M[]) => U,
+    initial: U
+  ): U
+
+  /**
+   * Reduces this collection to a value which is the accumulated result of
+   * running each model through `iteratee`, where each successive invocation
+   * is supplied the return value of the previous.
+   *
+   * If `initial` is not given, the first model of the collection is used
+   * as the initial value.
+   *
+   * @param iteratee Invoked with three arguments: (result, model, index)
+   *
+   * @param [initial] The initial value to use for the `result`.
+   *
+   * @returns The final value of result, after the last iteration.
+   */
+  public reduce<U = M>(
+    iteratee: (result: U | undefined, model: M, index: number, array: M[]) => U,
+    initial?: U
+  ): U | undefined {
+    // Use the first model as the initial value if an initial was not given.
+    if (arguments.length === 1) {
+      initial = (this.first() || undefined) as U | undefined
+    }
+
+    return this.models.reduce(iteratee, initial)
+  }
+
+  /**
+   * Removes and returns the first model of this collection, if there was one.
+   *
+   * @returns Removed model or undefined if there were none.
+   */
+  public shift(): Item<M> {
+    if (this.isNotEmpty()) {
+      return this._removeModelAtIndex(0) || null
+    }
+
+    return null
+  }
+
+  /**
+   * Removes and returns the last model of this collection, if there was one.
+   *
+   * @returns {Model|undefined} Removed model or undefined if there were none.
+   */
+  public pop(): Item<M> {
+    if (this.isNotEmpty()) {
+      return this._removeModelAtIndex(this.size() - 1) || null
+    }
+
+    return null
+  }
+
+  /**
+   * Returns the number of models in this collection.
+   */
+  public size(): number {
+    return this.models.length
+  }
+
+  /**
+   * Determines whether this collection is empty.
+   *
+   * @returns `true` if the collection is empty, `false` otherwise.
+   */
+  public isEmpty(): boolean {
+    return !this.size()
+  }
+
+  /**
+   * Determines whether this collection is not empty.
+   *
+   * @returns `true` if the collection is not empty, `false` otherwise.
+   */
+  public isNotEmpty(): boolean {
+    return !this.isEmpty()
+  }
+
+  /**
+   * @returns A native representation of this collection that will
+   * determine the contents of JSON.stringify(collection).
+   */
+  public toJSON(): Model[] {
+    return this.models
   }
 
   /**
