@@ -29,6 +29,18 @@ describe('Feature – Models – Fresh', () => {
     assertModel(user!, Data.User)
   })
 
+  it('should not be the original record', async () => {
+    axiosMock.onGet('http://localhost/users/1').reply(() => {
+      return [200, Data.User]
+    })
+
+    const user = new User(Data.User)
+    const fresh = await user.$fresh()
+
+    expect(fresh).toEqual(user)
+    expect(fresh).not.toBe(user)
+  })
+
   it('should return null when failed', async () => {
     // eslint-disable-next-line no-console
     console.error = jest.fn()
