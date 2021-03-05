@@ -452,6 +452,49 @@ export class Collection<M extends Model = Model> {
   }
 
   /**
+   * Replaces all models in this collection with those provided. This is
+   * effectively equivalent to `clear` and `add`, and will result in an empty
+   * collection if no models were provided.
+   *
+   * @param models Models to replace the current models with. Can be a model instance or plain object, or an array of
+   * either. A model instance will be created and returned if passed a plain object.
+   *
+   * @returns The added model or array of added models.
+   */
+  public replace(models: (M | Element)[]): M[]
+
+  /**
+   * Replaces all models in this collection with those provided. This is
+   * effectively equivalent to `clear` and `add`, and will result in an empty
+   * collection if no models were provided.
+   *
+   * @param model Models to replace the current models with. Can be a model instance or plain object, or an array of
+   * either. A model instance will be created and returned if passed a plain object.
+   *
+   * @returns The added model or array of added models.
+   */
+  public replace(model: M | Element): M
+
+  /**
+   * Replaces all models in this collection with those provided. This is
+   * effectively equivalent to `clear` and `add`, and will result in an empty
+   * collection if no models were provided.
+   *
+   * @param models Models to replace the current models with. Can be a model instance or plain object, or an array of
+   * either. A model instance will be created and returned if passed a plain object.
+   *
+   * @returns The added model or array of added models.
+   */
+  public replace(models: M | Element | (M | Element)[]): M | M[] {
+    assert(isObject(models) || isArray(models), [
+      'Expected a model, plain object, or array of either.'
+    ])
+
+    this.clear()
+    return this.add(models)
+  }
+
+  /**
    * Removes and returns the first model of this collection, if there was one.
    *
    * @returns Removed model or undefined if there were none.
@@ -477,6 +520,13 @@ export class Collection<M extends Model = Model> {
    */
   public toJSON(): Model[] {
     return this.models
+  }
+
+  /**
+   * Removes all models from this collection.
+   */
+  public clear(): void {
+    this._clearModels()
   }
 
   /**
@@ -568,6 +618,21 @@ export class Collection<M extends Model = Model> {
    */
   private _removeModel(model: M): M | undefined {
     return this._removeModelAtIndex(this._indexOf(model))
+  }
+
+  /**
+   * Removes all models from this collection.
+   */
+  private _clearModels(): void {
+    const models: Model[] = this.models
+
+    // Clear the model store, but keep a reference.
+    this.models = []
+
+    // Notify each model that it has been removed from this collection.
+    models.every((model) => {
+      this.onRemove(model)
+    })
   }
 
   /**
