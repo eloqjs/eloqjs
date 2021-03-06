@@ -1,4 +1,11 @@
 import { Model } from '../../model/Model'
+import {
+  isBoolean,
+  isNull,
+  isNumber,
+  isString,
+  isUndefined
+} from '../../support/Utils'
 import { Element } from '../../types/Data'
 import { Mutator } from '../Contracts'
 import { Type } from './Type'
@@ -37,15 +44,15 @@ export class Boolean extends Type {
    * Transform given data to the boolean.
    */
   public fix(value: unknown): boolean | null {
-    if (value === undefined) {
+    if (isUndefined(value)) {
       return this.value as boolean | null
     }
 
-    if (typeof value === 'boolean') {
+    if (isBoolean(value)) {
       return value
     }
 
-    if (typeof value === 'string') {
+    if (isString(value)) {
       if (value.length === 0) {
         return false
       }
@@ -55,11 +62,11 @@ export class Boolean extends Type {
       return isNaN(int) ? true : !!int
     }
 
-    if (typeof value === 'number') {
+    if (isNumber(value)) {
       return !!value
     }
 
-    if (value === null && this.isNullable) {
+    if (isNull(value) && this.isNullable) {
       return value
     }
 

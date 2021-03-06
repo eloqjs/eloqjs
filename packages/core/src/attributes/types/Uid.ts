@@ -1,5 +1,6 @@
 import { Model } from '../../model/Model'
 import { Uid as UidGenerator } from '../../support/Uid'
+import { isFunction, isNumber, isString } from '../../support/Utils'
 import { Type } from './Type'
 
 export class Uid extends Type {
@@ -14,11 +15,11 @@ export class Uid extends Type {
    * Convert given value to the appropriate value for the attribute.
    */
   public make(value?: unknown): string | number {
-    if (typeof value === 'number' || typeof value === 'string') {
+    if (isNumber(value) || isString(value)) {
       return value
     }
 
-    if (typeof this.value === 'function') {
+    if (isFunction(this.value)) {
       return this.value()
     }
 

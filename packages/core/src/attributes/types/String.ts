@@ -1,4 +1,5 @@
 import { Model } from '../../model/Model'
+import { isNull, isString, isUndefined } from '../../support/Utils'
 import { Element } from '../../types/Data'
 import { Mutator } from '../Contracts'
 import { Type } from './Type'
@@ -37,15 +38,15 @@ export class String extends Type {
    * Convert given value to the string.
    */
   public fix(value: unknown): string | null {
-    if (value === undefined) {
+    if (isUndefined(value)) {
       return this.value as string | null
     }
 
-    if (typeof value === 'string') {
+    if (isString(value)) {
       return value
     }
 
-    if (value === null && this.isNullable) {
+    if (isNull(value) && this.isNullable) {
       return value
     }
 

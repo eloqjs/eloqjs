@@ -1,4 +1,5 @@
 import { Model } from '../../model/Model'
+import { isFunction, isUndefined } from '../../support/Utils'
 import { Element } from '../../types/Data'
 import { Mutator } from '../Contracts'
 import { Type } from './Type'
@@ -25,12 +26,12 @@ export class Attr extends Type {
     key: string,
     mutate: boolean = true
   ): unknown {
-    value = value !== undefined ? value : this.value
+    value = !isUndefined(value) ? value : this.value
 
     // Default Value might be a function (taking no parameter).
     let localValue = value
 
-    if (typeof value === 'function') {
+    if (isFunction(value)) {
       localValue = value()
     }
 

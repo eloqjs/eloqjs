@@ -8,7 +8,7 @@ export type Wrapped<T> = { data: T }
  * @param data
  */
 export function variadic<T>(data: T | T[]): T {
-  if (Array.isArray(data)) {
+  if (isArray(data)) {
     return data[0]
   }
 
@@ -30,7 +30,7 @@ export function unwrap<T>(data: T | { data: T }): T {
  * @param data
  */
 export function forceArray<T>(data: T | T[]): T[] {
-  return Array.isArray(data) ? data : [data]
+  return isArray(data) ? data : [data]
 }
 
 /**

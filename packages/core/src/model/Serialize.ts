@@ -1,3 +1,4 @@
+import { isArray, isNull, isObject } from '../support/Utils'
 import { Collection, Element, Item } from '../types/Data'
 import { Model } from './Model'
 
@@ -5,16 +6,16 @@ import { Model } from './Model'
  * Serialize given value.
  */
 export function value(v: unknown): unknown {
-  if (v === null) {
+  if (isNull(v)) {
     return null
   }
 
-  if (Array.isArray(v)) {
+  if (isArray(v)) {
     return array(v)
   }
 
-  if (typeof v === 'object') {
-    return object(v as Record<string, unknown>)
+  if (isObject(v)) {
+    return object(v)
   }
 
   return v
@@ -47,7 +48,7 @@ export function relation(
   relation: Item | Collection,
   isPayload: boolean = false
 ): Element | Element[] | null {
-  if (relation === null) {
+  if (isNull(relation)) {
     return null
   }
 
@@ -61,7 +62,7 @@ export function relation(
     return model.$toJson()
   }
 
-  if (Array.isArray(relation)) {
+  if (isArray(relation)) {
     return relation.map((model) => resolve(model))
   }
 
@@ -72,5 +73,5 @@ export function relation(
  * Serialize given relation into empty json.
  */
 export function emptyRelation(relation: Item | Collection): [] | null {
-  return Array.isArray(relation) ? [] : null
+  return isArray(relation) ? [] : null
 }

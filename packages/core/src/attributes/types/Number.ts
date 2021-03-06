@@ -1,4 +1,11 @@
 import { Model } from '../../model/Model'
+import {
+  isBoolean,
+  isNull,
+  isNumber,
+  isString,
+  isUndefined
+} from '../../support/Utils'
 import { Element } from '../../types/Data'
 import { Mutator } from '../Contracts'
 import { Type } from './Type'
@@ -37,23 +44,23 @@ export class Number extends Type {
    * Transform given data to the number.
    */
   public fix(value: unknown): number | null {
-    if (value === undefined) {
+    if (isUndefined(value)) {
       return this.value as number | null
     }
 
-    if (typeof value === 'number') {
+    if (isNumber(value)) {
       return value
     }
 
-    if (typeof value === 'string') {
+    if (isString(value)) {
       return parseFloat(value)
     }
 
-    if (typeof value === 'boolean') {
+    if (isBoolean(value)) {
       return value ? 1 : 0
     }
 
-    if (value === null && this.isNullable) {
+    if (isNull(value) && this.isNullable) {
       return value
     }
 

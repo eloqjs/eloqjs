@@ -1,5 +1,6 @@
 import { Model } from '../../model/Model'
 import { Relation as CRelation } from '../../relations'
+import { isArray } from '../../support/Utils'
 import { Collection, Element } from '../../types/Data'
 import { Relation } from './Relation'
 
@@ -20,9 +21,9 @@ export class HasMany extends Relation {
     return new CRelation(this.related, parent, data, key, false)
   }
 
-  protected fix(value: Element): Element[] {
+  protected fix(value: Element | Element[]): Element[] {
     // Ensure that the value is an array of records.
-    return Array.isArray(value) ? value : []
+    return isArray(value) ? value : []
   }
 
   protected mutate(records: Element[]): Collection {

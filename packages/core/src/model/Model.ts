@@ -3,7 +3,16 @@ import { Mutator, Mutators } from '../attributes/Contracts'
 import * as Relations from '../relations'
 import { Map } from '../support/Map'
 import { Uid as UidGenerator } from '../support/Uid'
-import { assert } from '../support/Utils'
+import {
+  assert,
+  isEmptyString,
+  isFunction,
+  isModel,
+  isNull,
+  isNumber,
+  isString,
+  isUndefined
+} from '../support/Utils'
 import { Element, Item } from '../types/Data'
 import * as Contracts from './Contracts'
 import * as Serialize from './Serialize'
@@ -194,10 +203,9 @@ export class Model {
     record: InstanceType<M> | Element
   ): string | number | null {
     // Get the primary key value from attributes.
-    const value =
-      record instanceof Model
-        ? record.$attributes.get(this.primaryKey)
-        : record[this.primaryKey]
+    const value = isModel(record)
+      ? record.$attributes.get(this.primaryKey)
+      : record[this.primaryKey]
 
     return this.getIdFromValue(value)
   }
@@ -206,11 +214,11 @@ export class Model {
    * Get correct index id, which is `string` | `number`, from the given value.
    */
   public static getIdFromValue(value: unknown): string | number | null {
-    if (typeof value === 'string' && value !== '') {
+    if (isString(value) && !isEmptyString(value)) {
       return value
     }
 
-    if (typeof value === 'number') {
+    if (isNumber(value)) {
       return value
     }
 
@@ -231,7 +239,7 @@ export class Model {
     this: M,
     record: InstanceType<M> | Element
   ): boolean {
-    return this.getIdFromRecord(record) !== null
+    return !isNull(this.getIdFromRecord(record))
   }
 
   /**
@@ -339,8 +347,9 @@ export class Model {
     for (const key in registry) {
       const attribute = registry[key]
 
-      this.schemas[this.entity][key] =
-        typeof attribute === 'function' ? attribute() : attribute
+      this.schemas[this.entity][key] = isFunction(attribute)
+        ? attribute()
+        : attribute
     }
   }
 
@@ -418,7 +427,7 @@ export class Model {
   public static executeMutationHooks<M extends Item>(on: string, model: M): M {
     const hooks = this.buildHooks(on) as Contracts.MutationHook[]
 
-    if (hooks.length === 0 || model === null) {
+    if (hooks.length === 0 || isNull(model)) {
       return model
     }
 
@@ -604,7 +613,7 @@ export class Model {
       // Set the new value to the attribute.
       set(newValue: unknown) {
         // If undefined, apply default value of the field.
-        if (newValue === undefined) {
+        if (isUndefined(newValue)) {
           newValue = field.make(newValue, this, key, false)
         }
 
