@@ -115,3 +115,22 @@ export function isNullish(value: unknown): value is undefined | null {
 export function isModel(value: unknown): value is Model {
   return isObject(value) && value instanceof Model
 }
+
+/**
+ * Determines whether the given array or object is empty.
+ */
+export function isEmpty(
+  collection: unknown[] | Record<string, unknown>
+): boolean {
+  return size(collection) === 0
+}
+
+/**
+ * Gets the size of collection by returning its length for array-like values
+ * or the number of own enumerable string keyed properties for objects.
+ */
+export function size(collection: unknown[] | Record<string, unknown>): number {
+  return isArray(collection)
+    ? collection.length
+    : Object.keys(collection).length
+}
