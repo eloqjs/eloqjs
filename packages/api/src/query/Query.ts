@@ -1,6 +1,6 @@
 import { Model } from '@eloqjs/core'
 
-import { assert } from '../support/Utils'
+import { assert, isModel, isNull, isString } from '../support/Utils'
 import { QueryParam } from './QueryParam'
 import {
   AppendSpec,
@@ -199,15 +199,15 @@ export class Query {
 
     resources.forEach((value) => {
       switch (true) {
-        case typeof value === 'string':
+        case isString(value):
           resource += slash + (value as string).replace(/^\/+/, '')
           break
-        case value instanceof Model: {
+        case isModel(value): {
           const model = value as Model
           const id = model.$id
           resource += slash + model.$resource
 
-          if (id !== null) {
+          if (!isNull(id)) {
             resource += '/' + id
           }
           break

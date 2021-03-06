@@ -4,7 +4,7 @@ import { Builder } from '../../builder/Builder'
 import { HttpClient } from '../../httpclient'
 import { SingularPromise } from '../../response/SingularPromise'
 import { SingularResponse } from '../../response/SingularResponse'
-import { assert } from '../../support/Utils'
+import { assert, isEmpty, isNull } from '../../support/Utils'
 import { ModelAPIStatic } from './ModelAPIStatic'
 
 export class ModelAPIInstance<M extends Model = Model> {
@@ -35,7 +35,8 @@ export class ModelAPIInstance<M extends Model = Model> {
    *
    * * the representation of this {@link Model} instance in the API if this {@link Model} has an ID and this ID can.
    * be found in the API too
-   * * `null` if this {@link Model} instance has no ID or if there _is_ an ID, but a {@link Model} with this ID cannot be found in the backend.
+   * * `null` if this {@link Model} instance has no ID or if there _is_ an ID, but a {@link Model} with this ID cannot
+   *   be found in the backend.
    */
   public fresh(): Promise<Item<M>> {
     const id = this.model.$id
@@ -68,7 +69,7 @@ export class ModelAPIInstance<M extends Model = Model> {
   public delete(): Promise<void> {
     const id = this.model.$id
 
-    assert(id !== null, ['Cannot delete a model with no ID.'])
+    assert(!isNull(id), ['Cannot delete a model with no ID.'])
 
     return this._api().delete(id)
   }
@@ -81,16 +82,15 @@ export class ModelAPIInstance<M extends Model = Model> {
 
     const selfId = this.model.$id
 
-    assert(selfId !== null, [
+    assert(!isNull(selfId), [
       'Cannot attach a related model to a parent that has no ID.'
     ])
 
     const record = relationship.$serialize({
       isPayload: true
     })
-    const isEmpty = Object.keys(record).length === 0
 
-    assert(!isEmpty, [
+    assert(!isEmpty(record), [
       'Cannot create a new record, because no data was provided.'
     ])
 
@@ -115,13 +115,13 @@ export class ModelAPIInstance<M extends Model = Model> {
 
     const selfId = this.model.$id
 
-    assert(selfId !== null, [
+    assert(!isNull(selfId), [
       'Cannot detach a related model from a parent that has no ID.'
     ])
 
     const relationId = relationship.$id
 
-    assert(relationId !== null, ['Cannot detach a related model with no ID.'])
+    assert(!isNull(relationId), ['Cannot detach a related model with no ID.'])
 
     return this._getHttpClient()
       .delete(
@@ -138,14 +138,14 @@ export class ModelAPIInstance<M extends Model = Model> {
 
     const selfId = this.model.$id
 
-    assert(selfId !== null, [
+    assert(!isNull(selfId), [
       'Cannot sync a related model to a parent that has no ID.'
     ])
 
     // Get ID before serialize, otherwise the ID may not be available.
     const relationId = relationship.$id
 
-    assert(relationId !== null, ['Cannot sync a related model with no ID.'])
+    assert(!isNull(relationId), ['Cannot sync a related model with no ID.'])
 
     const record = relationship.$serialize({
       isPayload: true,

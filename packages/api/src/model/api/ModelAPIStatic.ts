@@ -7,7 +7,7 @@ import { OptionValue } from '../../query/specs/OptionSpec'
 import { PluralPromise } from '../../response/PluralPromise'
 import { SingularPromise } from '../../response/SingularPromise'
 import { SingularResponse } from '../../response/SingularResponse'
-import { assert } from '../../support/Utils'
+import { assert, isModel } from '../../support/Utils'
 
 export class ModelAPIStatic<M extends typeof Model = typeof Model> {
   /**
@@ -247,7 +247,7 @@ export class ModelAPIStatic<M extends typeof Model = typeof Model> {
   }
 
   private _instantiate(record: InstanceType<M> | Element): InstanceType<M> {
-    return record instanceof Model
+    return isModel(record)
       ? record
       : (new this.model(record) as InstanceType<M>)
   }

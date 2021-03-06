@@ -1,5 +1,6 @@
 import { AxiosPromise, AxiosResponse } from 'axios'
 
+import { isUndefined } from '../../support/Utils'
 import { HttpClientPromise } from '../HttpClientPromise'
 import { HttpClientResponse } from '../HttpClientResponse'
 import { Thenable } from '../Thenable'
@@ -20,11 +21,10 @@ export class AxiosHttpClientPromise implements HttpClientPromise {
     onFulfilled?: (value: HttpClientResponse) => Thenable<U> | U,
     onRejected?: (error: unknown) => void
   ): Promise<U> {
-    const wrappedOnFulfilled =
-      onFulfilled !== undefined
-        ? (axiosResponse: AxiosResponse<unknown>) =>
-            onFulfilled(new AxiosHttpClientResponse(axiosResponse))
-        : undefined
+    const wrappedOnFulfilled = !isUndefined(onFulfilled)
+      ? (axiosResponse: AxiosResponse<unknown>) =>
+          onFulfilled(new AxiosHttpClientResponse(axiosResponse))
+      : undefined
     return <Promise<U>>this.axiosPromise.then(wrappedOnFulfilled, onRejected)
   }
 

@@ -6,6 +6,7 @@ import { OptionValue } from '../../query/specs/OptionSpec'
 import { PluralPromise } from '../../response/PluralPromise'
 import { Response } from '../../response/Response'
 import { SingularPromise } from '../../response/SingularPromise'
+import { isModel } from '../../support/Utils'
 
 export class RelationAPI<
   M extends Model = Model,
@@ -204,7 +205,7 @@ export class RelationAPI<
   public attach(record: M | Element): SingularPromise<M> {
     let relationship = record as M
 
-    if (!(record instanceof Model)) {
+    if (!isModel(record)) {
       relationship = new this.model(record) as M
     }
 
@@ -225,7 +226,7 @@ export class RelationAPI<
   public sync(record: M | Element): SingularPromise<M> {
     let relationship = record as M
 
-    if (!(record instanceof Model)) {
+    if (!isModel(record)) {
       relationship = new this.model(record) as M
     }
 

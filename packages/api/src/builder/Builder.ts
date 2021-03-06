@@ -16,7 +16,13 @@ import { PluralPromise } from '../response/PluralPromise'
 import { PluralResponse } from '../response/PluralResponse'
 import { SingularPromise } from '../response/SingularPromise'
 import { SingularResponse } from '../response/SingularResponse'
-import { assert, forceArray } from '../support/Utils'
+import {
+  assert,
+  forceArray,
+  isArray,
+  isObject,
+  isUndefined
+} from '../support/Utils'
 import { SortDirection } from './SortDirection'
 
 export class Builder<M extends Model = Model, S extends boolean = false> {
@@ -27,8 +33,8 @@ export class Builder<M extends Model = Model, S extends boolean = false> {
   private readonly httpClient: HttpClient
 
   /**
-   * If true, then this function will in all cases return a {@link SingularResponse}. This is used by HasOne relation, which
-   * when queried spawn a Builder with this property set to true.
+   * If true, then this function will in all cases return a {@link SingularResponse}. This is used by HasOne relation,
+   * which when queried spawn a Builder with this property set to true.
    */
   private readonly forceSingular: boolean
 
@@ -95,11 +101,11 @@ export class Builder<M extends Model = Model, S extends boolean = false> {
    * @param {string} value - The value the attribute should be equal.
    */
   public where(attribute: string | string[], value: FilterValue): this {
-    assert(attribute !== undefined && value !== undefined, [
+    assert(!isUndefined(attribute) && !isUndefined(value), [
       'The `attribute` and `value` of `where` are required.'
     ])
 
-    assert(!Array.isArray(value) && typeof value !== 'object', [
+    assert(!isArray(value) && !isObject(value), [
       'The `value` of `where` must be primitive.'
     ])
 
@@ -115,11 +121,11 @@ export class Builder<M extends Model = Model, S extends boolean = false> {
    * @param {string} values - The values the attribute should be equal.
    */
   public whereIn(attribute: string | string[], values: FilterValue[]): this {
-    assert(attribute !== undefined && values !== undefined, [
+    assert(!isUndefined(attribute) && !isUndefined(values), [
       'The `attribute` and `values` of `whereIn` are required.'
     ])
 
-    assert(Array.isArray(values), [
+    assert(isArray(values), [
       'The `value` of `whereIn` must be an array of primitives.'
     ])
 
@@ -163,7 +169,7 @@ export class Builder<M extends Model = Model, S extends boolean = false> {
    * Specify the fields that should be included in the returned object graph.
    */
   public select(field: string | string[]): this {
-    assert(field !== undefined, ['The `field` of `select` is required.'])
+    assert(!isUndefined(field), ['The `field` of `select` is required.'])
 
     field = forceArray(field)
 
