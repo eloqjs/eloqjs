@@ -5,6 +5,7 @@ import {
   forceArray,
   isArray,
   isFunction,
+  isModel,
   isNumber,
   isObject,
   isString,
@@ -77,7 +78,7 @@ export class Collection<M extends Model = Model> {
       return record.map((r) => this._instantiate(r, modelType))
     }
 
-    if (record instanceof Model) {
+    if (isModel(record)) {
       return record
     }
 
@@ -197,7 +198,7 @@ export class Collection<M extends Model = Model> {
     assert(
       isString(predicate) ||
         isNumber(predicate) ||
-        (typeof predicate === 'object' && predicate instanceof Model) ||
+        isModel(predicate) ||
         isFunction(predicate),
       ['Invalid type of `predicate` on `find`.']
     )
@@ -206,7 +207,7 @@ export class Collection<M extends Model = Model> {
       return this.models.find(predicate) || null
     }
 
-    if (typeof predicate === 'object') {
+    if (isModel(predicate)) {
       return (predicate.$id && this.find(predicate.$id)) || null
     }
 
