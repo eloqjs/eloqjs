@@ -117,6 +117,13 @@ export function isModel(value: unknown): value is Model {
 }
 
 /**
+ * Determines whether the given string is empty.
+ */
+export function isEmptyString(value: string): boolean {
+  return value === ''
+}
+
+/**
  * Determines whether the given array or object is empty.
  */
 export function isEmpty(
