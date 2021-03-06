@@ -1,5 +1,5 @@
-import { isArray, isNull, isObject } from '../support/Utils'
 import { Collection } from '../collection/Collection'
+import { isArray, isCollection, isNull, isObject } from '../support/Utils'
 import { Element, Item } from '../types/Data'
 import { Model } from './Model'
 
@@ -63,7 +63,7 @@ export function relation(
     return model.$toJson()
   }
 
-  if (relation instanceof Collection) {
+  if (isCollection(relation)) {
     return relation.models.map((model) => resolve(model))
   }
 
