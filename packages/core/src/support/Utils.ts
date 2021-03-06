@@ -1,3 +1,4 @@
+import { Collection } from '../collection/Collection'
 import { Model } from '../model/Model'
 
 export type Wrapped<T> = { data: T }
@@ -115,6 +116,13 @@ export function isNullish(value: unknown): value is undefined | null {
  */
 export function isModel(value: unknown): value is Model {
   return isObject(value) && value instanceof Model
+}
+
+/**
+ * Determines whether the given value is the instance of {@link Collection}.
+ */
+export function isCollection(value: unknown): value is Collection {
+  return isObject(value) && value instanceof Collection
 }
 
 /**
