@@ -56,29 +56,29 @@ export class Model {
    * The schema for the model. It contains the result of the `fields`
    * method or the attributes defined by decorators.
    */
-  private static schemas: ModelSchemas = {}
+  private static _schemas: ModelSchemas = {}
 
   /**
    * The registry for the model. It contains predefined model schema generated
    * by the property decorators and gets evaluated, and stored, on the `schema`
    * property when registering models to the database.
    */
-  private static registries: ModelRegistries = {}
+  private static _registries: ModelRegistries = {}
 
   /**
    * The array of booted models.
    */
-  private static booted: Record<string, boolean> = {}
+  private static _booted: Record<string, boolean> = {}
 
   /**
    * The global lifecycle hook registries.
    */
-  private static hooks: Contracts.GlobalHooks = {}
+  private static _hooks: Contracts.GlobalHooks = {}
 
   /**
    * The counter to generate the UID for global hooks.
    */
-  private static lastHookId: number = 0
+  private static _lastHookId: number = 0
 
   /**
    * The unique ID for the model.
@@ -93,18 +93,18 @@ export class Model {
   /**
    * The unmutated attributes of the record.
    */
-  private readonly $attributes: Map<unknown> = new Map<unknown>()
+  private readonly _attributes: Map<unknown> = new Map<unknown>()
 
   /**
    * The unmutated relationships of the record.
    */
-  private readonly $relationships: Map<Relations.Relation> = new Map<Relations.Relation>()
+  private readonly _relationships: Map<Relations.Relation> = new Map<Relations.Relation>()
 
   /**
    * Create a new model instance.
    */
   public constructor(attributes?: Element, options: ModelOptions = {}) {
-    this.$boot()
+    this._boot()
 
     const fill = options.fill ?? true
 
@@ -146,11 +146,11 @@ export class Model {
     key: string,
     attribute: () => Attributes.Attribute
   ): typeof Model {
-    if (!this.registries[this.entity]) {
-      this.registries[this.entity] = {}
+    if (!this._registries[this.entity]) {
+      this._registries[this.entity] = {}
     }
 
-    this.registries[this.entity][key] = attribute
+    this._registries[this.entity][key] = attribute
 
     return this
   }
@@ -159,15 +159,15 @@ export class Model {
    * Clear the list of booted models so they can be re-booted.
    */
   public static clearBootedModels(): void {
-    this.booted = {}
-    this.schemas = {}
+    this._booted = {}
+    this._schemas = {}
   }
 
   /**
    * Clear registries.
    */
   public static clearRegistries(): void {
-    this.registries = {}
+    this._registries = {}
   }
 
   /**
@@ -178,12 +178,12 @@ export class Model {
   }
 
   /**
-   * Get the {@link Model} schema definition from the {@link schemas}.
+   * Get the {@link Model} schema definition from the {@link _schemas}.
    */
   public static getFields(): ModelFields {
-    this.boot()
+    this._boot()
 
-    return this.schemas[this.entity]
+    return this._schemas[this.entity]
   }
 
   /**
@@ -204,7 +204,7 @@ export class Model {
   ): string | number | null {
     // Get the primary key value from attributes.
     const value = isModel(record)
-      ? record.$attributes.get(this.primaryKey)
+      ? record._attributes.get(this.primaryKey)
       : record[this.primaryKey]
 
     return this.getIdFromValue(value)
@@ -273,6 +273,57 @@ export class Model {
   }
 
   /**
+   * Register a global hook. It will return ID for the hook that users may use
+   * it to unregister hooks.
+   */
+  public static on(on: string, callback: Contracts.HookableClosure): number {
+    const id = ++this._lastHookId
+
+    if (!this._hooks[on]) {
+      this._hooks[on] = []
+    }
+
+    this._hooks[on].push({ id, callback })
+
+    return id
+  }
+
+  /**
+   * Unregister global hook with the given id.
+   */
+  public static off(id: number): boolean {
+    return Object.keys(this._hooks).some((on) => {
+      const hooks = this._hooks[on]
+
+      const index = hooks.findIndex((h) => h.id === id)
+
+      if (index === -1) {
+        return false
+      }
+
+      hooks.splice(index, 1)
+
+      return true
+    })
+  }
+
+  /**
+   * Execute mutation hooks to the given model.
+   */
+  public static executeMutationHooks<M extends Item>(on: string, model: M): M {
+    const hooks = this._buildHooks(on) as Contracts.MutationHook[]
+
+    if (hooks.length === 0 || isNull(model)) {
+      return model
+    }
+
+    return hooks.reduce((m, hook) => {
+      hook(m as Model, this.entity)
+      return m
+    }, model)
+  }
+
+  /**
    * Create an attr attribute.
    */
   protected static attr(
@@ -336,18 +387,18 @@ export class Model {
   /**
    * Build the schema by evaluating fields and registry.
    */
-  private static initializeSchema(): void {
-    this.schemas[this.entity] = {}
+  private static _initializeSchema(): void {
+    this._schemas[this.entity] = {}
 
     const registry = {
       ...this.fields(),
-      ...this.registries[this.entity]
+      ...this._registries[this.entity]
     }
 
     for (const key in registry) {
       const attribute = registry[key]
 
-      this.schemas[this.entity][key] = isFunction(attribute)
+      this._schemas[this.entity][key] = isFunction(attribute)
         ? attribute()
         : attribute
     }
@@ -356,54 +407,19 @@ export class Model {
   /**
    * Bootstrap this model.
    */
-  private static boot(): void {
-    if (!this.booted[this.entity]) {
-      this.booted[this.entity] = true
+  private static _boot(): void {
+    if (!this._booted[this.entity]) {
+      this._booted[this.entity] = true
 
-      this.initializeSchema()
+      this._initializeSchema()
     }
-  }
-
-  /**
-   * Register a global hook. It will return ID for the hook that users may use
-   * it to unregister hooks.
-   */
-  public static on(on: string, callback: Contracts.HookableClosure): number {
-    const id = ++this.lastHookId
-
-    if (!this.hooks[on]) {
-      this.hooks[on] = []
-    }
-
-    this.hooks[on].push({ id, callback })
-
-    return id
-  }
-
-  /**
-   * Unregister global hook with the given id.
-   */
-  public static off(id: number): boolean {
-    return Object.keys(this.hooks).some((on) => {
-      const hooks = this.hooks[on]
-
-      const index = hooks.findIndex((h) => h.id === id)
-
-      if (index === -1) {
-        return false
-      }
-
-      hooks.splice(index, 1)
-
-      return true
-    })
   }
 
   /**
    * Build executable hook collection for the given hook.
    */
-  private static buildHooks(on: string): Contracts.HookableClosure[] {
-    const hooks = this.getGlobalHookAsArray(on)
+  private static _buildHooks(on: string): Contracts.HookableClosure[] {
+    const hooks = this._getGlobalHookAsArray(on)
     const localHook = this[on] as Contracts.HookableClosure | undefined
 
     localHook && hooks.push(localHook.bind(this))
@@ -415,26 +431,12 @@ export class Model {
    * Get global hook of the given name as array by stripping id key and keep
    * only hook functions.
    */
-  private static getGlobalHookAsArray(on: string): Contracts.HookableClosure[] {
-    const hooks = this.hooks[on]
+  private static _getGlobalHookAsArray(
+    on: string
+  ): Contracts.HookableClosure[] {
+    const hooks = this._hooks[on]
 
     return hooks ? hooks.map((h) => h.callback.bind(this)) : []
-  }
-
-  /**
-   * Execute mutation hooks to the given model.
-   */
-  public static executeMutationHooks<M extends Item>(on: string, model: M): M {
-    const hooks = this.buildHooks(on) as Contracts.MutationHook[]
-
-    if (hooks.length === 0 || isNull(model)) {
-      return model
-    }
-
-    return hooks.reduce((m, hook) => {
-      hook(m as Model, this.entity)
-      return m
-    }, model)
   }
 
   /**
@@ -475,12 +477,12 @@ export class Model {
       switch (true) {
         default:
         case field instanceof Attributes.Type: {
-          this.$defineAttribute(<Attributes.Type>field, key, value)
+          this._defineAttribute(<Attributes.Type>field, key, value)
           break
         }
         case field instanceof Attributes.Relation: {
           fillRelation &&
-            this.$defineRelation(<Attributes.Relation>field, key, value)
+            this._defineRelation(<Attributes.Relation>field, key, value)
         }
       }
     }
@@ -511,11 +513,11 @@ export class Model {
       switch (true) {
         default:
         case field instanceof Attributes.Type: {
-          if (_option.isPatch && !this.$attributes.isModified(key)) {
+          if (_option.isPatch && !this._attributes.isModified(key)) {
             continue
           }
 
-          const value = this.$attributes.get(key)
+          const value = this._attributes.get(key)
 
           // Exclude read-only attributes.
           if (!this.$self().readOnlyAttributes.includes(key)) {
@@ -525,11 +527,11 @@ export class Model {
           break
         }
         case field instanceof Attributes.Relation: {
-          if (_option.isPatch && !this.$relationships.isModified(key)) {
+          if (_option.isPatch && !this._relationships.isModified(key)) {
             continue
           }
 
-          const value = this.$relationships.get(key).data
+          const value = this._relationships.get(key).data
 
           result[key] = _option.relations
             ? Serialize.relation(value, _option.isPayload)
@@ -565,8 +567,8 @@ export class Model {
   /**
    * Bootstrap this model.
    */
-  private $boot(): void {
-    this.$self().boot()
+  private _boot(): void {
+    this.$self()._boot()
     this._generateUid()
   }
 
@@ -590,24 +592,24 @@ export class Model {
   }
 
   /**
-   * Define an attribute in {@link $attributes}, then define its mutable field.
+   * Define an attribute in {@link _attributes}, then define its mutable field.
    *
    * @param field - The type of attribute field.
    * @param key - The key of the attribute.
    * @param value - The value of the attribute.
    */
-  private $defineAttribute(
+  private _defineAttribute(
     field: Attributes.Type,
     key: string,
     value: unknown
   ) {
-    const $attributes = this.$attributes
+    const _attributes = this._attributes
 
     // Create a new field for the attribute.
     Object.defineProperty(this, key, {
       // Get the attribute, then apply the field mutation.
       get() {
-        return field.make($attributes.get(key), this, key)
+        return field.make(_attributes.get(key), this, key)
       },
 
       // Set the new value to the attribute.
@@ -618,14 +620,14 @@ export class Model {
         }
 
         // Set the new value to the attribute.
-        $attributes.set(key, newValue)
+        _attributes.set(key, newValue)
       }
     })
 
     Object.defineProperty(this.$, key, {
       // Get the attribute, then apply the field mutation.
       get() {
-        return field.make($attributes.$get(key), this, key)
+        return field.make(_attributes.$get(key), this, key)
       },
 
       set() {
@@ -638,13 +640,13 @@ export class Model {
   }
 
   /**
-   * Define a relationship in {@link $relationships}, then define its field.
+   * Define a relationship in {@link _relationships}, then define its field.
    *
    * @param field - The type of attribute field.
    * @param key - The key of the attribute.
    * @param value - The value of the attribute.
    */
-  private $defineRelation(
+  private _defineRelation(
     field: Attributes.Relation,
     key: string,
     value: Element | Element[]
@@ -653,7 +655,7 @@ export class Model {
     Object.defineProperty(this, key, {
       // Get the attribute, then apply the field mutation.
       get() {
-        return this.$relationships.get(key)
+        return this._relationships.get(key)
       },
 
       // Set the new value to the attribute.
@@ -662,7 +664,7 @@ export class Model {
         newValue = field.make(newValue, this, key)
 
         // Set the new value to the relation.
-        this.$relationships.set(key, newValue)
+        this._relationships.set(key, newValue)
       }
     })
 
