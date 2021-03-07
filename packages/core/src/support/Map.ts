@@ -8,8 +8,8 @@ export class Map<T> {
   }
 
   public set(key: string, value: T): void {
-    this.setReference(key, value)
-    this.setData(key, value)
+    this._setReference(key, value)
+    this._setData(key, value)
   }
 
   public $get(key: string): T {
@@ -38,11 +38,11 @@ export class Map<T> {
     return this.modified.includes(key)
   }
 
-  private setData(key: string, value: T): void {
+  private _setData(key: string, value: T): void {
     this.data[key] = value
   }
 
-  private setReference(key: string, value: T): void {
+  private _setReference(key: string, value: T): void {
     if (!(key in this.reference)) {
       this.reference[key] = value
     } else if (!this.modified.includes(key)) {
