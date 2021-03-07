@@ -21,7 +21,7 @@ export type ModelFields = Record<string, Attributes.Attribute>
 export type ModelSchemas = Record<string, ModelFields>
 export type ModelRegistries = Record<string, ModelRegistry>
 export type ModelRegistry = Record<string, () => Attributes.Attribute>
-export type ModelReference<T> = Omit<T, keyof Model>
+export type ModelReference<T> = Readonly<Omit<T, keyof Model>>
 
 export interface ModelOptions {
   fill?: boolean
@@ -88,17 +88,17 @@ export class Model {
   /**
    * The saved state of attributes.
    */
-  public $: ModelReference<this> = {} as ModelReference<this>
+  public readonly $: ModelReference<this> = {} as ModelReference<this>
 
   /**
    * The unmutated attributes of the record.
    */
-  private $attributes: Map<unknown> = new Map<unknown>()
+  private readonly $attributes: Map<unknown> = new Map<unknown>()
 
   /**
    * The unmutated relationships of the record.
    */
-  private $relationships: Map<Relations.Relation> = new Map<Relations.Relation>()
+  private readonly $relationships: Map<Relations.Relation> = new Map<Relations.Relation>()
 
   /**
    * Create a new model instance.
