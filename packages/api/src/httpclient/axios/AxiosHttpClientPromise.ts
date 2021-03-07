@@ -7,10 +7,10 @@ import { Thenable } from '../Thenable'
 import { AxiosHttpClientResponse } from './AxiosHttpClientResponse'
 
 export class AxiosHttpClientPromise implements HttpClientPromise {
-  private axiosPromise: AxiosPromise
+  private _axiosPromise: AxiosPromise
 
   public constructor(axiosPromise: AxiosPromise) {
-    this.axiosPromise = axiosPromise
+    this._axiosPromise = axiosPromise
   }
 
   public then<U>(
@@ -25,12 +25,12 @@ export class AxiosHttpClientPromise implements HttpClientPromise {
       ? (axiosResponse: AxiosResponse<unknown>) =>
           onFulfilled(new AxiosHttpClientResponse(axiosResponse))
       : undefined
-    return <Promise<U>>this.axiosPromise.then(wrappedOnFulfilled, onRejected)
+    return <Promise<U>>this._axiosPromise.then(wrappedOnFulfilled, onRejected)
   }
 
   public catch<U>(
     onRejected?: (error: unknown) => Thenable<U> | U
   ): Promise<U> {
-    return <Promise<U>>this.axiosPromise.catch(onRejected)
+    return <Promise<U>>this._axiosPromise.catch(onRejected)
   }
 }

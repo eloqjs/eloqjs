@@ -3,17 +3,17 @@ import { AxiosResponse } from 'axios'
 import { HttpClientResponse } from '../HttpClientResponse'
 
 export class AxiosHttpClientResponse implements HttpClientResponse {
-  private readonly axiosResponse: AxiosResponse
+  private readonly _axiosResponse: AxiosResponse
 
   public constructor(axiosResponse: AxiosResponse) {
-    this.axiosResponse = axiosResponse
+    this._axiosResponse = axiosResponse
   }
 
   public getData<T = unknown>(): T {
-    return this.axiosResponse.data
+    return this._axiosResponse.data
   }
 
   public getUnderlying(): unknown {
-    return this.axiosResponse
+    return this._axiosResponse
   }
 }

@@ -5,13 +5,13 @@ export type FilterValue = string | number | boolean
 export class FilterSpec {
   public static parameter: string = 'filter'
 
-  private readonly attribute: string | string[]
+  private readonly _attribute: string | string[]
 
-  private readonly value: FilterValue
+  private readonly _value: FilterValue
 
   public constructor(attribute: string | string[], value: FilterValue) {
-    this.attribute = attribute
-    this.value = value
+    this._attribute = attribute
+    this._value = value
   }
 
   public getParameter(): string {
@@ -26,10 +26,10 @@ export class FilterSpec {
   }
 
   public getAttribute(): string | string[] {
-    return this.attribute
+    return this._attribute
   }
 
   public getValue(): FilterValue {
-    return this.value
+    return this._value
   }
 }

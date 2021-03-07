@@ -1,13 +1,13 @@
 export class LimitSpec {
   public static parameter: string = 'limit'
 
-  private readonly value: number
+  private readonly _value: number
 
   public constructor(value: number) {
-    this.value = value
+    this._value = value
   }
 
   public getValue(): number {
-    return this.value
+    return this._value
   }
 }

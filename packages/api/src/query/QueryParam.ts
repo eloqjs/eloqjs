@@ -27,11 +27,11 @@ export class QueryParam {
    */
   public encode(): string {
     return (
-      QueryParam.encodeURI(this.name) + '=' + QueryParam.encodeURI(this.value)
+      QueryParam._encodeURI(this.name) + '=' + QueryParam._encodeURI(this.value)
     )
   }
 
-  private static encodeURI(str: string): string {
+  private static _encodeURI(str: string): string {
     return encodeURI(str).replace(/%5B/g, '[').replace(/%5D/g, ']')
   }
 }

@@ -9,7 +9,7 @@ export type SingularData = Element | Element[] | null | undefined
 export class SingularResponse<M extends Model = Model> extends Response {
   public readonly data: Item<M> = null
 
-  private readonly hooks: string[]
+  private readonly _hooks: string[]
 
   public constructor(
     httpClientResponse: HttpClientResponse,
@@ -18,12 +18,8 @@ export class SingularResponse<M extends Model = Model> extends Response {
   ) {
     super(httpClientResponse, model)
 
-    this.hooks = forceArray(hooks)
+    this._hooks = forceArray(hooks)
     this.data = this.resolveData()
-  }
-
-  private mutate(record: Element): M {
-    return new this.model(record) as M
   }
 
   protected resolveData(): Item<M> {
@@ -34,12 +30,16 @@ export class SingularResponse<M extends Model = Model> extends Response {
     if (!data || !(data = unwrap(data)) || !(data = variadic(data))) {
       data = null
     } else {
-      data = this.mutate(data)
+      data = this._mutate(data)
     }
 
-    return this.hooks.reduce((model, on) => {
+    return this._hooks.reduce((model, on) => {
       this.model.executeMutationHooks(on, model)
       return model
     }, data as Item<M>)
+  }
+
+  private _mutate(record: Element): M {
+    return new this.model(record) as M
   }
 }

@@ -42,20 +42,20 @@ export class Query {
 
   protected idToFind?: string | number
 
-  private resource: string
+  private _resource: string
 
-  private readonly relatedResource?: string
+  private readonly _relatedResource?: string
 
-  private readonly baseId?: string | number
+  private readonly _baseId?: string | number
 
   public constructor(
     resource: string,
     relatedResource?: string,
     modelId?: string | number
   ) {
-    this.resource = resource
-    this.relatedResource = relatedResource
-    this.baseId = modelId
+    this._resource = resource
+    this._relatedResource = relatedResource
+    this._baseId = modelId
 
     this.append = []
     this.fields = []
@@ -96,7 +96,7 @@ export class Query {
   /**
    * Groups the values of specs by parameter.
    */
-  private static groupByParameter(
+  private static _groupByParameter(
     specs: (FieldSpec | FilterSpec | OptionSpec)[]
   ): Map<string, string> {
     const dictionary = new Map()
@@ -115,7 +115,7 @@ export class Query {
     return dictionary
   }
 
-  private static mapValues(
+  private static _mapValues(
     specs: (AppendSpec | IncludeSpec | SortSpec)[]
   ): string {
     return specs.map((spec) => spec.getValue()).join(',')
@@ -223,30 +223,30 @@ export class Query {
       }
     })
 
-    this.resource = resource
+    this._resource = resource
   }
 
   public toString(): string {
     let relationToFind: string
 
-    if (!this.baseId) {
-      relationToFind = this.relatedResource ? '/' + this.relatedResource : ''
+    if (!this._baseId) {
+      relationToFind = this._relatedResource ? '/' + this._relatedResource : ''
     } else {
-      relationToFind = this.relatedResource
-        ? '/' + this.baseId + '/' + this.relatedResource
+      relationToFind = this._relatedResource
+        ? '/' + this._baseId + '/' + this._relatedResource
         : ''
     }
 
     const idToFind = this.idToFind ? '/' + this.idToFind : ''
-    const paramString = this.stringifyParameters()
+    const paramString = this._stringifyParameters()
 
-    return this.resource + relationToFind + idToFind + paramString
+    return this._resource + relationToFind + idToFind + paramString
   }
 
   protected addIncludeParameters(searchParams: QueryParam[]): void {
     if (this.include.length > 0) {
       const parameter = IncludeSpec.parameter
-      const value = Query.mapValues(this.include)
+      const value = Query._mapValues(this.include)
 
       searchParams.push(new QueryParam(parameter, value))
     }
@@ -255,14 +255,14 @@ export class Query {
   protected addAppendParameters(searchParams: QueryParam[]): void {
     if (this.append.length > 0) {
       const parameter = AppendSpec.parameter
-      const value = Query.mapValues(this.append)
+      const value = Query._mapValues(this.append)
 
       searchParams.push(new QueryParam(parameter, value))
     }
   }
 
   protected addFieldParameters(searchParams: QueryParam[]): void {
-    const fields = Query.groupByParameter(this.fields)
+    const fields = Query._groupByParameter(this.fields)
 
     for (const [parameter, value] of fields) {
       searchParams.push(new QueryParam(parameter, value))
@@ -270,7 +270,7 @@ export class Query {
   }
 
   protected addFilterParameters(searchParams: QueryParam[]): void {
-    const filters = Query.groupByParameter(this.filters)
+    const filters = Query._groupByParameter(this.filters)
 
     for (const [parameter, value] of filters) {
       searchParams.push(new QueryParam(parameter, value))
@@ -280,14 +280,14 @@ export class Query {
   protected addSortParameters(searchParams: QueryParam[]): void {
     if (this.sort.length > 0) {
       const parameter = SortSpec.parameter
-      const value = Query.mapValues(this.sort)
+      const value = Query._mapValues(this.sort)
 
       searchParams.push(new QueryParam(parameter, value))
     }
   }
 
   protected addOptionsParameters(searchParams: QueryParam[]): void {
-    const options = Query.groupByParameter(this.options)
+    const options = Query._groupByParameter(this.options)
 
     for (const [parameter, value] of options) {
       searchParams.push(new QueryParam(parameter, value))
@@ -308,7 +308,7 @@ export class Query {
     }
   }
 
-  private stringifyParameters(): string {
+  private _stringifyParameters(): string {
     const searchParams: QueryParam[] = []
 
     this.addIncludeParameters(searchParams)

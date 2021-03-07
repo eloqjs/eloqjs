@@ -28,15 +28,15 @@ import { SortDirection } from './SortDirection'
 export class Builder<M extends Model = Model, S extends boolean = false> {
   protected model: typeof Model
 
-  private query: Query
+  private _query: Query
 
-  private readonly httpClient: HttpClient
+  private readonly _httpClient: HttpClient
 
   /**
    * If true, then this function will in all cases return a {@link SingularResponse}. This is used by HasOne relation,
    * which when queried spawn a Builder with this property set to true.
    */
-  private readonly forceSingular: boolean
+  private readonly _forceSingular: boolean
 
   public constructor(
     model: typeof Model,
@@ -51,11 +51,11 @@ export class Builder<M extends Model = Model, S extends boolean = false> {
       : model.getResource()
     const relatedResource = belongsToModel ? model.getResource() : undefined
 
-    this.query = new Query(resource, relatedResource, belongsToModelId)
-    this.httpClient = model.getHttpClient()
-    this.forceSingular = !!forceSingular
+    this._query = new Query(resource, relatedResource, belongsToModelId)
+    this._httpClient = model.getHttpClient()
+    this._forceSingular = !!forceSingular
 
-    assert(!!this.httpClient, ['You must define the HTTP Client'])
+    assert(!!this._httpClient, ['You must define the HTTP Client'])
   }
 
   /**
@@ -63,14 +63,14 @@ export class Builder<M extends Model = Model, S extends boolean = false> {
    */
   public get(): S extends true ? SingularPromise<M> : PluralPromise<M>
   public get(): SingularPromise<M> | PluralPromise<M> {
-    if (this.forceSingular) {
-      return this.httpClient
-        .get(this.query.toString())
+    if (this._forceSingular) {
+      return this._httpClient
+        .get(this._query.toString())
         .then((response) => new SingularResponse<M>(response, this.model))
     }
 
-    return this.httpClient
-      .get(this.query.toString())
+    return this._httpClient
+      .get(this._query.toString())
       .then((response) => new PluralResponse<M>(response, this.model))
   }
 
@@ -78,8 +78,8 @@ export class Builder<M extends Model = Model, S extends boolean = false> {
    * Get the first record of a collection of records.
    */
   public first(): SingularPromise<M> {
-    return this.httpClient
-      .get(this.query.toString())
+    return this._httpClient
+      .get(this._query.toString())
       .then((response) => new SingularResponse(response, this.model))
   }
 
@@ -87,10 +87,10 @@ export class Builder<M extends Model = Model, S extends boolean = false> {
    * Find an specific record.
    */
   public find(id: string | number): SingularPromise<M> {
-    this.query.setIdToFind(id)
+    this._query.setIdToFind(id)
 
-    return this.httpClient
-      .get(this.query.toString())
+    return this._httpClient
+      .get(this._query.toString())
       .then((response) => new SingularResponse(response, this.model))
   }
 
@@ -109,7 +109,7 @@ export class Builder<M extends Model = Model, S extends boolean = false> {
       'The `value` of `where` must be primitive.'
     ])
 
-    this.query.addFilter(new FilterSpec(attribute, value))
+    this._query.addFilter(new FilterSpec(attribute, value))
 
     return this
   }
@@ -130,7 +130,7 @@ export class Builder<M extends Model = Model, S extends boolean = false> {
     ])
 
     for (const value of values) {
-      this.query.addFilter(new FilterSpec(attribute, value))
+      this._query.addFilter(new FilterSpec(attribute, value))
     }
 
     return this
@@ -144,7 +144,7 @@ export class Builder<M extends Model = Model, S extends boolean = false> {
     relationship = forceArray(relationship)
 
     for (const relation of relationship) {
-      this.query.addInclude(new IncludeSpec(relation))
+      this._query.addInclude(new IncludeSpec(relation))
     }
 
     return this
@@ -159,7 +159,7 @@ export class Builder<M extends Model = Model, S extends boolean = false> {
     attribute = forceArray(attribute)
 
     for (const attr of attribute) {
-      this.query.addAppend(new AppendSpec(attr))
+      this._query.addAppend(new AppendSpec(attr))
     }
 
     return this
@@ -174,7 +174,7 @@ export class Builder<M extends Model = Model, S extends boolean = false> {
     field = forceArray(field)
 
     for (const value of field) {
-      this.query.addField(new FieldSpec(this.model.entity, value))
+      this._query.addField(new FieldSpec(this.model.entity, value))
     }
 
     return this
@@ -198,7 +198,7 @@ export class Builder<M extends Model = Model, S extends boolean = false> {
         _direction = SortDirection.DESC
     }
 
-    this.query.addSort(
+    this._query.addSort(
       new SortSpec(attribute, _direction === SortDirection.ASC)
     )
 
@@ -215,7 +215,7 @@ export class Builder<M extends Model = Model, S extends boolean = false> {
     value = forceArray(value)
 
     for (const val of value) {
-      this.query.addOption(new OptionSpec(parameter, val))
+      this._query.addOption(new OptionSpec(parameter, val))
     }
 
     return this
@@ -231,7 +231,7 @@ export class Builder<M extends Model = Model, S extends boolean = false> {
       'The `value` of `page` must be an integer.'
     ])
 
-    this.query.setPage(new PageSpec(page))
+    this._query.setPage(new PageSpec(page))
 
     return this
   }
@@ -246,7 +246,7 @@ export class Builder<M extends Model = Model, S extends boolean = false> {
       'The `value` of `limit` must be an integer.'
     ])
 
-    this.query.setLimit(new LimitSpec(limit))
+    this._query.setLimit(new LimitSpec(limit))
 
     return this
   }
@@ -261,7 +261,7 @@ export class Builder<M extends Model = Model, S extends boolean = false> {
       'The `custom()` method takes a minimum of one argument.'
     ])
 
-    this.query.setResource(resources)
+    this._query.setResource(resources)
 
     return this
   }

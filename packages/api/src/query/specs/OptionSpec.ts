@@ -1,20 +1,20 @@
 export type OptionValue = string | number | boolean
 
 export class OptionSpec {
-  private readonly parameter: string
+  private readonly _parameter: string
 
-  private readonly value: OptionValue
+  private readonly _value: OptionValue
 
   public constructor(parameter: string, value: OptionValue) {
-    this.parameter = parameter
-    this.value = value
+    this._parameter = parameter
+    this._value = value
   }
 
   public getParameter(): string {
-    return this.parameter
+    return this._parameter
   }
 
   public getValue(): OptionValue {
-    return this.value
+    return this._value
   }
 }

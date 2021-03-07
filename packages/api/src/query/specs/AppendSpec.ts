@@ -1,13 +1,13 @@
 export class AppendSpec {
   public static parameter: string = 'append'
 
-  private readonly value: string
+  private readonly _value: string
 
   public constructor(value: string) {
-    this.value = value
+    this._value = value
   }
 
   public getValue(): string {
-    return this.value
+    return this._value
   }
 }

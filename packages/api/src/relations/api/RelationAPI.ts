@@ -61,7 +61,7 @@ export class RelationAPI<
   public get(): Promise<Response> {
     const response = this.query.get()
 
-    this.updateRelation(response, this.forceSingular)
+    this._updateRelation(response, this.forceSingular)
 
     return response
   }
@@ -72,7 +72,7 @@ export class RelationAPI<
   public first(): SingularPromise<M> {
     const response = this.query.first()
 
-    this.updateRelation(response, true)
+    this._updateRelation(response, true)
 
     return response
   }
@@ -83,7 +83,7 @@ export class RelationAPI<
   public find(id: string | number): SingularPromise<M> {
     const response = this.query.find(id)
 
-    this.updateRelation(response, true)
+    this._updateRelation(response, true)
 
     return response
   }
@@ -233,7 +233,7 @@ export class RelationAPI<
     return this.belongsToModel.$api().sync(relationship)
   }
 
-  private updateRelation(
+  private _updateRelation(
     response: Promise<Response>,
     isSingular: boolean
   ): void {

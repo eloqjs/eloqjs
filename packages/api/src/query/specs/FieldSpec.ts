@@ -1,13 +1,13 @@
 export class FieldSpec {
   public static parameter: string = 'fields'
 
-  private readonly attribute: string
+  private readonly _attribute: string
 
-  private readonly value: string
+  private readonly _value: string
 
   public constructor(attribute: string, value: string) {
-    this.attribute = attribute
-    this.value = value
+    this._attribute = attribute
+    this._value = value
   }
 
   public getParameter(): string {
@@ -15,10 +15,10 @@ export class FieldSpec {
   }
 
   public getAttribute(): string {
-    return this.attribute
+    return this._attribute
   }
 
   public getValue(): string {
-    return this.value
+    return this._value
   }
 }
