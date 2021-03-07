@@ -93,7 +93,7 @@ export class Model {
   /**
    * The collections of the record.
    */
-  private _collections: Record<string, Collection<this>> = {}
+  private readonly _collections: Record<string, Collection<this>> = {}
   /**
    * The unmutated attributes of the record.
    */
