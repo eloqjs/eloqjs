@@ -2,12 +2,12 @@ import { Model, ModelReference } from '../model/Model'
 import { Uid as UidGenerator } from '../support/Uid'
 import {
   assert,
-  forceArray,
   isArray,
   isFunction,
   isModel,
   isNumber,
   isObject,
+  isPlainObject,
   isString,
   ValueOf
 } from '../support/Utils'
@@ -126,21 +126,31 @@ export class Collection<M extends Model = Model> {
    *
    * @returns The added model or array of added models.
    */
-  public add(model: M | Element | (M | Element)[]): M | M[] {
-    assert(isObject(model) || isArray(model), [
+  public add(model: M | Element | (M | Element)[]): M | M[] | void {
+    // If given an array, assume an array of models and add them all.
+    if (isArray(model)) {
+      return model.map((m) => this.add(m)).filter((m): m is M => !!m)
+    }
+
+    // Objects should be converted to model instances first, then added.
+    if (isPlainObject(model)) {
+      return this.add(this._self()._instantiate<M>(model, this._options.model))
+    }
+
+    // At this point, `model` should be an instance of Model.
+    assert(isModel(model), [
       'Expected a model, plain object, or array of either.'
     ])
 
-    // Instantiate the object
-    const _model = this._self()._instantiate<M>(model, this._options.model)
-    const models: M[] = forceArray(_model)
-
-    for (const model of models) {
-      this.models.push(model)
-      this.onAdd(model)
+    // Make sure we don't add the same model twice.
+    if (this._hasModelInRegistry(model)) {
+      return
     }
 
-    return _model
+    this.models.push(model)
+    this.onAdd(model)
+
+    return model
   }
 
   /**
