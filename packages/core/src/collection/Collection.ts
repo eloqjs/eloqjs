@@ -450,10 +450,6 @@ export class Collection<M extends Model = Model> {
       | (M | Element)[]
       | ((model: M, index: number, array: M[]) => boolean)
   ): M | M[] | undefined {
-    assert(isObject(model) || isArray(model) || isFunction(model), [
-      'Expected function, object, array, or model to remove.'
-    ])
-
     // Support using a predicate to remove all models it returns true for.
     if (isFunction(model)) {
       return this.remove(this.models.filter(model))
@@ -463,10 +459,19 @@ export class Collection<M extends Model = Model> {
       return model.map((m) => this.remove(m)).filter((m): m is M => !!m)
     }
 
-    // Instantiate the object
-    const _model = this._self()._instantiate<M>(model, this._options.model)
+    // Objects should be converted to model instances first, then removed.
+    if (isPlainObject(model)) {
+      return this.remove(
+        this._self()._instantiate<M>(model, this._options.model)
+      )
+    }
 
-    return this._removeModel(_model)
+    // At this point, `model` should be an instance of Model.
+    assert(isModel(model), [
+      'Expected function, object, array, or model to remove.'
+    ])
+
+    return this._removeModel(model)
   }
 
   /**
