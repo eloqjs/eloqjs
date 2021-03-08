@@ -26,5 +26,8 @@
     "test": "jest",
     "test:watch": "jest --watch",
     "coverage": "jest --collect-coverage"
+  },
+  "dependencies": {
+    "type-fest": "^0.21.2"
   }
 }
