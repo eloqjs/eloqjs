@@ -6,10 +6,12 @@ import { Map } from '../support/Map'
 import { Uid as UidGenerator } from '../support/Uid'
 import {
   assert,
+  isArray,
   isEmptyString,
   isFunction,
   isModel,
   isNull,
+  isNullish,
   isNumber,
   isString,
   isUndefined
@@ -507,12 +509,12 @@ export class Model {
    * delete it will be remove from the collection. Registering the same
    * collection more than once has no effect.
    *
-   * @param {Collection} collection
+   * @param collection
    */
   public $registerCollection(
     collection: Collection<this> | Collection<this>[]
   ): void {
-    if (Array.isArray(collection)) {
+    if (isArray(collection)) {
       for (const c of collection) {
         this.$registerCollection(c)
       }
@@ -520,12 +522,9 @@ export class Model {
       return
     }
 
-    assert(
-      collection !== undefined &&
-        collection !== null &&
-        collection.$uid !== undefined,
-      ['Collection is not valid.']
-    )
+    assert(!isNullish(collection) && !isUndefined(collection.$uid), [
+      'Collection is not valid.'
+    ])
 
     this._collections[collection.$uid] = collection
   }
@@ -536,12 +535,12 @@ export class Model {
    *
    * Unregistering a collection that isn't registered has no effect.
    *
-   * @param {Collection} collection
+   * @param collection
    */
   public $unregisterCollection(
     collection: Collection<this> | Collection<this>[]
   ): void {
-    if (Array.isArray(collection)) {
+    if (isArray(collection)) {
       for (const c of collection) {
         this.$unregisterCollection(c)
       }
@@ -549,12 +548,9 @@ export class Model {
       return
     }
 
-    assert(
-      collection !== undefined &&
-        collection !== null &&
-        collection.$uid !== undefined,
-      ['Collection is not valid.']
-    )
+    assert(!isNullish(collection) && !isUndefined(collection.$uid), [
+      'Collection is not valid.'
+    ])
 
     delete this._collections[collection.$uid]
   }
