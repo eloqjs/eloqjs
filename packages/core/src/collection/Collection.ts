@@ -205,14 +205,6 @@ export class Collection<M extends Model = Model> {
   public find<T = boolean>(
     predicate: string | number | M | ((model: M) => T)
   ): Item<M> {
-    assert(
-      isString(predicate) ||
-        isNumber(predicate) ||
-        isModel(predicate) ||
-        isFunction(predicate),
-      ['Invalid type of `predicate` on `find`.']
-    )
-
     if (isFunction(predicate)) {
       return this.models.find(predicate) || null
     }
@@ -220,6 +212,10 @@ export class Collection<M extends Model = Model> {
     if (isModel(predicate)) {
       return (predicate.$id && this.find(predicate.$id)) || null
     }
+
+    assert(isString(predicate) || isNumber(predicate), [
+      'Invalid type of `predicate` on `find`.'
+    ])
 
     return this.find((model) => {
       return model.$id === predicate
