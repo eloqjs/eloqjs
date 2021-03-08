@@ -93,6 +93,16 @@ describe('Feature – Collections – Add', () => {
     assertCollection(collection, [user])
   })
 
+  it('should skip add if the collection already contains the model', () => {
+    const collection = new Collection<User>([], {
+      model: User
+    })
+    const user = collection.add({ id: 1, name: 'Joe Doe' })
+
+    collection.add(user)
+    assertCollection(collection, [user])
+  })
+
   it('should register the collection to the model on add', () => {
     const collection = new Collection<User>([], {
       model: User
