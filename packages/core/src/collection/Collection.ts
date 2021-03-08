@@ -379,7 +379,7 @@ export class Collection<M extends Model = Model> {
   ): U | undefined {
     // Use the first model as the initial value if an initial was not given.
     if (arguments.length === 1) {
-      initial = (this.first() || undefined) as U | undefined
+      initial = ((this.first() || undefined) as unknown) as U | undefined
     }
 
     return this.models.reduce(iteratee, initial)
