@@ -688,6 +688,19 @@ export class Collection<M extends Model = Model> {
   }
 
   /**
+   * Creates a new instance of the collection.
+   */
+  private _createCollection(
+    models: (M | Element)[] = [],
+    options: CollectionOptions = {}
+  ): this {
+    return new (this.constructor as typeof Collection)(models, {
+      ...this._options,
+      ...options
+    }) as this
+  }
+
+  /**
    * Get the constructor of this collection.
    */
   private _self(): typeof Collection {
