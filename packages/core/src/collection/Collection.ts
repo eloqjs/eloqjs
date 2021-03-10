@@ -188,6 +188,13 @@ export class Collection<M extends Model = Model> {
    * If `predicate` is a `string`, `number` or {@link Model}, `find` will attempt to return a model matching the
    * primary key.
    */
+  public find(keys: (string | number)[]): Item<M>[]
+
+  /**
+   * Returns the first model that matches the given criteria.
+   * If `predicate` is a `string`, `number` or {@link Model}, `find` will attempt to return a model matching the
+   * primary key.
+   */
   public find(model: M): Item<M>
 
   /**
@@ -203,14 +210,18 @@ export class Collection<M extends Model = Model> {
    * primary key.
    */
   public find<T = boolean>(
-    predicate: string | number | M | ((model: M) => T)
-  ): Item<M> {
+    predicate: string | number | (string | number)[] | M | ((model: M) => T)
+  ): Item<M> | Item<M>[] {
     if (isFunction(predicate)) {
       return this.models.find(predicate) || null
     }
 
     if (isModel(predicate)) {
       return (predicate.$id && this.find(predicate.$id)) || null
+    }
+
+    if (isArray(predicate)) {
+      return predicate.map((id) => this.find(id)).filter((m): m is M => !!m)
     }
 
     assert(isString(predicate) || isNumber(predicate), [
