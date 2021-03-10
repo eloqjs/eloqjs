@@ -38,6 +38,7 @@ This package was based and inspired by some amazing packages!
 - [Vue API Query][vue-api-query-src] by [Robson Tenório][vue-api-query-author]
 - [Coloquent][coloquent-src] by [David Duwaer][coloquent-author]
 - [Sarala][sarala-src] by [Milroy E. Fraser][sarala-author]
+- [collect.js][collectjs-src] by [Daniel Eckermann][collectjs-author]
 
 ## 📑 License
 
@@ -89,3 +90,6 @@ Copyright (c) João Pedro Antunes Silva
 
 [sarala-src]: https://github.com/milroyfraser/sarala
 [sarala-author]: https://github.com/milroyfraser
+
+[collectjs-src]: https://github.com/ecrmnn/collect.js
+[collectjs-author]: https://github.com/ecrmnn
