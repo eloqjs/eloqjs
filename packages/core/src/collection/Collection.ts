@@ -4,6 +4,7 @@ import { Model, ModelReference } from '../model/Model'
 import { Uid as UidGenerator } from '../support/Uid'
 import {
   assert,
+  forceArray,
   isArray,
   isEmpty,
   isFunction,
@@ -300,8 +301,16 @@ export class Collection<M extends Model = Model> {
    *
    * @returns `true` if the collection contains the given model, `false` otherwise.
    */
-  public has(model: M): boolean {
-    return this._indexOf(model) >= 0
+  public has(model: M | M[]): boolean {
+    const models = forceArray(model)
+
+    for (const record of models) {
+      if (this._indexOf(record) < 0) {
+        return false
+      }
+    }
+
+    return true
   }
 
   /**
