@@ -305,6 +305,19 @@ export class Collection<M extends Model = Model> {
   }
 
   /**
+   * Concatenate values of a given key as a string.
+   *
+   * @param key - The key of the attributes you wish to join.
+   * @param glue - The "glue" string you wish to place between the values.
+   */
+  public implode(
+    key: LiteralUnion<keyof ModelReference<M>, string>,
+    glue: string
+  ): string {
+    return this.pluck(key).join(glue)
+  }
+
+  /**
    * Determines whether this collection is empty.
    *
    * @returns `true` if the collection is empty, `false` otherwise.
