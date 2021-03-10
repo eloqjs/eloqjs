@@ -1,3 +1,5 @@
+import { LiteralUnion } from 'type-fest'
+
 import { Model, ModelReference } from '../model/Model'
 import { Uid as UidGenerator } from '../support/Uid'
 import {
@@ -153,6 +155,20 @@ export class Collection<M extends Model = Model> {
     this.onAdd(model)
 
     return model
+  }
+
+  /**
+   * Alias for the "avg" method.
+   */
+  public average(key: LiteralUnion<keyof ModelReference<M>, string>): number {
+    return this.avg(key)
+  }
+
+  /**
+   * Returns the average of a property of all models in the collection.
+   */
+  public avg(key: LiteralUnion<keyof ModelReference<M>, string>): number {
+    return this.sum(key) / this.count()
   }
 
   /**
