@@ -221,6 +221,7 @@ export class Collection<M extends Model = Model> {
    * Returns the first model that matches the given criteria.
    * If `predicate` is a `string`, `number` or {@link Model}, `find` will attempt to return a model matching the
    * primary key.
+   * If `predicate` is an array of keys, find will return all models which match the keys.
    */
   public find(key: string | number): Item<M>
 
@@ -228,6 +229,7 @@ export class Collection<M extends Model = Model> {
    * Returns the first model that matches the given criteria.
    * If `predicate` is a `string`, `number` or {@link Model}, `find` will attempt to return a model matching the
    * primary key.
+   * If `predicate` is an array of keys, find will return all models which match the keys.
    */
   public find(keys: (string | number)[]): Item<M>[]
 
@@ -235,6 +237,7 @@ export class Collection<M extends Model = Model> {
    * Returns the first model that matches the given criteria.
    * If `predicate` is a `string`, `number` or {@link Model}, `find` will attempt to return a model matching the
    * primary key.
+   * If `predicate` is an array of keys, find will return all models which match the keys.
    */
   public find(model: M): Item<M>
 
@@ -242,6 +245,7 @@ export class Collection<M extends Model = Model> {
    * Returns the first model that matches the given criteria.
    * If `predicate` is a `string`, `number` or {@link Model}, `find` will attempt to return a model matching the
    * primary key.
+   * If `predicate` is an array of keys, find will return all models which match the keys.
    */
   public find<T = boolean>(predicate: (model: M) => T): Item<M>
 
@@ -249,6 +253,7 @@ export class Collection<M extends Model = Model> {
    * Returns the first model that matches the given criteria.
    * If `predicate` is a `string`, `number` or {@link Model}, `find` will attempt to return a model matching the
    * primary key.
+   * If `predicate` is an array of keys, find will return all models which match the keys.
    */
   public find<T = boolean>(
     predicate: string | number | (string | number)[] | M | ((model: M) => T)
@@ -298,6 +303,8 @@ export class Collection<M extends Model = Model> {
 
   /**
    * Determines whether this collection has the given model.
+   *
+   * It also accepts an array of models.
    *
    * @returns `true` if the collection contains the given model, `false` otherwise.
    */
