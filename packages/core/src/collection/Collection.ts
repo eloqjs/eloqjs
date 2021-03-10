@@ -628,9 +628,13 @@ export class Collection<M extends Model = Model> {
     let total = 0
 
     for (const model of this.models) {
-      const value = isFunction(key)
-        ? key(model)
-        : ((model[key as K] as unknown) as string | number)
+      let value: string | number
+
+      if (isFunction(key)) {
+        value = key(model)
+      } else {
+        value = (model[key as K] as unknown) as string | number
+      }
 
       total += isString(value) ? parseFloat(value) : value
     }
