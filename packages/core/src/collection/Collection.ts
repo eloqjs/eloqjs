@@ -269,6 +269,17 @@ export class Collection<M extends Model = Model> {
   }
 
   /**
+   * Returns a new collection containing the models that would be present on a given page number.
+   * The method accepts the page number as its first argument
+   * and the number of items to show per page as its second argument.
+   */
+  public forPage(page: number, chunk: number): this {
+    const models = this.models.slice(page * chunk - chunk, page * chunk)
+
+    return this._createCollection(models)
+  }
+
+  /**
    * Determines whether this collection has the given model.
    *
    * @returns `true` if the collection contains the given model, `false` otherwise.
