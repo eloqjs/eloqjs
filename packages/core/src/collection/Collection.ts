@@ -50,7 +50,7 @@ export class Collection<M extends Model = Model> {
    * Accessor to support Array.length semantics.
    */
   public get length(): number {
-    return this.size()
+    return this.count()
   }
 
   /**
@@ -164,6 +164,13 @@ export class Collection<M extends Model = Model> {
       this.models,
       this._options
     ) as this
+  }
+
+  /**
+   * Returns the number of models in this collection.
+   */
+  public count(): number {
+    return this.models.length
   }
 
   /**
@@ -293,7 +300,7 @@ export class Collection<M extends Model = Model> {
    */
   public last(): Item<M> {
     if (this.isNotEmpty()) {
-      return this.models[this.size() - 1]
+      return this.models[this.count() - 1]
     }
 
     return null
@@ -348,7 +355,7 @@ export class Collection<M extends Model = Model> {
    */
   public pop(): Item<M> {
     if (this.isNotEmpty()) {
-      return this._removeModelAtIndex(this.size() - 1) || null
+      return this._removeModelAtIndex(this.count() - 1) || null
     }
 
     return null
@@ -567,13 +574,6 @@ export class Collection<M extends Model = Model> {
     }
 
     return null
-  }
-
-  /**
-   * Returns the number of models in this collection.
-   */
-  public size(): number {
-    return this.models.length
   }
 
   /**
