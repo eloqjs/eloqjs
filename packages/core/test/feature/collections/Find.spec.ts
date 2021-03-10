@@ -14,6 +14,10 @@ describe('Feature – Collections – Find', () => {
     expect(collection.find(3)).toBe(users[2])
   })
 
+  it('should find multiple models by their primary keys', () => {
+    expect(collection.find([2, 3, 4])).toEqual([users[1], users[2], users[3]])
+  })
+
   it('should support a model predicate', () => {
     expect(collection.find(users[2])).toBe(users[2])
   })
