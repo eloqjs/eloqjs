@@ -54,7 +54,7 @@ export class Collection<M extends Model = Model> {
   /**
    * Instantiate the given records.
    */
-  private static _instantiate<T extends Model>(
+  private static _createModel<T extends Model>(
     records: (T | Element)[],
     modelType?: typeof Model
   ): T[]
@@ -62,7 +62,7 @@ export class Collection<M extends Model = Model> {
   /**
    * Instantiate the given records.
    */
-  private static _instantiate<T extends Model>(
+  private static _createModel<T extends Model>(
     record: T | Element,
     modelType?: typeof Model
   ): T
@@ -70,12 +70,12 @@ export class Collection<M extends Model = Model> {
   /**
    * Instantiate the given records.
    */
-  private static _instantiate<T extends Model>(
+  private static _createModel<T extends Model>(
     record: T | Element | (T | Element)[],
     modelType?: typeof Model
   ): T | T[] {
     if (isArray(record)) {
-      return record.map((r) => this._instantiate(r, modelType))
+      return record.map((r) => this._createModel(r, modelType))
     }
 
     if (isModel(record)) {
@@ -134,7 +134,7 @@ export class Collection<M extends Model = Model> {
 
     // Objects should be converted to model instances first, then added.
     if (isPlainObject(model)) {
-      return this.add(this._self()._instantiate<M>(model, this._options.model))
+      return this.add(this._self()._createModel<M>(model, this._options.model))
     }
 
     // At this point, `model` should be an instance of Model.
@@ -469,7 +469,7 @@ export class Collection<M extends Model = Model> {
     // Objects should be converted to model instances first, then removed.
     if (isPlainObject(model)) {
       return this.remove(
-        this._self()._instantiate<M>(model, this._options.model)
+        this._self()._createModel<M>(model, this._options.model)
       )
     }
 
