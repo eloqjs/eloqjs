@@ -371,6 +371,43 @@ export class Collection<M extends Model = Model> {
   }
 
   /**
+   * Returns the maximum value of a given key.
+   */
+  public max(key: LiteralUnion<keyof ModelReference<M>, string>): number {
+    const values = this.pluck(key).filter(
+      (value) => value !== undefined
+    ) as number[]
+
+    return Math.max(...values)
+  }
+
+  /**
+   * Returns the [median value]{@link https://en.wikipedia.org/wiki/Median} of a given key.
+   */
+  public median(key: LiteralUnion<keyof ModelReference<M>, string>): number {
+    if (this.count() % 2 === 0) {
+      return (
+        ((this.models[this.count() / 2 - 1][key as string] as number) +
+          (this.models[this.count() / 2][key as string] as number)) /
+        2
+      )
+    }
+
+    return this.models[Math.floor(this.count() / 2)][key as string] as number
+  }
+
+  /**
+   * Returns the minimum value of a given key.
+   */
+  public min(key: LiteralUnion<keyof ModelReference<M>, string>): number {
+    const values = this.pluck(key).filter(
+      (value) => value !== undefined
+    ) as number[]
+
+    return Math.min(...values)
+  }
+
+  /**
    * Returns only the models from the collection with the specified keys.
    */
   public only(keys: (string | number)[]): this {
