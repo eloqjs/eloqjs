@@ -3,8 +3,10 @@ import { Uid as UidGenerator } from '../support/Uid'
 import {
   assert,
   isArray,
+  isEmpty,
   isFunction,
   isModel,
+  isNullish,
   isNumber,
   isObject,
   isPlainObject,
@@ -177,6 +179,21 @@ export class Collection<M extends Model = Model> {
   }
 
   /**
+   * Returns all models in the collection except the models with specified keys.
+   */
+  public except(keys: (string | number)[]): this {
+    if (isNullish(keys) || isEmpty(keys)) {
+      return this._createCollection(this.models)
+    }
+
+    const models = this.models.filter(
+      (model) => model.$id && !keys.includes(model.$id)
+    )
+
+    return this._createCollection(models)
+  }
+
+  /**
    * Returns the first model that matches the given criteria.
    * If `predicate` is a `string`, `number` or {@link Model}, `find` will attempt to return a model matching the
    * primary key.
@@ -288,6 +305,21 @@ export class Collection<M extends Model = Model> {
    */
   public map<U = M>(callback: (model: M, index: number, array: M[]) => U): U[] {
     return this.models.map(callback)
+  }
+
+  /**
+   * Returns only the models from the collection with the specified keys.
+   */
+  public only(keys: (string | number)[]): this {
+    if (isNullish(keys) || isEmpty(keys)) {
+      return this._createCollection(this.models)
+    }
+
+    const models = this.models.filter(
+      (model) => model.$id && keys.includes(model.$id)
+    )
+
+    return this._createCollection(models)
   }
 
   /**
