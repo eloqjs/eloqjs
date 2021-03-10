@@ -74,7 +74,7 @@ export class Collection<M extends Model = Model> {
     record: T | Element | (T | Element)[],
     modelType?: typeof Model
   ): T | T[] {
-    if (Array.isArray(record)) {
+    if (isArray(record)) {
       return record.map((r) => this._instantiate(r, modelType))
     }
 
