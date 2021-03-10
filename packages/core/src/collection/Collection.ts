@@ -670,6 +670,13 @@ export class Collection<M extends Model = Model> {
   }
 
   /**
+   * Returns a new collection, without the first given amount of models.
+   */
+  public skip(count: number): this {
+    return this._createCollection(this.models.slice(count))
+  }
+
+  /**
    * Returns the sum of a property of all models in the collection.
    *
    * @param {string|string[]|Function} key
@@ -693,6 +700,19 @@ export class Collection<M extends Model = Model> {
     }
 
     return parseFloat(total.toPrecision(12))
+  }
+
+  /**
+   * Returns a new collection with the specified number of models.
+   *
+   * You may also pass a negative integer to take the specified amount of models from the end of the collection.
+   */
+  public take(limit: number): this {
+    if (limit < 0) {
+      return this._createCollection(this.models.slice(limit))
+    }
+
+    return this._createCollection(this.models.slice(0, limit))
   }
 
   /**
