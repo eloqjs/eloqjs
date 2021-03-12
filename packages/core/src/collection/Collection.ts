@@ -173,6 +173,26 @@ export class Collection<M extends Model = Model> {
   }
 
   /**
+   * Breaks the collection into multiple, smaller collections of a given size.
+   *
+   * @param size - Size of the chunks.
+   */
+  public chunk(size: number): this[] {
+    const chunks = []
+    let index = 0
+
+    do {
+      const models = this.models.slice(index, index + size)
+      const collection = this._createCollection(models)
+
+      chunks.push(collection)
+      index += size
+    } while (index < this.count())
+
+    return chunks
+  }
+
+  /**
    * Creates a copy of this collection. Model references are preserved so
    * changes to the models inside the clone will also affect the subject.
    */
