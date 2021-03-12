@@ -718,6 +718,24 @@ export class Collection<M extends Model = Model> {
   }
 
   /**
+   * Randomly shuffles the models in this collection.
+   */
+  public shuffle(): this {
+    let j
+    let x
+    let i
+
+    for (i = this.count(); i; i -= 1) {
+      j = Math.floor(Math.random() * i)
+      x = this.models[i - 1]
+      this.models[i - 1] = this.models[j]
+      this.models[j] = x
+    }
+
+    return this
+  }
+
+  /**
    * Returns a new collection, without the first given amount of models.
    */
   public skip(count: number): this {
