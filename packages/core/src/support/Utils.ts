@@ -27,6 +27,20 @@ export function unwrap<T>(data: T | { data: T }): T {
 }
 
 /**
+ * Resolves the value from the given model.
+ */
+export function resolveValue<T = unknown, M extends Model = Model>(
+  model: M,
+  predicate: string | ((model: M) => T)
+): T {
+  if (isFunction(predicate)) {
+    return predicate(model)
+  }
+
+  return model[predicate]
+}
+
+/**
  * Force the data to be an array.
  *
  * @param data
