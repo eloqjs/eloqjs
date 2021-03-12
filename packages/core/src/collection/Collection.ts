@@ -1,5 +1,3 @@
-import { LiteralUnion } from 'type-fest'
-
 import { Model, ModelReference } from '../model/Model'
 import { Uid as UidGenerator } from '../support/Uid'
 import {
@@ -163,14 +161,14 @@ export class Collection<M extends Model = Model> {
   /**
    * Alias for the "avg" method.
    */
-  public average(key: LiteralUnion<keyof ModelReference<M>, string>): number {
+  public average(key: keyof ModelReference<M> | string): number {
     return this.avg(key)
   }
 
   /**
    * Returns the average of a property of all models in the collection.
    */
-  public avg(key: LiteralUnion<keyof ModelReference<M>, string>): number {
+  public avg(key: keyof ModelReference<M> | string): number {
     return this.sum(key) / this.count()
   }
 
@@ -328,10 +326,7 @@ export class Collection<M extends Model = Model> {
    * @param key - The key of the attributes you wish to join.
    * @param glue - The "glue" string you wish to place between the values.
    */
-  public implode(
-    key: LiteralUnion<keyof ModelReference<M>, string>,
-    glue: string
-  ): string {
+  public implode(key: keyof ModelReference<M> | string, glue: string): string {
     return this.pluck(key).join(glue)
   }
 
@@ -375,7 +370,7 @@ export class Collection<M extends Model = Model> {
   /**
    * Returns the maximum value of a given key.
    */
-  public max(key: LiteralUnion<keyof ModelReference<M>, string>): number {
+  public max(key: keyof ModelReference<M> | string): number {
     const values = this.pluck(key).filter(
       (value) => value !== undefined
     ) as number[]
@@ -386,7 +381,7 @@ export class Collection<M extends Model = Model> {
   /**
    * Returns the [median value]{@link https://en.wikipedia.org/wiki/Median} of a given key.
    */
-  public median(key: LiteralUnion<keyof ModelReference<M>, string>): number {
+  public median(key: keyof ModelReference<M> | string): number {
     if (this.count() % 2 === 0) {
       return (
         ((this.models[this.count() / 2 - 1][key as string] as number) +
@@ -401,7 +396,7 @@ export class Collection<M extends Model = Model> {
   /**
    * Returns the minimum value of a given key.
    */
-  public min(key: LiteralUnion<keyof ModelReference<M>, string>): number {
+  public min(key: keyof ModelReference<M> | string): number {
     const values = this.pluck(key).filter(
       (value) => value !== undefined
     ) as number[]
@@ -692,7 +687,8 @@ export class Collection<M extends Model = Model> {
    */
   public sortBy(
     comparator:
-      | LiteralUnion<keyof ModelReference<M>, string>
+      | keyof ModelReference<M>
+      | string
       | ((model: M) => string | number)
   ): this {
     this.models.sort((a, b) => {
@@ -712,7 +708,8 @@ export class Collection<M extends Model = Model> {
    */
   public sortByDesc(
     comparator:
-      | LiteralUnion<keyof ModelReference<M>, string>
+      | keyof ModelReference<M>
+      | string
       | ((model: M) => string | number)
   ): this {
     this.sortBy(comparator)
@@ -728,8 +725,8 @@ export class Collection<M extends Model = Model> {
    * @param {string|string[]|Function} key
    * @return {number}
    */
-  public sum<K extends keyof ModelReference<M>>(
-    key: K | string | ((model: M) => string | number)
+  public sum(
+    key: keyof ModelReference<M> | string | ((model: M) => string | number)
   ): number {
     let total = 0
 
@@ -739,7 +736,7 @@ export class Collection<M extends Model = Model> {
       if (isFunction(key)) {
         value = key(model)
       } else {
-        value = (model[key as K] as unknown) as string | number
+        value = (model[key as string] as unknown) as string | number
       }
 
       total += isString(value) ? parseFloat(value) : value
