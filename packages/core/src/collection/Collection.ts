@@ -12,6 +12,7 @@ import {
   isObject,
   isPlainObject,
   isString,
+  isUndefined,
   resolveValue,
   ValueOf
 } from '../support/Utils'
@@ -319,6 +320,36 @@ export class Collection<M extends Model = Model> {
     const models = this.models.slice(page * chunk - chunk, page * chunk)
 
     return this._createCollection(models)
+  }
+
+  /**
+   * Groups the models in this collection by a given key.
+   */
+  public groupBy(
+    key:
+      | keyof ModelReference<M>
+      | string
+      | ((model: M, index: number) => string)
+  ): Record<string, this> {
+    const collection: Record<string, this> = {}
+
+    this.models.forEach((model, index) => {
+      let resolvedKey: string
+
+      if (isFunction(key)) {
+        resolvedKey = key(model, index) ?? ''
+      } else {
+        resolvedKey = model[key as string] ?? ''
+      }
+
+      if (isUndefined(collection[resolvedKey])) {
+        collection[resolvedKey] = this._createCollection()
+      }
+
+      collection[resolvedKey].add(model)
+    })
+
+    return collection
   }
 
   /**
