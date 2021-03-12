@@ -499,6 +499,24 @@ export class Collection<M extends Model = Model> {
     return null
   }
 
+  public random(): Item<M>
+
+  public random(length: number): this
+
+  /**
+   * Returns a random model from the collection.
+   */
+  public random(length?: number): Item<M> | this {
+    const collection = this.clone().shuffle()
+
+    // If not a length was specified
+    if (!length) {
+      return collection.first()
+    }
+
+    return collection.take(length)
+  }
+
   /**
    * Reduces this collection to a value which is the accumulated result of
    * running each model through `iteratee`, where each successive invocation
