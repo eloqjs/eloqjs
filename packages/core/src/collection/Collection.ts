@@ -14,9 +14,11 @@ import {
   isObject,
   isPlainObject,
   isString,
+  resolveValue,
   ValueOf
 } from '../support/Utils'
 import { Element, Item } from '../types/Data'
+import { sortGreaterOrLessThan, sortNullish } from './Sort'
 
 export interface CollectionOptions {
   model?: typeof Model
@@ -674,6 +676,50 @@ export class Collection<M extends Model = Model> {
    */
   public skip(count: number): this {
     return this._createCollection(this.models.slice(count))
+  }
+
+  /**
+   * Sorts this collection's models using a custom algorithm.
+   */
+  public sort(callback: (a: M, b: M) => number): this {
+    this.models.sort(callback)
+
+    return this
+  }
+
+  /**
+   * Sorts this collection's models using a comparator.
+   */
+  public sortBy(
+    comparator:
+      | LiteralUnion<keyof ModelReference<M>, string>
+      | ((model: M) => string | number)
+  ): this {
+    this.models.sort((a, b) => {
+      const valueA = resolveValue(a, comparator)
+      const valueB = resolveValue(b, comparator)
+
+      return (
+        sortNullish(valueA, valueB) || sortGreaterOrLessThan(valueA, valueB)
+      )
+    })
+
+    return this
+  }
+
+  /**
+   * Sorts this collection's models using a comparator, but in the opposite order.
+   */
+  public sortByDesc(
+    comparator:
+      | LiteralUnion<keyof ModelReference<M>, string>
+      | ((model: M) => string | number)
+  ): this {
+    this.sortBy(comparator)
+
+    this.models.reverse()
+
+    return this
   }
 
   /**
