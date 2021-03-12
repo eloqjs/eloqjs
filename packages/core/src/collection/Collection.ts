@@ -198,10 +198,7 @@ export class Collection<M extends Model = Model> {
    * changes to the models inside the clone will also affect the subject.
    */
   public clone(): this {
-    return new (this.constructor as typeof Collection)(
-      this.models,
-      this._options
-    ) as this
+    return this._createCollection(this.models)
   }
 
   /**
