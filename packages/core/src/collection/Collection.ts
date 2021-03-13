@@ -467,6 +467,13 @@ export class Collection<M extends Model = Model> {
   }
 
   /**
+   * Returns an array of primary keys.
+   */
+  public modelKeys(): (string | number | null)[] {
+    return this.models.map((model) => model.$id)
+  }
+
+  /**
    * Returns only the models from the collection with the specified keys.
    */
   public only(keys: (string | number)[]): this {
