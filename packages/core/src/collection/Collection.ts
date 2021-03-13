@@ -467,6 +467,42 @@ export class Collection<M extends Model = Model> {
   }
 
   /**
+   * Returns the [mode value]{@link https://en.wikipedia.org/wiki/Mode_(statistics)} of a given key.
+   */
+  public mode(key: keyof ModelReference<M> | string): number[] | null {
+    const values: { key: number; count: number }[] = []
+    let highestCount = 1
+
+    if (this.isEmpty()) {
+      return null
+    }
+
+    this.models.forEach((model) => {
+      const tempValues = values.filter((value) => {
+        return value.key === model[key as string]
+      })
+
+      if (!tempValues.length) {
+        values.push({
+          key: model[key as string],
+          count: 1
+        })
+      } else {
+        tempValues[0].count += 1
+        const { count } = tempValues[0]
+
+        if (count > highestCount) {
+          highestCount = count
+        }
+      }
+    })
+
+    return values
+      .filter((value) => value.count === highestCount)
+      .map((value) => value.key)
+  }
+
+  /**
    * Returns an array of primary keys.
    */
   public modelKeys(): (string | number | null)[] {
