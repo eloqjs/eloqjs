@@ -893,6 +893,22 @@ export class Collection<M extends Model = Model> {
   }
 
   /**
+   * Breaks a collection into the given number of groups.
+   */
+  public split(size: number): this[] {
+    const modelsPerGroup = Math.round(this.count() / size)
+    const collections = []
+
+    for (let iterator = 0; iterator < size; iterator += 1) {
+      collections.push(
+        this._createCollection(this.models.splice(0, modelsPerGroup))
+      )
+    }
+
+    return collections
+  }
+
+  /**
    * Returns the sum of a property of all models in the collection.
    *
    * @param {string|string[]|Function} key
