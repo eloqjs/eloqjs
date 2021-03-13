@@ -536,6 +536,27 @@ export class Collection<M extends Model = Model> {
   }
 
   /**
+   * May be combined with destructuring to separate models
+   * that pass a given truth test from those that do not.
+   */
+  public partition(callback: (model: M) => boolean): [this, this] {
+    const arrays: [this, this] = [
+      this._createCollection(),
+      this._createCollection()
+    ]
+
+    this.models.forEach((model) => {
+      if (callback(model)) {
+        arrays[0].add(model)
+      } else {
+        arrays[1].add(model)
+      }
+    })
+
+    return arrays
+  }
+
+  /**
    * Returns an array that contains the values for a given key for each model in this collection.
    */
   public pluck<K extends keyof ModelReference<M>>(key: K): ValueOf<M, K>[]
