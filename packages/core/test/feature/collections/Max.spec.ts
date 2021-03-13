@@ -7,13 +7,8 @@ describe('Feature – Collections – Max', () => {
       model: Product
     })
 
-    collection.add([
-      { name: 'Chair', price: 600 },
-      { name: 'Desk', price: 900 },
-      { name: 'Lamp', price: 150 }
-    ])
+    collection.add([{ price: 600 }, { price: 900 }, { price: 150 }])
 
-    const max = collection.max('price')
-    expect(max).toBe(900)
+    expect(collection.max('price')).toBe(900)
   })
 })

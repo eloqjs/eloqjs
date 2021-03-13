@@ -9,8 +9,7 @@ describe('Feature – Collections – Median', () => {
 
     collection1.add([{ price: 1 }, { price: 1 }, { price: 2 }, { price: 4 }])
 
-    const median1 = collection1.median('price')
-    expect(median1).toBe(1.5)
+    expect(collection1.median('price')).toBe(1.5)
 
     const collection2 = new Collection<Product>([], {
       model: Product
@@ -26,7 +25,6 @@ describe('Feature – Collections – Median', () => {
       { price: 9 }
     ])
 
-    const median2 = collection2.median('price')
-    expect(median2).toBe(6)
+    expect(collection2.median('price')).toBe(6)
   })
 })

@@ -7,13 +7,29 @@ describe('Feature – Collections – Min', () => {
       model: Product
     })
 
+    collection.add([{ price: 600 }, { price: 900 }, { price: 150 }])
+
+    expect(collection.min('price')).toBe(150)
+  })
+
+  it('should work with negative values', () => {
+    const collection = new Collection<Product>([], {
+      model: Product
+    })
+
     collection.add([
-      { name: 'Chair', price: 600 },
-      { name: 'Desk', price: 900 },
-      { name: 'Lamp', price: 150 }
+      { price: 1 },
+      { price: 2 },
+      { price: 3 },
+      { price: 4 },
+      { price: 5 },
+      { price: -5 },
+      { price: -4 },
+      { price: -3 },
+      { price: -2 },
+      { price: -1 }
     ])
 
-    const min = collection.min('price')
-    expect(min).toBe(150)
+    expect(collection.min('price')).toBe(-5)
   })
 })
