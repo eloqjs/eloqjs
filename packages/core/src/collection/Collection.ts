@@ -510,6 +510,17 @@ export class Collection<M extends Model = Model> {
   }
 
   /**
+   * Creates a new collection consisting of every n-th model.
+   */
+  public nth(step: number, offset?: number): this {
+    const models = this.models
+      .slice(offset)
+      .filter((_model, index) => index % step === 0)
+
+    return this._createCollection(models)
+  }
+
+  /**
    * Returns only the models from the collection with the specified keys.
    */
   public only(keys: (string | number)[]): this {
