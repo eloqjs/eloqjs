@@ -209,6 +209,20 @@ export class Collection<M extends Model = Model> {
   }
 
   /**
+   * Counts the occurrences of values in this collection.
+   */
+  public countBy(
+    callback: (model: M, index: number) => string
+  ): Record<string, number> {
+    const group = this.groupBy(callback)
+
+    return Object.keys(group).reduce((result, key) => {
+      result[key] = group[key].length
+      return result
+    }, {} as Record<string, number>)
+  }
+
+  /**
    * Iterates through all models, calling a given callback for each one.
    */
   public each(
