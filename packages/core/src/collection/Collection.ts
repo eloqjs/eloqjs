@@ -18,6 +18,7 @@ import {
 } from '../support/Utils'
 import { Element, Item } from '../types/Data'
 import { sortGreaterOrLessThan, sortNullish } from './Sort'
+import { compareValues, Operator } from './Where'
 
 export interface CollectionOptions {
   model?: typeof Model
@@ -968,6 +969,62 @@ export class Collection<M extends Model = Model> {
    */
   public toJSON(): Model[] {
     return this.models
+  }
+
+  /**
+   * Filters the collection by a given key / value pair.
+   */
+  public where<V = unknown>(
+    key: keyof ModelReference<M> | string,
+    value?: V
+  ): this
+
+  /**
+   * Filters the collection by a given key / value pair.
+   */
+  public where<V = unknown>(
+    key: keyof ModelReference<M> | string,
+    operator: Operator,
+    value: V
+  ): this
+
+  /**
+   * Filters the collection by a given key / value pair.
+   */
+  public where<V extends unknown>(
+    key: keyof ModelReference<M> | string,
+    operator?: V | Operator,
+    value?: V
+  ): this {
+    const collection = this.clone()
+
+    let comparisonOperator = operator
+    let comparisonValue = value
+
+    if (operator === undefined || operator === true) {
+      collection.models = collection.models.filter(
+        (model) => model[key as string]
+      )
+    } else if (operator === false) {
+      collection.models = collection.models.filter(
+        (model) => !model[key as string]
+      )
+    } else {
+      if (value === undefined) {
+        comparisonValue = operator as V
+        comparisonOperator = '==='
+      }
+
+      collection.models = this.models.filter((model) => {
+        return compareValues(
+          model[key as string],
+          comparisonValue as V,
+          comparisonOperator as Operator
+        )
+      })
+    }
+
+    return collection
   }
 
   /**
