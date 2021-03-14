@@ -23,16 +23,16 @@ describe('Feature – Collections – Chunk', () => {
 
     expect(chunkedCollections[0]).toBeInstanceOf(Collection)
     assertCollection(chunkedCollections[0], [
-      { id: 1, name: 'Desk', price: 200 },
-      { id: 2, name: 'Chair', price: 100 },
-      { id: 3, name: 'Bookcase', price: 150 }
+      { id: 1, name: 'Desk', price: 200, manufacturer: null },
+      { id: 2, name: 'Chair', price: 100, manufacturer: null },
+      { id: 3, name: 'Bookcase', price: 150, manufacturer: null }
     ])
 
     expect(chunkedCollections[1]).toBeInstanceOf(Collection)
     assertCollection(chunkedCollections[1], [
-      { id: 4, name: 'Table', price: 150 },
-      { id: 5, name: 'Monitor', price: 200 },
-      { id: 6, name: 'Mouse', price: 50 }
+      { id: 4, name: 'Table', price: 150, manufacturer: null },
+      { id: 5, name: 'Monitor', price: 200, manufacturer: null },
+      { id: 6, name: 'Mouse', price: 50, manufacturer: null }
     ])
   })
 })

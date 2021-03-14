@@ -22,15 +22,15 @@ describe('Feature – Collections – GroupBy', () => {
 
     expect(groupedCollections['150']).toBeInstanceOf(Collection)
     assertCollection(groupedCollections['150'], [
-      { id: 2, name: 'Chair', price: 150 },
-      { id: 3, name: 'Bookcase', price: 150 },
-      { id: 4, name: 'Table', price: 150 }
+      { id: 2, name: 'Chair', price: 150, manufacturer: null },
+      { id: 3, name: 'Bookcase', price: 150, manufacturer: null },
+      { id: 4, name: 'Table', price: 150, manufacturer: null }
     ])
 
     expect(groupedCollections['200']).toBeInstanceOf(Collection)
     assertCollection(groupedCollections['200'], [
-      { id: 1, name: 'Desk', price: 200 },
-      { id: 5, name: 'Monitor', price: 200 }
+      { id: 1, name: 'Desk', price: 200, manufacturer: null },
+      { id: 5, name: 'Monitor', price: 200, manufacturer: null }
     ])
   })
 
@@ -55,15 +55,15 @@ describe('Feature – Collections – GroupBy', () => {
 
     expect(groupedCollections['15']).toBeInstanceOf(Collection)
     assertCollection(groupedCollections['15'], [
-      { id: 2, name: 'Chair', price: 150 },
-      { id: 3, name: 'Bookcase', price: 150 },
-      { id: 4, name: 'Table', price: 150 }
+      { id: 2, name: 'Chair', price: 150, manufacturer: null },
+      { id: 3, name: 'Bookcase', price: 150, manufacturer: null },
+      { id: 4, name: 'Table', price: 150, manufacturer: null }
     ])
 
     expect(groupedCollections['20']).toBeInstanceOf(Collection)
     assertCollection(groupedCollections['20'], [
-      { id: 1, name: 'Desk', price: 200 },
-      { id: 5, name: 'Monitor', price: 200 }
+      { id: 1, name: 'Desk', price: 200, manufacturer: null },
+      { id: 5, name: 'Monitor', price: 200, manufacturer: null }
     ])
   })
 
@@ -88,7 +88,7 @@ describe('Feature – Collections – GroupBy', () => {
       expect(Object.keys(groupedCollections)).toEqual(['150', '200', ''])
 
       assertCollection(groupedCollections[''], [
-        { id: 4, name: 'Table', price: null }
+        { id: 4, name: 'Table', price: null, manufacturer: null }
       ])
     }
   )
