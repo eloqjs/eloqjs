@@ -34,6 +34,22 @@ describe('Unit – Collection', () => {
     assertInstanceOf(collection, User)
   })
 
+  it('should be iterable', () => {
+    const collection = new Collection<User>([], {
+      model: User
+    })
+
+    collection.add([{ id: 1 }, { id: 2 }, { id: 3 }, { id: 4 }])
+
+    const models = []
+
+    for (const model of collection) {
+      models.push(model)
+    }
+
+    expect(models).toEqual(collection.models)
+  })
+
   it('should throw an error when trying to instantiate without model type', () => {
     const user = {
       id: 1
