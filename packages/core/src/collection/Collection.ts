@@ -95,6 +95,21 @@ export class Collection<M extends Model = Model> {
     return new modelConstructor(record) as T
   }
 
+  public [Symbol.iterator](): Iterator<M> {
+    let index = -1
+
+    return {
+      next: () => {
+        index += 1
+
+        return {
+          value: this.models[index],
+          done: index >= this.models.length
+        }
+      }
+    }
+  }
+
   /**
    * Add a {@link Model} to this {@link Collection}.
    *
