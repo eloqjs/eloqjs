@@ -2,7 +2,7 @@ import * as Attributes from '../attributes'
 import { Mutator, Mutators } from '../attributes/Contracts'
 import { Collection } from '../collection/Collection'
 import * as Relations from '../relations'
-import { Map } from '../support/Map'
+import { AttrMap } from '../support/AttrMap'
 import { Uid as UidGenerator } from '../support/Uid'
 import {
   assert,
@@ -92,18 +92,21 @@ export class Model {
    * The saved state of attributes.
    */
   public readonly $: ModelReference<this> = {} as ModelReference<this>
+
   /**
    * The collections of the record.
    */
   private readonly _collections: Record<string, Collection<this>> = {}
+
   /**
    * The unmutated attributes of the record.
    */
-  private readonly _attributes: Map<unknown> = new Map<unknown>()
+  private readonly _attributes: AttrMap<unknown> = new AttrMap<unknown>()
+
   /**
    * The unmutated relationships of the record.
    */
-  private readonly _relationships: Map<Relations.Relation> = new Map<Relations.Relation>()
+  private readonly _relationships: AttrMap<Relations.Relation> = new AttrMap<Relations.Relation>()
 
   /**
    * Create a new model instance.
