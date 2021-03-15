@@ -3,6 +3,7 @@ import { Mutator, Mutators } from '../attributes/Contracts'
 import { Collection } from '../collection/Collection'
 import * as Relations from '../relations'
 import { AttrMap } from '../support/AttrMap'
+import { Map } from '../support/Map'
 import { Uid as UidGenerator } from '../support/Uid'
 import {
   assert,
@@ -96,7 +97,9 @@ export class Model {
   /**
    * The collections of the record.
    */
-  private readonly _collections: Record<string, Collection<this>> = {}
+  private readonly _collections: Map<Collection<this>> = new Map<
+    Collection<this>
+  >()
 
   /**
    * The unmutated attributes of the record.
@@ -152,7 +155,7 @@ export class Model {
   }
 
   public get $collections(): Collection<this>[] {
-    return Object.values(this._collections)
+    return Object.values(this._collections.toArray())
   }
 
   /**
@@ -529,7 +532,7 @@ export class Model {
       'Collection is not valid.'
     ])
 
-    this._collections[collection.$uid] = collection
+    this._collections.set(collection.$uid, collection)
   }
 
   /**
@@ -555,7 +558,7 @@ export class Model {
       'Collection is not valid.'
     ])
 
-    delete this._collections[collection.$uid]
+    this._collections.delete(collection.$uid)
   }
 
   /**
