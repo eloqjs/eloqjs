@@ -2,7 +2,9 @@
   "name": "example-nuxt",
   "version": "1.0.0",
   "scripts": {
-    "dev": "nuxt-ts"
+    "nuxt:dev": "nuxt-ts",
+    "nuxt:build": "nuxt-ts build",
+    "nuxt:start": "nuxt-ts start"
   },
   "dependencies": {
     "@eloqjs/api": "0.0.0-development",

@@ -2,7 +2,8 @@
   "name": "example-laravel-lumen",
   "version": "1.0.0",
   "scripts": {
-    "watch": "cross-env NODE_ENV=development ../../node_modules/webpack/bin/webpack.js --progress --hide-modules --config=../../node_modules/laravel-mix/setup/webpack.config.js --watch"
+    "lumen:dev": "cross-env NODE_ENV=development ../../node_modules/webpack/bin/webpack.js --progress --hide-modules --config=../../node_modules/laravel-mix/setup/webpack.config.js",
+    "lumen:watch": "yarn run lumen:dev --watch"
   },
   "dependencies": {
     "@eloqjs/api": "0.0.0-development",
