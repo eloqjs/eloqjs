@@ -19,6 +19,8 @@
     "vue": "^2.6.10"
   },
   "devDependencies": {
+    "browser-sync": "^2.26.14",
+    "browser-sync-webpack-plugin": "2.0.1",
     "vue-template-compiler": "^2.6.10"
   }
 }
