@@ -19,6 +19,7 @@
   ],
   "scripts": {
     "build": "yarn run clean && yarn run compile",
+    "watch": "yarn run compile --watch",
     "clean": "rimraf -rf ./dist",
     "compile": "tsc -p tsconfig.build.json",
     "lint": "eslint --ext .ts,.js,.json .",

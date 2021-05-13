@@ -9,6 +9,7 @@
   "scripts": {
     "clean": "lerna run clean",
     "build": "lerna run build",
+    "watch": "lerna run watch --stream --no-sort",
     "publish": "lerna publish",
     "test": "lerna run test"
   },
