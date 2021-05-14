@@ -23,10 +23,19 @@
 </template>
 
 <script>
+import debounce from 'debounce'
+
 export default {
   props: [
     'task'
   ],
+
+  data () {
+    return {
+      isDirty: false,
+      wasChanged: false
+    }
+  },
 
   computed: {
     deleteButtonText () {
@@ -36,7 +45,47 @@ export default {
     saveButtonText () {
       return this.task.saving ? 'Saving...' : 'Save'
     }
-  }
+  },
+
+  methods: {
+    notifyChange( message, color) {
+      const h = this.$createElement
+
+      this.$notify({
+        title: `[${this.task.$id}] - ${this.task.$.name}`,
+        message: h('i', { style: `color: ${color}` }, message),
+        duration: 2000
+      })
+    },
+  },
+
+  created() {
+    // when the component has been created,
+    // we replaced the original method with a debounced version
+    this.notifyChange = debounce(this.notifyChange, 500)
+  },
+
+  watch: {
+    task: {
+      handler: function (task) {
+        if (task.$isDirty() && !this.isDirty) {
+          this.isDirty = true
+          this.notifyChange('The task is now dirty', 'orange')
+        }
+
+        if (task.$isClean() && this.isDirty) {
+          this.isDirty = false
+          this.notifyChange('The task is now clean', 'green')
+        }
+
+        if (task.$wasChanged() && !this.wasChanged) {
+          this.wasChanged = true
+          this.notifyChange('The task was changed', 'cyan')
+        }
+      },
+      deep: true
+    }
+  },
 }
 </script>
 
