@@ -10,6 +10,7 @@
     "@eloqjs/core": "0.0.0-development",
     "axios": "^0.21.1",
     "cross-env": "^5.2.0",
+    "debounce": "^1.2.1",
     "element-theme-default": "^1.4.13",
     "element-ui": "^2.11.1",
     "laravel-mix": "4.1.2",
