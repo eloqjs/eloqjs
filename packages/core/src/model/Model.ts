@@ -693,6 +693,52 @@ export class Model {
   }
 
   /**
+   * Sync the reference attributes with the current.
+   */
+  public $syncReference(): this {
+    this._attributes.syncReference()
+    this._relationships.syncReference()
+
+    return this
+  }
+
+  /**
+   * Sync a single reference attribute with its current value.
+   */
+  public $syncReferenceAttribute(attribute: string): this {
+    this._attributes.syncReferenceAttribute(attribute)
+
+    return this
+  }
+
+  /**
+   * Sync multiple reference attribute with their current values.
+   */
+  public $syncReferenceAttributes(attributes: string | string[]): this {
+    this._attributes.syncReferenceAttributes(attributes)
+
+    return this
+  }
+
+  /**
+   * Sync a single reference relationship with its current value.
+   */
+  public $syncReferenceRelationship(relationship: string): this {
+    this._relationships.syncReferenceAttribute(relationship)
+
+    return this
+  }
+
+  /**
+   * Sync multiple reference relationship with their current values.
+   */
+  public $syncReferenceRelationships(relationships: string | string[]): this {
+    this._relationships.syncReferenceAttributes(relationships)
+
+    return this
+  }
+
+  /**
    * Sync the changed attributes.
    */
   public $syncChanges(): this {

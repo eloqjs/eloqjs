@@ -19,6 +19,31 @@ export class AttrMap<T> extends Map<T> {
   }
 
   /**
+   * Sync the reference attributes with the current.
+   */
+  public syncReference(): void {
+    this.reference = this.data
+  }
+
+  /**
+   * Sync a single reference attribute with its current value.
+   */
+  public syncReferenceAttribute(attribute: string): void {
+    return this.syncReferenceAttributes(attribute)
+  }
+
+  /**
+   * Sync multiple reference attribute with their current values.
+   */
+  public syncReferenceAttributes(attributes: string | string[]): void {
+    attributes = forceArray(attributes)
+
+    for (const attribute of attributes) {
+      this.reference[attribute] = this.data[attribute]
+    }
+  }
+
+  /**
    * Sync the changed attributes.
    */
   public syncChanges(): void {
