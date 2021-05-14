@@ -666,6 +666,24 @@ export class Model {
   }
 
   /**
+   * Adds this model to all registered collections.
+   */
+  public $addToAllCollections(): void {
+    for (const collection of this.$collections) {
+      collection.add(this)
+    }
+  }
+
+  /**
+   * Removes this model from all registered collections.
+   */
+  public $removeFromAllCollections(): void {
+    for (const collection of this.$collections) {
+      collection.remove(this)
+    }
+  }
+
+  /**
    * Determine if the model or any of the given attribute(s) have been modified.
    */
   public $isDirty(attributes: string | string[]): boolean {
