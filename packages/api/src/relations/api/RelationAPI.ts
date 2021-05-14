@@ -5,6 +5,7 @@ import { FilterValue } from '../../query/specs/FilterSpec'
 import { OptionValue } from '../../query/specs/OptionSpec'
 import { PluralPromise } from '../../response/PluralPromise'
 import { Response } from '../../response/Response'
+import { SavePromise } from '../../response/SavePromise'
 import { SingularPromise } from '../../response/SingularPromise'
 import { isModel } from '../../support/Utils'
 
@@ -202,7 +203,7 @@ export class RelationAPI<
   /**
    * Create a record of this relation and attach it to the parent {@link Model}.
    */
-  public attach(record: M | Element): SingularPromise<M> {
+  public attach(record: M | Element): SavePromise<M> {
     let relationship = record as M
 
     if (!isModel(record)) {
@@ -223,7 +224,7 @@ export class RelationAPI<
   /**
    * Update a record of this relation and sync it to the parent {@link Model}.
    */
-  public sync(record: M | Element): SingularPromise<M> {
+  public sync(record: M | Element): SavePromise<M> {
     let relationship = record as M
 
     if (!isModel(record)) {

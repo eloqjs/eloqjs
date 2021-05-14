@@ -5,8 +5,9 @@ import { HttpClient } from '../../httpclient/HttpClient'
 import { FilterValue } from '../../query/specs/FilterSpec'
 import { OptionValue } from '../../query/specs/OptionSpec'
 import { PluralPromise } from '../../response/PluralPromise'
+import { SavePromise } from '../../response/SavePromise'
+import { SaveResponse } from '../../response/SaveResponse'
 import { SingularPromise } from '../../response/SingularPromise'
-import { SingularResponse } from '../../response/SingularResponse'
 import { assert, isModel } from '../../support/Utils'
 
 export class ModelAPIStatic<M extends typeof Model = typeof Model> {
@@ -170,9 +171,7 @@ export class ModelAPIStatic<M extends typeof Model = typeof Model> {
    * Save or update a record.
    * If the record doesn't have an ID, a new record will be created, otherwise the record will be updated.
    */
-  public save(
-    record: InstanceType<M> | Element
-  ): SingularPromise<InstanceType<M>> {
+  public save(record: InstanceType<M> | Element): SavePromise<InstanceType<M>> {
     let model = this._instantiate(record)
     model = this.model.executeMutationHooks('beforeSave', model)
 
@@ -192,7 +191,7 @@ export class ModelAPIStatic<M extends typeof Model = typeof Model> {
   /**
    * Create a record.
    */
-  private _create(model: InstanceType<M>): SingularPromise<InstanceType<M>> {
+  private _create(model: InstanceType<M>): SavePromise<InstanceType<M>> {
     model = this.model.executeMutationHooks('beforeCreate', model)
 
     const record = this._serialize(model, { isPayload: true })
@@ -206,11 +205,7 @@ export class ModelAPIStatic<M extends typeof Model = typeof Model> {
       .getHttpClient()
       .post(this.model.getResource(), record)
       .then((response) => {
-        // Sync model changes and references
-        model.$syncChanges()
-        model.$syncReference()
-
-        return new SingularResponse<InstanceType<M>>(response, this.model, [
+        return new SaveResponse<InstanceType<M>>(response, model, [
           'afterCreate',
           'afterSave'
         ])
@@ -220,7 +215,7 @@ export class ModelAPIStatic<M extends typeof Model = typeof Model> {
   /**
    * Update a record.
    */
-  private _update(model: InstanceType<M>): SingularPromise<InstanceType<M>> {
+  private _update(model: InstanceType<M>): SavePromise<InstanceType<M>> {
     model = this.model.executeMutationHooks('beforeUpdate', model)
 
     // Get ID before serialize, otherwise the ID may not be available.
@@ -231,11 +226,7 @@ export class ModelAPIStatic<M extends typeof Model = typeof Model> {
       .getHttpClient()
       .patch(this.model.getResource() + '/' + id, record)
       .then((response) => {
-        // Sync model changes and references
-        model.$syncChanges()
-        model.$syncReference()
-
-        return new SingularResponse<InstanceType<M>>(response, this.model, [
+        return new SaveResponse<InstanceType<M>>(response, model, [
           'afterUpdate',
           'afterSave'
         ])

@@ -3,6 +3,7 @@ import { Collection, Element, Item, Model, Relations } from '@eloqjs/core'
 import { FilterValue } from '../query/specs/FilterSpec'
 import { OptionValue } from '../query/specs/OptionSpec'
 import { PluralPromise } from '../response/PluralPromise'
+import { SavePromise } from '../response/SavePromise'
 import { SingularPromise } from '../response/SingularPromise'
 import { RelationAPI } from './api'
 
@@ -143,7 +144,7 @@ export class Relation<
   /**
    * Create a record of this relation and attach it to the parent {@link Model}.
    */
-  public attach(record: M | Element): SingularPromise<M> {
+  public attach(record: M | Element): SavePromise<M> {
     return this.api().attach(record)
   }
 
@@ -157,7 +158,7 @@ export class Relation<
   /**
    * Update a record of this relation and sync it to the parent {@link Model}.
    */
-  public sync(record: M | Element): SingularPromise<M> {
+  public sync(record: M | Element): SavePromise<M> {
     return this.api().sync(record)
   }
 }

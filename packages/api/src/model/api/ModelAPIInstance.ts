@@ -2,8 +2,8 @@ import { Item, Model } from '@eloqjs/core'
 
 import { Builder } from '../../builder/Builder'
 import { HttpClient } from '../../httpclient'
-import { SingularPromise } from '../../response/SingularPromise'
-import { SingularResponse } from '../../response/SingularResponse'
+import { SavePromise } from '../../response/SavePromise'
+import { SaveResponse } from '../../response/SaveResponse'
 import { assert, isEmpty, isNull } from '../../support/Utils'
 import { ModelAPIStatic } from './ModelAPIStatic'
 
@@ -59,8 +59,8 @@ export class ModelAPIInstance<M extends Model = Model> {
    * Save or update a record.
    * If the record doesn't have an ID, a new record will be created, otherwise the record will be updated.
    */
-  public save(): SingularPromise<M> {
-    return this._api().save(this.model) as SingularPromise<M>
+  public save(): SavePromise<M> {
+    return this._api().save(this.model) as SavePromise<M>
   }
 
   /**
@@ -71,13 +71,17 @@ export class ModelAPIInstance<M extends Model = Model> {
 
     assert(!isNull(id), ['Cannot delete a model with no ID.'])
 
-    return this._api().delete(id)
+    return this._api()
+      .delete(id)
+      .then(() => {
+        this.model.$self().executeMutationHooks('afterDelete', this.model)
+      })
   }
 
   /**
    * Create a related record and attach it to this {@link Model}.
    */
-  public attach<R extends Model>(relationship: R): SingularPromise<R> {
+  public attach<R extends Model>(relationship: R): SavePromise<R> {
     this._hasRelation(relationship)
 
     const selfId = this.model.$id
@@ -100,7 +104,7 @@ export class ModelAPIInstance<M extends Model = Model> {
         record
       )
       .then((response) => {
-        return new SingularResponse<R>(response, relationship.$self(), [
+        return new SaveResponse<R>(response, relationship, [
           'afterCreate',
           'afterSave'
         ])
@@ -133,7 +137,7 @@ export class ModelAPIInstance<M extends Model = Model> {
   /**
    * Update a related record and sync it to this {@link Model}.
    */
-  public sync<R extends Model>(relationship: R): SingularPromise<R> {
+  public sync<R extends Model>(relationship: R): SavePromise<R> {
     this._hasRelation(relationship)
 
     const selfId = this.model.$id
@@ -160,7 +164,7 @@ export class ModelAPIInstance<M extends Model = Model> {
         record
       )
       .then((response) => {
-        return new SingularResponse<R>(response, relationship.$self(), [
+        return new SaveResponse<R>(response, relationship, [
           'afterUpdate',
           'afterSave'
         ])
@@ -170,7 +174,7 @@ export class ModelAPIInstance<M extends Model = Model> {
   /**
    * Create a related record for the provided {@link Model}.
    */
-  public for<T extends Model>(model: T): SingularPromise<M> {
+  public for<T extends Model>(model: T): SavePromise<M> {
     return model.$api().attach(this.model)
   }
 

@@ -5,6 +5,7 @@ import { Builder } from '../builder/Builder'
 import { FilterValue } from '../query/specs/FilterSpec'
 import { OptionValue } from '../query/specs/OptionSpec'
 import { PluralPromise } from '../response/PluralPromise'
+import { SavePromise } from '../response/SavePromise'
 import { SingularPromise } from '../response/SingularPromise'
 import { assert } from '../support/Utils'
 import { ModelAPIInstance, ModelAPIStatic } from './api'
@@ -45,7 +46,7 @@ export class Model extends BaseModel {
   public static save<M extends typeof Model>(
     this: M,
     record: InstanceType<M> | Element
-  ): SingularPromise<InstanceType<M>> {
+  ): SavePromise<InstanceType<M>> {
     return this._api().save(record)
   }
 
@@ -224,7 +225,7 @@ export class Model extends BaseModel {
    * Save or update the record.
    * If the record doesn't have an ID, a new record will be created, otherwise the record will be updated.
    */
-  public $save(): SingularPromise<this> {
+  public $save(): SavePromise<this> {
     return this._$api().save()
   }
 
@@ -238,7 +239,7 @@ export class Model extends BaseModel {
   /**
    * Create a related record and attach it to this {@link Model}.
    */
-  public $attach<R extends Model>(relationship: R): SingularPromise<R> {
+  public $attach<R extends Model>(relationship: R): SavePromise<R> {
     return this._$api().attach(relationship)
   }
 
@@ -252,14 +253,14 @@ export class Model extends BaseModel {
   /**
    * Update a related record and sync it to this {@link Model}.
    */
-  public $sync<R extends Model>(relationship: R): SingularPromise<R> {
+  public $sync<R extends Model>(relationship: R): SavePromise<R> {
     return this._$api().sync(relationship)
   }
 
   /**
    * Create a related record for the provided {@link Model}.
    */
-  public $for<T extends Model>(model: T): SingularPromise<this> {
+  public $for<T extends Model>(model: T): SavePromise<this> {
     return this._$api().for(model)
   }
 
