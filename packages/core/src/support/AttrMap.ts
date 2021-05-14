@@ -22,7 +22,7 @@ export class AttrMap<T> extends Map<T> {
    * Sync the reference attributes with the current.
    */
   public syncReference(): void {
-    this.reference = this.data
+    this.reference = { ...this.data }
   }
 
   /**
