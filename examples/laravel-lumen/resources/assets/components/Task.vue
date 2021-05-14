@@ -10,13 +10,13 @@
           type="success"
           icon="el-icon-check"
           size="small"
-          @click="$emit('update')">{{ saveButtonText }}
+          @click="onUpdate">{{ saveButtonText }}
       </el-button>
       <el-button
           type="danger"
           icon="el-icon-delete"
           size="small"
-          @click="$emit('delete')">{{ deleteButtonText }}
+          @click="onDelete">{{ deleteButtonText }}
       </el-button>
     </td>
   </tr>
@@ -57,6 +57,22 @@ export default {
         duration: 2000
       })
     },
+
+    async onDelete () {
+      await this.task.$delete().then(() => {
+        this.$message.success('Task deleted successfully')
+      }).catch((error) => {
+        this.$message.error('Failed to delete task!')
+      })
+    },
+
+    async onUpdate () {
+      await this.task.$save().then(() => {
+        this.$message.success('Task saved successfully')
+      }).catch((error) => {
+        this.$message.error('Failed to save task!')
+      })
+    }
   },
 
   created() {

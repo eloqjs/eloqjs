@@ -47,118 +47,54 @@
       <hr> -->
 
       <!-- PROGRESS -->
-      <el-progress :percentage="progress" :status="status"></el-progress>
+      <el-progress :percentage="tasks.progress" :status="status"></el-progress>
     </template>
   </div>
 </template>
 
 <script>
+import TaskCollection from '../collections/TaskCollection'
 import Task from '../models/Task'
-import _ from 'lodash'
 
 export default {
   data () {
-    return {
-      tasks: [],
-      // _tasks: [],
-      // _task: new Task().$toJson(),
-      task: new Task()
-    }
+    const tasks = new TaskCollection()
+    const task = new Task({}, tasks) // <-- Register the collection
+
+    return { tasks, task }
   },
 
   async created () {
-    this.tasks = await Task.all().then((response) => {
+    // TODO: Should update the registered collection automatically.
+    const tasks = await Task.all().then((response) => {
       this.$message.success('Fetched!')
-      return response.data
+      return response.data.toJSON()
     })
+
+    this.tasks.add(tasks)
   },
 
   computed: {
-    progress() {
-      const completed = _.sum(this.tasks.map((task) => task.$.done))
-
-      if (_.isEmpty(this.tasks)) {
-        return 0
-      }
-
-      return _.round((completed / this.tasks.length) * 100)
-    },
-
     status () {
-      if (this.progress === 100) {
+      if (this.tasks.progress === 100) {
         return 'success'
       }
     },
 
     createButtonText () {
       return this.task.saving ? 'Creating...' : 'Create'
-    },
-
-    taskCollection() {
-      return this.tasks
     }
-
-    /*task: {
-      get: function () {
-        const task = this._task || {}
-        return new Task(task)
-      },
-      set: function (record) {
-        if (record instanceof Task) {
-          record = record.$toJson()
-        }
-
-        this._task = record
-      }
-    },*/
-
-    /*tasks: {
-      get: function () {
-        console.log('get', this._tasks)
-        const tasks = this._tasks || []
-        return this.$collect(tasks)
-      },
-      set: function (tasks) {
-        this._tasks = tasks
-        console.log('set', this._tasks)
-      }
-    }*/
   },
 
   methods: {
     async onCreate () {
-      const task = await this.task.$save().then((response) => {
-        this.task = new Task()
+      await this.task.$save().then((response) => {
+        this.task = new Task({}, this.tasks)
         this.$message.success('Task created successfully')
         return response.data
       }).catch((error) => {
         this.$message.error('Failed to create task!')
       })
-
-      this.tasks.push(task)
-    },
-    async onDelete (task) {
-      const index = this.tasks.findIndex((t) => t.id === task.id)
-
-      await task.$delete().then(() => {
-        this.$message.success('Task deleted successfully')
-        this.$delete(this.tasks, index)
-      }).catch((error) => {
-        this.$message.error('Failed to delete task!')
-      })
-    },
-
-    async onUpdate (task) {
-      const index = this.tasks.findIndex((t) => t.id === task.id)
-
-      const updatedTask = await task.$save().then((response) => {
-        this.$message.success('Task saved successfully')
-        return response.data
-      }).catch((error) => {
-        this.$message.error('Failed to save task!')
-      })
-
-      this.$set(this.tasks, index, updatedTask)
     }
   }
 }
