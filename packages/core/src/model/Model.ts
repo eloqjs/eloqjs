@@ -85,6 +85,16 @@ export class Model {
   private static _lastHookId: number = 0
 
   /**
+   * Determines if the model is in saving state.
+   */
+  public $saving: boolean = false
+
+  /**
+   * Determines if the model is in deleting state.
+   */
+  public $deleting: boolean = false
+
+  /**
    * The unique ID for the model.
    */
   public readonly $uid!: string
@@ -884,6 +894,13 @@ export class Model {
   }
 }
 
+Model.on('beforeSave', (model) => {
+  if (model) {
+    // Update saving state
+    model.$saving = true
+  }
+})
+
 Model.on('afterSave', (model) => {
   if (model) {
     // We need to sync changes before references
@@ -892,11 +909,24 @@ Model.on('afterSave', (model) => {
 
     // Automatically add to all registered collections.
     model.$addToAllCollections()
+
+    // Update saving state
+    model.$saving = false
+  }
+})
+
+Model.on('beforeDelete', (model) => {
+  if (model) {
+    // Update deleting state
+    model.$deleting = true
   }
 })
 
 Model.on('afterDelete', (model) => {
   if (model) {
     model.$removeFromAllCollections()
+
+    // Update deleting state
+    model.$deleting = false
   }
 })
