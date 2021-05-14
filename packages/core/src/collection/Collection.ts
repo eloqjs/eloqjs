@@ -587,6 +587,13 @@ export class Collection<M extends Model = Model> {
    */
   public pluck<K extends keyof ModelReference<M>>(
     key: K | string
+  ): ValueOf<M, K>[] | unknown[]
+
+  /**
+   * Returns an array that contains the values for a given key for each model in this collection.
+   */
+  public pluck<K extends keyof ModelReference<M>>(
+    key: K | string
   ): ValueOf<M, K>[] | unknown[] {
     return this.models.map((model) => model[key as K])
   }
@@ -881,8 +888,14 @@ export class Collection<M extends Model = Model> {
       | ((model: M) => string | number)
   ): this {
     this.models.sort((a, b) => {
-      const valueA = resolveValue(a, comparator)
-      const valueB = resolveValue(b, comparator)
+      const valueA = resolveValue(
+        a,
+        comparator as string | ((model: M) => string | number)
+      )
+      const valueB = resolveValue(
+        b,
+        comparator as string | ((model: M) => string | number)
+      )
 
       return (
         sortNullish(valueA, valueB) || sortGreaterOrLessThan(valueA, valueB)
