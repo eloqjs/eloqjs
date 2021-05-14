@@ -582,15 +582,24 @@ export class Model {
       const field = fields[key]
       const value = attributes[key]
 
+      // Define the getters and setters of attributes and relationships
       switch (true) {
         default:
         case field instanceof Attributes.Type: {
-          this._defineAttribute(<Attributes.Type>field, key, value)
+          if (!(key in this)) {
+            this._defineAttribute(<Attributes.Type>field, key)
+          }
+
+          this[key] = value ?? this._attributes.get(key)
+
           break
         }
-        case field instanceof Attributes.Relation: {
-          fillRelation &&
-            this._defineRelation(<Attributes.Relation>field, key, value)
+        case field instanceof Attributes.Relation && fillRelation: {
+          if (!(key in this)) {
+            this._defineRelation(<Attributes.Relation>field, key)
+          }
+
+          this[key] = value ?? this._relationships.get(key)
         }
       }
     }
@@ -805,13 +814,8 @@ export class Model {
    *
    * @param field - The type of attribute field.
    * @param key - The key of the attribute.
-   * @param value - The value of the attribute.
    */
-  private _defineAttribute(
-    field: Attributes.Type,
-    key: string,
-    value: unknown
-  ) {
+  private _defineAttribute(field: Attributes.Type, key: string) {
     const _attributes = this._attributes
 
     // Create a new field for the attribute.
@@ -843,9 +847,6 @@ export class Model {
         assert(false, ["The saved state of a property can't be overridden."])
       }
     })
-
-    // Set the value to the field of the attribute.
-    this[key] = value
   }
 
   /**
@@ -853,13 +854,8 @@ export class Model {
    *
    * @param field - The type of attribute field.
    * @param key - The key of the attribute.
-   * @param value - The value of the attribute.
    */
-  private _defineRelation(
-    field: Attributes.Relation,
-    key: string,
-    value: Element | Element[]
-  ) {
+  private _defineRelation(field: Attributes.Relation, key: string) {
     // Create a new field for the attribute.
     Object.defineProperty(this, key, {
       // Get the attribute, then apply the field mutation.
@@ -876,8 +872,5 @@ export class Model {
         this._relationships.set(key, newValue)
       }
     })
-
-    // Set the value to the field of the attribute.
-    this[key] = value
   }
 }
