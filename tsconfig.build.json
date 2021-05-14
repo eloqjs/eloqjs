@@ -1,12 +1,12 @@
 {
   "compilerOptions": {
-    "module": "CommonJS",
-    "target": "ES6",
+    "module": "ES2020",
+    "target": "ESNext",
     "declaration": true,
     "sourceMap": false,
-    "noEmitOnError": true
+    "noEmitOnError": true,
+    "moduleResolution": "Node"
   },
-
   "exclude": [
     "node_modules",
     "dist",

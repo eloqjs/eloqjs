@@ -7,7 +7,6 @@
       "@eloqjs/*": ["packages/*/src", "!packages/collection/src"]
     },
     "strict": true,
-    "moduleResolution": "node",
     "esModuleInterop": true,
     "skipLibCheck": true,
     "importHelpers": true,
