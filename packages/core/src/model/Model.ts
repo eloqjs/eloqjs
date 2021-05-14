@@ -621,7 +621,7 @@ export class Model {
       switch (true) {
         default:
         case field instanceof Attributes.Type: {
-          if (_option.isPatch && !this._attributes.isModified(key)) {
+          if (_option.isPatch && this._attributes.isClean(key)) {
             continue
           }
 
@@ -635,7 +635,7 @@ export class Model {
           break
         }
         case field instanceof Attributes.Relation: {
-          if (_option.isPatch && !this._relationships.isModified(key)) {
+          if (_option.isPatch && this._relationships.isClean(key)) {
             continue
           }
 
@@ -663,6 +663,43 @@ export class Model {
    */
   public $toJson(model?: Model, options: ModelOptions = {}): Element {
     return (model ?? this).$serialize(options)
+  }
+
+  /**
+   * Determine if the model or any of the given attribute(s) have been modified.
+   */
+  public $isDirty(attributes: string | string[]): boolean {
+    return (
+      this._attributes.isDirty(attributes) ||
+      this._relationships.isDirty(attributes)
+    )
+  }
+
+  /**
+   * Determine if the model and all the given attribute(s) have remained the same.
+   */
+  public $isClean(attributes: string | string[]): boolean {
+    return !this.$isDirty(attributes)
+  }
+
+  /**
+   * Determine if the model or any of the given attribute(s) have been modified.
+   */
+  public $wasChanged(attributes: string | string[]): boolean {
+    return (
+      this._attributes.wasChanged(attributes) ||
+      this._relationships.wasChanged(attributes)
+    )
+  }
+
+  /**
+   * Sync the changed attributes.
+   */
+  public $syncChanges(): this {
+    this._attributes.syncChanges()
+    this._relationships.syncChanges()
+
+    return this
   }
 
   /**
