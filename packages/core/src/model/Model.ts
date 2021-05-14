@@ -603,8 +603,6 @@ export class Model {
         }
       }
     }
-
-    this._generateUid()
   }
 
   /**
@@ -805,15 +803,15 @@ export class Model {
    * Generate an unique ID for the model.
    */
   private _generateUid(): void {
-    // If the model's ID is not available, attempt to use the current UID or generate a new one.
-    let id = this.$id ?? this.$uid ?? UidGenerator.make('model')
+    // If the model's UID is not available, generate a new one.
+    let uid = this.$uid ?? UidGenerator.make('model')
 
-    // Force ID to be an string.
-    id = String(id)
+    // Force UID to be an string.
+    uid = String(uid)
 
     // Define the $uid property.
     Object.defineProperty(this, '$uid', {
-      value: id,
+      value: uid,
       enumerable: false,
       configurable: true,
       writable: false
