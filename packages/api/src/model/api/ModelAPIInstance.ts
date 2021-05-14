@@ -67,15 +67,7 @@ export class ModelAPIInstance<M extends Model = Model> {
    * Delete a record.
    */
   public delete(): Promise<void> {
-    const id = this.model.$id
-
-    assert(!isNull(id), ['Cannot delete a model with no ID.'])
-
-    return this._api()
-      .delete(id)
-      .then(() => {
-        this.model.$self().executeMutationHooks('afterDelete', this.model)
-      })
+    return this._api().delete(this.model)
   }
 
   /**

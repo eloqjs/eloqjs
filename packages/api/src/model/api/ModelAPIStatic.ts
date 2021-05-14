@@ -8,7 +8,13 @@ import { PluralPromise } from '../../response/PluralPromise'
 import { SavePromise } from '../../response/SavePromise'
 import { SaveResponse } from '../../response/SaveResponse'
 import { SingularPromise } from '../../response/SingularPromise'
-import { assert, isModel } from '../../support/Utils'
+import {
+  assert,
+  isModel,
+  isNull,
+  isNumber,
+  isString
+} from '../../support/Utils'
 
 export class ModelAPIStatic<M extends typeof Model = typeof Model> {
   /**
@@ -178,14 +184,35 @@ export class ModelAPIStatic<M extends typeof Model = typeof Model> {
     return this.model.hasId(model) ? this._update(model) : this._create(model)
   }
 
+  public delete(record: InstanceType<M> | Element): Promise<void>
+
+  public delete(id: string | number): Promise<void>
+
   /**
    * Delete a record.
    */
-  public delete(id: string | number): Promise<void> {
+  public delete(
+    record: InstanceType<M> | Element | string | number
+  ): Promise<void> {
+    // If an ID was passed, assign it to model's primary key
+    if (isString(record) || isNumber(record)) {
+      record = { [this.model.primaryKey]: record }
+    }
+
+    const model = this._instantiate(record)
+    this.model.executeMutationHooks('beforeDelete', model)
+
+    // Get ID before serialize, otherwise the ID may not be available.
+    const id = model.$id
+
+    assert(!isNull(id), ['Cannot delete a model with no ID.'])
+
     return this._self()
       .getHttpClient()
       .delete(this.model.getResource() + '/' + id)
-      .then(() => {}) // eslint-disable-line @typescript-eslint/no-empty-function
+      .then(() => {
+        this.model.executeMutationHooks('afterDelete', model)
+      }) // eslint-disable-line @typescript-eslint/no-empty-function
   }
 
   /**
