@@ -719,6 +719,17 @@ export class Model {
     )
   }
 
+  public $getDirty(): Record<string, any> {
+    return { ...this._attributes.getDirty(), ...this._relationships.getDirty() }
+  }
+
+  public $getChanges(): Record<string, any> {
+    return {
+      ...this._attributes.getChanges(),
+      ...this._relationships.getChanges()
+    }
+  }
+
   /**
    * Sync the reference attributes with the current.
    */
