@@ -8,7 +8,7 @@
         <el-input v-model="task.name" ref="name" autofocus placeholder="Name"></el-input>
       </el-form-item>
       <el-form-item>
-        <el-button type="primary" @click="onCreate" :loading="task.saving">
+        <el-button type="primary" @click="onCreate" :loading="task.$saving">
           {{ createButtonText }}
         </el-button>
       </el-form-item>
@@ -27,9 +27,7 @@
         <tbody>
         <task v-for="task in tasks"
               :key="task.id"
-              :task="task"
-              @update="onUpdate(task)"
-              @delete="onDelete(task)">
+              :task="task">
         </task>
         </tbody>
       </table>
@@ -82,7 +80,7 @@ export default {
     },
 
     createButtonText () {
-      return this.task.saving ? 'Creating...' : 'Create'
+      return this.task.$saving ? 'Creating...' : 'Create'
     }
   },
 

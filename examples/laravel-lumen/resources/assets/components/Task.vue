@@ -10,13 +10,15 @@
           type="success"
           icon="el-icon-check"
           size="small"
-          @click="onUpdate">{{ saveButtonText }}
+          @click="onUpdate"
+          :loading="task.$saving">{{ saveButtonText }}
       </el-button>
       <el-button
           type="danger"
           icon="el-icon-delete"
           size="small"
-          @click="onDelete">{{ deleteButtonText }}
+          @click="onDelete"
+          :loading="task.$deleting">{{ deleteButtonText }}
       </el-button>
     </td>
   </tr>
@@ -39,11 +41,11 @@ export default {
 
   computed: {
     deleteButtonText () {
-      return this.task.deleting ? 'Deleting...' : 'Delete'
+      return this.task.$deleting ? 'Deleting...' : 'Delete'
     },
 
     saveButtonText () {
-      return this.task.saving ? 'Saving...' : 'Save'
+      return this.task.$saving ? 'Saving...' : 'Save'
     }
   },
 
