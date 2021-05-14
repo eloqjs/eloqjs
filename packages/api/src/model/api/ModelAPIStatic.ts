@@ -206,6 +206,10 @@ export class ModelAPIStatic<M extends typeof Model = typeof Model> {
       .getHttpClient()
       .post(this.model.getResource(), record)
       .then((response) => {
+        // Sync model changes and references
+        model.$syncChanges()
+        model.$syncReference()
+
         return new SingularResponse<InstanceType<M>>(response, this.model, [
           'afterCreate',
           'afterSave'
@@ -227,6 +231,10 @@ export class ModelAPIStatic<M extends typeof Model = typeof Model> {
       .getHttpClient()
       .patch(this.model.getResource() + '/' + id, record)
       .then((response) => {
+        // Sync model changes and references
+        model.$syncChanges()
+        model.$syncReference()
+
         return new SingularResponse<InstanceType<M>>(response, this.model, [
           'afterUpdate',
           'afterSave'
