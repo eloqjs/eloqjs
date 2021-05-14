@@ -885,3 +885,20 @@ export class Model {
     })
   }
 }
+
+Model.on('afterSave', (model) => {
+  if (model) {
+    // We need to sync changes before references
+    model.$syncChanges()
+    model.$syncReference()
+
+    // Automatically add to all registered collections.
+    model.$addToAllCollections()
+  }
+})
+
+Model.on('afterDelete', (model) => {
+  if (model) {
+    model.$removeFromAllCollections()
+  }
+})
