@@ -1,4 +1,4 @@
-import { Model } from '@eloqjs/core'
+import { Collection, Model } from '@eloqjs/core'
 
 import { HttpClient } from '../httpclient/HttpClient'
 import { Query } from '../query/Query'
@@ -61,8 +61,12 @@ export class Builder<M extends Model = Model, S extends boolean = false> {
   /**
    * Get a collection of records.
    */
-  public get(): S extends true ? SingularPromise<M> : PluralPromise<M>
-  public get(): SingularPromise<M> | PluralPromise<M> {
+  public get<C extends Collection<M>>(
+    collection?: C
+  ): S extends true ? SingularPromise<M> : PluralPromise<M>
+  public get<C extends Collection<M>>(
+    collection?: C
+  ): SingularPromise<M> | PluralPromise<M, C> {
     if (this._forceSingular) {
       return this._httpClient
         .get(this._query.toString())
@@ -71,7 +75,9 @@ export class Builder<M extends Model = Model, S extends boolean = false> {
 
     return this._httpClient
       .get(this._query.toString())
-      .then((response) => new PluralResponse<M>(response, this.model))
+      .then(
+        (response) => new PluralResponse<M, C>(response, this.model, collection)
+      )
   }
 
   /**

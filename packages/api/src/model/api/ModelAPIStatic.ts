@@ -1,4 +1,4 @@
-import { Element, Model, ModelOptions } from '@eloqjs/core'
+import { Collection, Element, Model, ModelOptions } from '@eloqjs/core'
 
 import { Builder } from '../../builder/Builder'
 import { HttpClient } from '../../httpclient/HttpClient'
@@ -58,8 +58,10 @@ export class ModelAPIStatic<M extends typeof Model = typeof Model> {
   /**
    * Get a collection of records.
    */
-  public all(): PluralPromise<InstanceType<M>> {
-    return this._query().get() as PluralPromise<InstanceType<M>>
+  public all<C extends Collection<InstanceType<M>>>(
+    collection?: C
+  ): PluralPromise<InstanceType<M>, C> {
+    return this._query().get(collection) as PluralPromise<InstanceType<M>, C>
   }
 
   /**

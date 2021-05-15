@@ -6,18 +6,24 @@ import { Response } from './Response'
 
 export type PluralData = Element[] | null | undefined
 
-export class PluralResponse<M extends Model = Model> extends Response {
-  public readonly data: Collection<M>
+export class PluralResponse<
+  M extends Model = Model,
+  C extends Collection<M> = Collection<M>
+> extends Response {
+  public readonly data: C
 
   public constructor(
     httpClientResponse: HttpClientResponse,
-    model: typeof Model
+    model: typeof Model,
+    collection?: C
   ) {
     super(httpClientResponse, model)
 
-    this.data = new Collection<M>([], {
-      model: this.model
-    })
+    this.data =
+      collection ||
+      (new Collection<M>([], {
+        model: this.model
+      }) as C)
 
     this._resolveData()
   }

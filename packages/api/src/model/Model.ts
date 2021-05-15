@@ -1,4 +1,4 @@
-import { Element, Item, Model as BaseModel } from '@eloqjs/core'
+import { Collection, Element, Item, Model as BaseModel } from '@eloqjs/core'
 
 import * as Attributes from '../attributes'
 import { Builder } from '../builder/Builder'
@@ -14,10 +14,11 @@ export class Model extends BaseModel {
   /**
    * Get a collection of records.
    */
-  public static all<M extends typeof Model>(
-    this: M
-  ): PluralPromise<InstanceType<M>> {
-    return this._api().all()
+  public static all<
+    M extends typeof Model,
+    C extends Collection<InstanceType<M>>
+  >(this: M, collection?: C): PluralPromise<InstanceType<M>, C> {
+    return this._api().all(collection)
   }
 
   /**
