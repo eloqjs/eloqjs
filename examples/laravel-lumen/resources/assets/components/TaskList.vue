@@ -63,13 +63,9 @@ export default {
   },
 
   async created () {
-    // TODO: Should update the registered collection automatically.
-    const tasks = await Task.all().then((response) => {
+    await Task.all(this.tasks).then(() => {
       this.$message.success('Fetched!')
-      return response.data.toJSON()
     })
-
-    this.tasks.add(tasks)
   },
 
   computed: {
