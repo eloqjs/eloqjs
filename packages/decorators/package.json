@@ -9,8 +9,16 @@
   "repository": "github:eloqjs/eloqjs",
   "license": "MIT",
   "author": "João Pedro Antunes Silva",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "require": "./dist/index.js",
+      "import": "./dist/index.es.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "main": "./dist/index.js",
+  "module": "./dist/index.es.js",
+  "types": "./dist/index.d.ts",
   "files": [
     "dist"
   ],
