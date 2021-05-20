@@ -1,5 +1,5 @@
 export { Attribute } from './Attribute'
-export { Mutator, Mutators } from './Contracts'
+export type { Mutator, Mutators } from './Contracts'
 export { HasMany } from './relations/HasMany'
 export { HasOne } from './relations/HasOne'
 export { Relation } from './relations/Relation'

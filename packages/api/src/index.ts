@@ -27,25 +27,27 @@ export { RelationAPI } from './relations/api'
 /**
  * HTTP Client
  */
-export {
-  AxiosHttpClient,
-  AxiosHttpClientPromise,
-  AxiosHttpClientResponse,
+export type {
   HttpClient,
   HttpClientPromise,
   HttpClientResponse,
   Thenable
 } from './httpclient'
+export {
+  AxiosHttpClient,
+  AxiosHttpClientPromise,
+  AxiosHttpClientResponse
+} from './httpclient'
 
 /**
  * Contracts
  */
-export { Config } from './contracts/Config'
+export type { Config } from './contracts/Config'
 
 /**
  * Plugin
  */
-export { Options, Plugin, PluginComponents, use } from './plugins/use'
+export type { Options, Plugin, PluginComponents, use } from './plugins/use'
 
 /**
  * ELOQJS API (Default)
