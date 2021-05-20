@@ -1,17 +1,14 @@
 {
   "name": "@eloqjs/core",
   "version": "0.0.0-development",
-  "repository": "github:eloqjs/eloqjs",
   "keywords": [
     "eloqjs",
     "eloquent",
     "orm"
   ],
-  "author": "João Pedro Antunes Silva",
+  "repository": "github:eloqjs/eloqjs",
   "license": "MIT",
-  "publishConfig": {
-    "access": "public"
-  },
+  "author": "João Pedro Antunes Silva",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "files": [
@@ -21,7 +18,7 @@
     "build": "yarn run clean && yarn run compile",
     "watch": "yarn run compile --watch",
     "clean": "rimraf -rf ./dist",
-    "compile": "tsc -p tsconfig.build.json",
+    "compile": "siroc build",
     "lint": "eslint --ext .ts,.js,.json .",
     "lint:fix": "yarn lint --fix",
     "test": "jest",
@@ -30,5 +27,8 @@
   },
   "dependencies": {
     "type-fest": "^0.21.2"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }
