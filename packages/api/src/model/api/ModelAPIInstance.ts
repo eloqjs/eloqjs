@@ -82,6 +82,9 @@ export class ModelAPIInstance<M extends Model = Model> {
       'Cannot attach a related model to a parent that has no ID.'
     ])
 
+    relationship.$self().executeMutationHooks('beforeSave', relationship)
+    relationship.$self().executeMutationHooks('beforeCreate', relationship)
+
     const record = relationship.$serialize({
       isPayload: true
     })
@@ -96,10 +99,30 @@ export class ModelAPIInstance<M extends Model = Model> {
         record
       )
       .then((response) => {
-        return new SaveResponse<R>(response, relationship, [
-          'afterCreate',
-          'afterSave'
-        ])
+        const saveResponse = new SaveResponse(response, relationship)
+
+        relationship
+          .$self()
+          .executeMutationHooks('afterCreateSuccess', relationship)
+        relationship
+          .$self()
+          .executeMutationHooks('afterSaveSuccess', relationship)
+
+        return saveResponse
+      })
+      .catch((error) => {
+        relationship
+          .$self()
+          .executeMutationHooks('afterCreateFailure', relationship)
+        relationship
+          .$self()
+          .executeMutationHooks('afterSaveFailure', relationship)
+
+        return Promise.reject(error)
+      })
+      .finally(() => {
+        relationship.$self().executeMutationHooks('afterCreate', relationship)
+        relationship.$self().executeMutationHooks('afterSave', relationship)
       })
   }
 
@@ -115,6 +138,8 @@ export class ModelAPIInstance<M extends Model = Model> {
       'Cannot detach a related model from a parent that has no ID.'
     ])
 
+    relationship.$self().executeMutationHooks('beforeDelete', relationship)
+
     const relationId = relationship.$id
 
     assert(!isNull(relationId), ['Cannot detach a related model with no ID.'])
@@ -123,7 +148,21 @@ export class ModelAPIInstance<M extends Model = Model> {
       .delete(
         `${this.model.$resource}/${selfId}/${relationship.$resource}/${relationId}`
       )
-      .then(() => {}) // eslint-disable-line @typescript-eslint/no-empty-function
+      .then(() => {
+        relationship
+          .$self()
+          .executeMutationHooks('afterDeleteSuccess', relationship)
+      })
+      .catch((error) => {
+        relationship
+          .$self()
+          .executeMutationHooks('afterDeleteFailure', relationship)
+
+        return Promise.reject(error)
+      })
+      .finally(() => {
+        relationship.$self().executeMutationHooks('afterDelete', relationship)
+      })
   }
 
   /**
@@ -137,6 +176,9 @@ export class ModelAPIInstance<M extends Model = Model> {
     assert(!isNull(selfId), [
       'Cannot sync a related model to a parent that has no ID.'
     ])
+
+    relationship.$self().executeMutationHooks('beforeSave', relationship)
+    relationship.$self().executeMutationHooks('beforeUpdate', relationship)
 
     // Get ID before serialize, otherwise the ID may not be available.
     const relationId = relationship.$id
@@ -156,10 +198,30 @@ export class ModelAPIInstance<M extends Model = Model> {
         record
       )
       .then((response) => {
-        return new SaveResponse<R>(response, relationship, [
-          'afterUpdate',
-          'afterSave'
-        ])
+        const saveResponse = new SaveResponse(response, relationship)
+
+        relationship
+          .$self()
+          .executeMutationHooks('afterUpdateSuccess', relationship)
+        relationship
+          .$self()
+          .executeMutationHooks('afterSaveSuccess', relationship)
+
+        return saveResponse
+      })
+      .catch((error) => {
+        relationship
+          .$self()
+          .executeMutationHooks('afterUpdateSuccess', relationship)
+        relationship
+          .$self()
+          .executeMutationHooks('afterSaveFailure', relationship)
+
+        return Promise.reject(error)
+      })
+      .finally(() => {
+        relationship.$self().executeMutationHooks('afterUpdate', relationship)
+        relationship.$self().executeMutationHooks('afterSave', relationship)
       })
   }
 

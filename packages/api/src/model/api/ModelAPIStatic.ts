@@ -180,10 +180,29 @@ export class ModelAPIStatic<M extends typeof Model = typeof Model> {
    * If the record doesn't have an ID, a new record will be created, otherwise the record will be updated.
    */
   public save(record: InstanceType<M> | Element): SavePromise<InstanceType<M>> {
-    let model = this._instantiate(record)
-    model = this.model.executeMutationHooks('beforeSave', model)
+    const model = this._instantiate(record)
+    this.model.executeMutationHooks('beforeSave', model)
 
-    return this.model.hasId(model) ? this._update(model) : this._create(model)
+    const response = this.model.hasId(model)
+      ? this._update(model)
+      : this._create(model)
+
+    response
+      .then((response) => {
+        this.model.executeMutationHooks('afterSaveSuccess', model)
+
+        return response
+      })
+      .catch((error) => {
+        this.model.executeMutationHooks('afterSaveFailure', model)
+
+        return Promise.reject(error)
+      })
+      .finally(() => {
+        this.model.executeMutationHooks('afterSave', model)
+      })
+
+    return response
   }
 
   public delete(record: InstanceType<M> | Element): Promise<void>
@@ -213,15 +232,22 @@ export class ModelAPIStatic<M extends typeof Model = typeof Model> {
       .getHttpClient()
       .delete(this.model.getResource() + '/' + id)
       .then(() => {
+        this.model.executeMutationHooks('afterDeleteSuccess', model)
+      })
+      .catch((error) => {
+        // TODO: Error hook
+        return Promise.reject(error)
+      })
+      .finally(() => {
         this.model.executeMutationHooks('afterDelete', model)
-      }) // eslint-disable-line @typescript-eslint/no-empty-function
+      })
   }
 
   /**
    * Create a record.
    */
   private _create(model: InstanceType<M>): SavePromise<InstanceType<M>> {
-    model = this.model.executeMutationHooks('beforeCreate', model)
+    this.model.executeMutationHooks('beforeCreate', model)
 
     const record = this._serialize(model, { isPayload: true })
     const isEmpty = Object.keys(record).length === 0
@@ -234,10 +260,19 @@ export class ModelAPIStatic<M extends typeof Model = typeof Model> {
       .getHttpClient()
       .post(this.model.getResource(), record)
       .then((response) => {
-        return new SaveResponse<InstanceType<M>>(response, model, [
-          'afterCreate',
-          'afterSave'
-        ])
+        const saveResponse = new SaveResponse<InstanceType<M>>(response, model)
+
+        this.model.executeMutationHooks('afterCreateSuccess', model)
+
+        return saveResponse
+      })
+      .catch((error) => {
+        this.model.executeMutationHooks('afterCreateFailure', model)
+
+        return Promise.reject(error)
+      })
+      .finally(() => {
+        this.model.executeMutationHooks('afterCreate', model)
       })
   }
 
@@ -245,7 +280,7 @@ export class ModelAPIStatic<M extends typeof Model = typeof Model> {
    * Update a record.
    */
   private _update(model: InstanceType<M>): SavePromise<InstanceType<M>> {
-    model = this.model.executeMutationHooks('beforeUpdate', model)
+    this.model.executeMutationHooks('beforeUpdate', model)
 
     // Get ID before serialize, otherwise the ID may not be available.
     const id = model.$id
@@ -255,10 +290,19 @@ export class ModelAPIStatic<M extends typeof Model = typeof Model> {
       .getHttpClient()
       .patch(this.model.getResource() + '/' + id, record)
       .then((response) => {
-        return new SaveResponse<InstanceType<M>>(response, model, [
-          'afterUpdate',
-          'afterSave'
-        ])
+        const saveResponse = new SaveResponse<InstanceType<M>>(response, model)
+
+        this.model.executeMutationHooks('afterUpdateSuccess', model)
+
+        return saveResponse
+      })
+      .catch((error) => {
+        this.model.executeMutationHooks('afterUpdateFailure', model)
+
+        return Promise.reject(error)
+      })
+      .finally(() => {
+        this.model.executeMutationHooks('afterUpdate', model)
       })
   }
 
