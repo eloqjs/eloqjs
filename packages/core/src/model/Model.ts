@@ -901,7 +901,7 @@ Model.on('beforeSave', (model) => {
   }
 })
 
-Model.on('afterSave', (model) => {
+Model.on('afterSaveSuccess', (model) => {
   if (model) {
     // We need to sync changes before references
     model.$syncChanges()
@@ -909,7 +909,11 @@ Model.on('afterSave', (model) => {
 
     // Automatically add to all registered collections.
     model.$addToAllCollections()
+  }
+})
 
+Model.on('afterSave', (model) => {
+  if (model) {
     // Update saving state
     model.$saving = false
   }
@@ -922,10 +926,15 @@ Model.on('beforeDelete', (model) => {
   }
 })
 
+Model.on('afterDeleteSuccess', (model) => {
+  if (model) {
+    // Automatically remove from all registered collections.
+    model.$removeFromAllCollections()
+  }
+})
+
 Model.on('afterDelete', (model) => {
   if (model) {
-    model.$removeFromAllCollections()
-
     // Update deleting state
     model.$deleting = false
   }
