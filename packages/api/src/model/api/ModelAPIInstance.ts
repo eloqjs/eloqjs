@@ -1,9 +1,9 @@
 import { Item, Model } from '@eloqjs/core'
 
 import { Builder } from '../../builder/Builder'
-import { HttpClient } from '../../httpclient'
+import { HttpClientResponse } from '../../httpclient'
+import { Operation } from '../../operation/Operation'
 import { SavePromise } from '../../response/SavePromise'
-import { SaveResponse } from '../../response/SaveResponse'
 import { assert, isEmpty, isNull } from '../../support/Utils'
 import { ModelAPIStatic } from './ModelAPIStatic'
 
@@ -18,6 +18,10 @@ export class ModelAPIInstance<M extends Model = Model> {
    */
   public constructor(model: M) {
     this.model = model
+  }
+
+  private static _operation<T extends Model>(model: T): Operation<T> {
+    return new Operation(model)
   }
 
   /**
@@ -66,7 +70,7 @@ export class ModelAPIInstance<M extends Model = Model> {
   /**
    * Delete a record.
    */
-  public delete(): Promise<void> {
+  public delete(): Promise<HttpClientResponse | null> {
     return this._api().delete(this.model)
   }
 
@@ -82,9 +86,6 @@ export class ModelAPIInstance<M extends Model = Model> {
       'Cannot attach a related model to a parent that has no ID.'
     ])
 
-    relationship.$self().executeMutationHooks('beforeSave', relationship)
-    relationship.$self().executeMutationHooks('beforeCreate', relationship)
-
     const record = relationship.$serialize({
       isPayload: true
     })
@@ -93,43 +94,19 @@ export class ModelAPIInstance<M extends Model = Model> {
       'Cannot create a new record, because no data was provided.'
     ])
 
-    return this._getHttpClient()
-      .post(
-        `${this.model.$resource}/${selfId}/${relationship.$resource}`,
-        record
-      )
-      .then((response) => {
-        const saveResponse = new SaveResponse(response, relationship)
-
-        relationship
-          .$self()
-          .executeMutationHooks('afterCreateSuccess', relationship)
-        relationship
-          .$self()
-          .executeMutationHooks('afterSaveSuccess', relationship)
-
-        return saveResponse
-      })
-      .catch((error) => {
-        relationship
-          .$self()
-          .executeMutationHooks('afterCreateFailure', relationship)
-        relationship
-          .$self()
-          .executeMutationHooks('afterSaveFailure', relationship)
-
-        return Promise.reject(error)
-      })
-      .finally(() => {
-        relationship.$self().executeMutationHooks('afterCreate', relationship)
-        relationship.$self().executeMutationHooks('afterSave', relationship)
+    return this._self()
+      ._operation(relationship)
+      .create({
+        url: `${this.model.$resource}/${selfId}/${relationship.$resource}`
       })
   }
 
   /**
    * Delete a related record and detach it from this {@link Model}.
    */
-  public detach<R extends Model>(relationship: R): Promise<void> {
+  public detach<R extends Model>(
+    relationship: R
+  ): Promise<HttpClientResponse | null> {
     this._hasRelation(relationship)
 
     const selfId = this.model.$id
@@ -138,30 +115,14 @@ export class ModelAPIInstance<M extends Model = Model> {
       'Cannot detach a related model from a parent that has no ID.'
     ])
 
-    relationship.$self().executeMutationHooks('beforeDelete', relationship)
-
     const relationId = relationship.$id
 
     assert(!isNull(relationId), ['Cannot detach a related model with no ID.'])
 
-    return this._getHttpClient()
-      .delete(
-        `${this.model.$resource}/${selfId}/${relationship.$resource}/${relationId}`
-      )
-      .then(() => {
-        relationship
-          .$self()
-          .executeMutationHooks('afterDeleteSuccess', relationship)
-      })
-      .catch((error) => {
-        relationship
-          .$self()
-          .executeMutationHooks('afterDeleteFailure', relationship)
-
-        return Promise.reject(error)
-      })
-      .finally(() => {
-        relationship.$self().executeMutationHooks('afterDelete', relationship)
+    return this._self()
+      ._operation(relationship)
+      .delete({
+        url: `${this.model.$resource}/${selfId}/${relationship.$resource}/${relationId}`
       })
   }
 
@@ -177,51 +138,15 @@ export class ModelAPIInstance<M extends Model = Model> {
       'Cannot sync a related model to a parent that has no ID.'
     ])
 
-    relationship.$self().executeMutationHooks('beforeSave', relationship)
-    relationship.$self().executeMutationHooks('beforeUpdate', relationship)
-
     // Get ID before serialize, otherwise the ID may not be available.
     const relationId = relationship.$id
 
     assert(!isNull(relationId), ['Cannot sync a related model with no ID.'])
 
-    const record = relationship.$serialize({
-      isPayload: true,
-      // TODO: Add option to disable `isPatch` when creating the model instance.
-      // For now we can't deduce modified fields of relationships, so setting this to `false`.
-      isPatch: false
-    })
-
-    return this._getHttpClient()
-      .patch(
-        `${this.model.$resource}/${selfId}/${relationship.$resource}/${relationId}`,
-        record
-      )
-      .then((response) => {
-        const saveResponse = new SaveResponse(response, relationship)
-
-        relationship
-          .$self()
-          .executeMutationHooks('afterUpdateSuccess', relationship)
-        relationship
-          .$self()
-          .executeMutationHooks('afterSaveSuccess', relationship)
-
-        return saveResponse
-      })
-      .catch((error) => {
-        relationship
-          .$self()
-          .executeMutationHooks('afterUpdateSuccess', relationship)
-        relationship
-          .$self()
-          .executeMutationHooks('afterSaveFailure', relationship)
-
-        return Promise.reject(error)
-      })
-      .finally(() => {
-        relationship.$self().executeMutationHooks('afterUpdate', relationship)
-        relationship.$self().executeMutationHooks('afterSave', relationship)
+    return this._self()
+      ._operation(relationship)
+      .update({
+        url: `${this.model.$resource}/${selfId}/${relationship.$resource}/${relationId}`
       })
   }
 
@@ -236,10 +161,6 @@ export class ModelAPIInstance<M extends Model = Model> {
     return new ModelAPIStatic(this.model.$self())
   }
 
-  private _getHttpClient(): HttpClient {
-    return (this._api().constructor as typeof ModelAPIStatic).getHttpClient()
-  }
-
   private _hasRelation<R extends Model>(relationship: R): void {
     const modelName = this.model.$self().name
     const relationName = relationship.$self().name
@@ -247,5 +168,9 @@ export class ModelAPIInstance<M extends Model = Model> {
     assert(this.model.$self().hasRelation(relationship.$self()), [
       `The ${modelName} model does not have a relationship with the ${relationName} model.`
     ])
+  }
+
+  private _self(): typeof ModelAPIInstance {
+    return this.constructor as typeof ModelAPIInstance
   }
 }
