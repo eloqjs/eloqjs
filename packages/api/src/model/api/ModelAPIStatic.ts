@@ -2,7 +2,6 @@ import { HttpClientResponse } from '@eloqjs/api'
 import { Collection, Element, Model } from '@eloqjs/core'
 
 import { Builder } from '../../builder/Builder'
-import { HttpClient } from '../../httpclient/HttpClient'
 import { Operation } from '../../operation/Operation'
 import { FilterValue } from '../../query/specs/FilterSpec'
 import { OptionValue } from '../../query/specs/OptionSpec'
@@ -19,11 +18,6 @@ import {
 
 export class ModelAPIStatic<M extends typeof Model = typeof Model> {
   /**
-   * The http client of the model.
-   */
-  private static _httpClient: HttpClient | null
-
-  /**
    * The type of the model.
    */
   protected model: M
@@ -33,27 +27,6 @@ export class ModelAPIStatic<M extends typeof Model = typeof Model> {
    */
   public constructor(model: M) {
     this.model = model
-  }
-
-  /**
-   * Allows you to get the current HTTP client (AxiosHttpClient by default), e.g. to alter its configuration.
-   */
-  public static getHttpClient(): HttpClient {
-    assert(!!this._httpClient, [
-      'The http client instance is not registered. Please register the http client instance to the model.'
-    ])
-
-    return this._httpClient
-  }
-
-  /**
-   * Allows you to use any HTTP client library, as long as you write a wrapper for it that implements the interfaces
-   * {@link HttpClient}, {@link HttpClientPromise} and {@link HttpClientResponse}.
-   *
-   * @param httpClient
-   */
-  public static setHttpClient(httpClient: HttpClient): void {
-    this._httpClient = httpClient
   }
 
   /**
