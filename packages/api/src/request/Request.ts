@@ -58,9 +58,9 @@ export class Request<M extends typeof Model = typeof Model> {
   public request(
     config: RequestOptions | (() => RequestOptions),
     onRequest: OnRequestCallback,
-    onSuccess: OnRequestSuccessCallback,
-    onFailure: OnRequestFailureCallback,
-    onFinish: onRequestFinishCallback
+    onSuccess?: OnRequestSuccessCallback,
+    onFailure?: OnRequestFailureCallback,
+    onFinish?: onRequestFinishCallback
   ): Promise<HttpClientResponse | null> {
     return new Promise(
       (resolve, reject): Promise<void> => {
@@ -72,7 +72,10 @@ export class Request<M extends typeof Model = typeof Model> {
               case RequestOperation.REQUEST_SKIP:
                 return
               case RequestOperation.REQUEST_REDUNDANT: // Skip, but consider it a success.
-                onSuccess(null)
+                if (isFunction(onSuccess)) {
+                  onSuccess(null)
+                }
+
                 resolve(null)
                 return
             }
@@ -83,11 +86,17 @@ export class Request<M extends typeof Model = typeof Model> {
 
             return this._resolveRequest(config)
               .then((response): void => {
-                onSuccess(response)
+                if (isFunction(onSuccess)) {
+                  onSuccess(response)
+                }
+
                 resolve(response)
               })
               .catch((error) => {
-                onFailure(error, error.response)
+                if (isFunction(onFailure)) {
+                  onFailure(error, error.response)
+                }
+
                 reject(error)
               })
               .catch(reject) // For errors that occur in `onFailure`.
