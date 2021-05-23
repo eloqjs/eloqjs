@@ -22,7 +22,7 @@
         <thead>
         <th width="50"></th>
         <th>Name</th>
-        <th width="200"></th>
+        <th width="300"></th>
         </thead>
         <tbody>
         <task v-for="task in tasks"
