@@ -1,27 +1,16 @@
-import { Collection, Element, Model, ModelOptions } from '@eloqjs/core'
+import { Collection, Element, Model } from '@eloqjs/core'
 
 import { Builder } from '../../builder/Builder'
-import { HttpClient } from '../../httpclient/HttpClient'
+import { Operation } from '../../operation/Operation'
 import { FilterValue } from '../../query/specs/FilterSpec'
 import { OptionValue } from '../../query/specs/OptionSpec'
+import { DeletePromise } from '../../response/DeletePromise'
 import { PluralPromise } from '../../response/PluralPromise'
 import { SavePromise } from '../../response/SavePromise'
-import { SaveResponse } from '../../response/SaveResponse'
 import { SingularPromise } from '../../response/SingularPromise'
-import {
-  assert,
-  isModel,
-  isNull,
-  isNumber,
-  isString
-} from '../../support/Utils'
+import { isModel, isNumber, isString } from '../../support/Utils'
 
 export class ModelAPIStatic<M extends typeof Model = typeof Model> {
-  /**
-   * The http client of the model.
-   */
-  private static _httpClient: HttpClient | null
-
   /**
    * The type of the model.
    */
@@ -32,27 +21,6 @@ export class ModelAPIStatic<M extends typeof Model = typeof Model> {
    */
   public constructor(model: M) {
     this.model = model
-  }
-
-  /**
-   * Allows you to get the current HTTP client (AxiosHttpClient by default), e.g. to alter its configuration.
-   */
-  public static getHttpClient(): HttpClient {
-    assert(!!this._httpClient, [
-      'The http client instance is not registered. Please register the http client instance to the model.'
-    ])
-
-    return this._httpClient
-  }
-
-  /**
-   * Allows you to use any HTTP client library, as long as you write a wrapper for it that implements the interfaces
-   * {@link HttpClient}, {@link HttpClientPromise} and {@link HttpClientResponse}.
-   *
-   * @param httpClient
-   */
-  public static setHttpClient(httpClient: HttpClient): void {
-    this._httpClient = httpClient
   }
 
   /**
@@ -181,129 +149,32 @@ export class ModelAPIStatic<M extends typeof Model = typeof Model> {
    */
   public save(record: InstanceType<M> | Element): SavePromise<InstanceType<M>> {
     const model = this._instantiate(record)
-    this.model.executeMutationHooks('beforeSave', model)
 
-    const response = this.model.hasId(model)
-      ? this._update(model)
-      : this._create(model)
-
-    response
-      .then((response) => {
-        this.model.executeMutationHooks('afterSaveSuccess', model)
-
-        return response
-      })
-      .catch((error) => {
-        this.model.executeMutationHooks('afterSaveFailure', model)
-
-        return Promise.reject(error)
-      })
-      .finally(() => {
-        this.model.executeMutationHooks('afterSave', model)
-      })
-
-    return response
+    return this._operation(model).save()
   }
 
-  public delete(record: InstanceType<M> | Element): Promise<void>
+  public delete(record: InstanceType<M> | Element): DeletePromise
 
-  public delete(id: string | number): Promise<void>
+  public delete(id: string | number): DeletePromise
 
   /**
    * Delete a record.
    */
   public delete(
     record: InstanceType<M> | Element | string | number
-  ): Promise<void> {
+  ): DeletePromise {
     // If an ID was passed, assign it to model's primary key
     if (isString(record) || isNumber(record)) {
       record = { [this.model.primaryKey]: record }
     }
 
     const model = this._instantiate(record)
-    this.model.executeMutationHooks('beforeDelete', model)
 
-    // Get ID before serialize, otherwise the ID may not be available.
-    const id = model.$id
-
-    assert(!isNull(id), ['Cannot delete a model with no ID.'])
-
-    return this._self()
-      .getHttpClient()
-      .delete(this.model.getResource() + '/' + id)
-      .then(() => {
-        this.model.executeMutationHooks('afterDeleteSuccess', model)
-      })
-      .catch((error) => {
-        // TODO: Error hook
-        return Promise.reject(error)
-      })
-      .finally(() => {
-        this.model.executeMutationHooks('afterDelete', model)
-      })
+    return this._operation(model).delete()
   }
 
-  /**
-   * Create a record.
-   */
-  private _create(model: InstanceType<M>): SavePromise<InstanceType<M>> {
-    this.model.executeMutationHooks('beforeCreate', model)
-
-    const record = this._serialize(model, { isPayload: true })
-    const isEmpty = Object.keys(record).length === 0
-
-    assert(!isEmpty, [
-      'Cannot create a new record, because no data was provided.'
-    ])
-
-    return this._self()
-      .getHttpClient()
-      .post(this.model.getResource(), record)
-      .then((response) => {
-        const saveResponse = new SaveResponse<InstanceType<M>>(response, model)
-
-        this.model.executeMutationHooks('afterCreateSuccess', model)
-
-        return saveResponse
-      })
-      .catch((error) => {
-        this.model.executeMutationHooks('afterCreateFailure', model)
-
-        return Promise.reject(error)
-      })
-      .finally(() => {
-        this.model.executeMutationHooks('afterCreate', model)
-      })
-  }
-
-  /**
-   * Update a record.
-   */
-  private _update(model: InstanceType<M>): SavePromise<InstanceType<M>> {
-    this.model.executeMutationHooks('beforeUpdate', model)
-
-    // Get ID before serialize, otherwise the ID may not be available.
-    const id = model.$id
-    const record = this._serialize(model, { isPayload: true, isPatch: true })
-
-    return this._self()
-      .getHttpClient()
-      .patch(this.model.getResource() + '/' + id, record)
-      .then((response) => {
-        const saveResponse = new SaveResponse<InstanceType<M>>(response, model)
-
-        this.model.executeMutationHooks('afterUpdateSuccess', model)
-
-        return saveResponse
-      })
-      .catch((error) => {
-        this.model.executeMutationHooks('afterUpdateFailure', model)
-
-        return Promise.reject(error)
-      })
-      .finally(() => {
-        this.model.executeMutationHooks('afterUpdate', model)
-      })
+  private _operation(model: InstanceType<M>): Operation<InstanceType<M>> {
+    return new Operation(model)
   }
 
   /**
@@ -314,20 +185,9 @@ export class ModelAPIStatic<M extends typeof Model = typeof Model> {
     return new Builder(this.model)
   }
 
-  private _self(): typeof ModelAPIStatic {
-    return this.constructor as typeof ModelAPIStatic
-  }
-
   private _instantiate(record: InstanceType<M> | Element): InstanceType<M> {
     return isModel(record)
       ? record
       : (new this.model(record) as InstanceType<M>)
-  }
-
-  private _serialize(
-    model: InstanceType<M>,
-    options: ModelOptions = {}
-  ): Element {
-    return model.$serialize(options)
   }
 }

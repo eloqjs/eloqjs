@@ -6,9 +6,6 @@ import * as API from '../../model/api'
 import { assert } from '../../support/Utils'
 
 export function Model(model: typeof BaseModel, config: Config): void {
-  // @ts-ignore
-  API.ModelAPIStatic._httpClient = config.httpClient || null
-
   model.httpClient = config.httpClient || null
 
   /**
@@ -29,8 +26,6 @@ export function Model(model: typeof BaseModel, config: Config): void {
    * @param httpClient
    */
   model.setHttpClient = function (httpClient: HttpClient): void {
-    // @ts-ignore
-    API.ModelAPIStatic._httpClient = httpClient
     this.httpClient = httpClient
   }
 

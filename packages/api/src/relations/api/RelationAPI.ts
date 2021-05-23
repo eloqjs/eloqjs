@@ -3,8 +3,9 @@ import { Collection, Element, Item, Model } from '@eloqjs/core'
 import { Builder } from '../../builder/Builder'
 import { FilterValue } from '../../query/specs/FilterSpec'
 import { OptionValue } from '../../query/specs/OptionSpec'
+import { DeletePromise } from '../../response/DeletePromise'
 import { PluralPromise } from '../../response/PluralPromise'
-import { Response } from '../../response/Response'
+import { ResponsePromise } from '../../response/ResponsePromise'
 import { SavePromise } from '../../response/SavePromise'
 import { SingularPromise } from '../../response/SingularPromise'
 import { isModel } from '../../support/Utils'
@@ -59,7 +60,7 @@ export class RelationAPI<
   /**
    * Get a collection of records.
    */
-  public get(): Promise<Response> {
+  public get(): ResponsePromise {
     const response = this.query.get()
 
     this._updateRelation(response, this.forceSingular)
@@ -216,7 +217,7 @@ export class RelationAPI<
   /**
    * Delete a record of this relation and detach it from the parent {@link Model}.
    */
-  public detach(id: string | number): Promise<void> {
+  public detach(id: string | number): DeletePromise {
     const relationship = new this.model({ [this.model.primaryKey]: id }) as M
     return this.belongsToModel.$api().detach(relationship)
   }
@@ -235,10 +236,14 @@ export class RelationAPI<
   }
 
   private _updateRelation(
-    response: Promise<Response>,
+    response: ResponsePromise,
     isSingular: boolean
   ): void {
     response.then((response) => {
+      if (!response) {
+        return
+      }
+
       const isArray = Array.isArray(this.belongsToModel[this.key])
       this.belongsToModel[this.key] =
         isArray && isSingular

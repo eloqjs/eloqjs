@@ -4,6 +4,7 @@ import * as Attributes from '../attributes'
 import { Builder } from '../builder/Builder'
 import { FilterValue } from '../query/specs/FilterSpec'
 import { OptionValue } from '../query/specs/OptionSpec'
+import { DeletePromise } from '../response/DeletePromise'
 import { PluralPromise } from '../response/PluralPromise'
 import { SavePromise } from '../response/SavePromise'
 import { SingularPromise } from '../response/SingularPromise'
@@ -173,7 +174,7 @@ export class Model extends BaseModel {
   /**
    * Delete a record.
    */
-  public static delete(id: string | number): Promise<void> {
+  public static delete(id: string | number): DeletePromise {
     return this._api().delete(id)
   }
 
@@ -233,7 +234,7 @@ export class Model extends BaseModel {
   /**
    * Delete the record.
    */
-  public $delete(): Promise<void> {
+  public $delete(): DeletePromise {
     return this._$api().delete()
   }
 
@@ -247,7 +248,7 @@ export class Model extends BaseModel {
   /**
    * Delete a related record and detach it from this {@link Model}.
    */
-  public $detach<R extends Model>(relationship: R): Promise<void> {
+  public $detach<R extends Model>(relationship: R): DeletePromise {
     return this._$api().detach(relationship)
   }
 

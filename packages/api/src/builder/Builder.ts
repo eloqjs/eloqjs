@@ -1,6 +1,5 @@
 import { Collection, Model } from '@eloqjs/core'
 
-import { HttpClient } from '../httpclient/HttpClient'
 import { Query } from '../query/Query'
 import {
   AppendSpec,
@@ -12,6 +11,9 @@ import {
 } from '../query/specs'
 import { FilterSpec, FilterValue } from '../query/specs/FilterSpec'
 import { OptionSpec, OptionValue } from '../query/specs/OptionSpec'
+import { Request } from '../request/Request'
+import { RequestMethod } from '../request/RequestMethod'
+import { RequestOperation } from '../request/RequestOperation'
 import { PluralPromise } from '../response/PluralPromise'
 import { PluralResponse } from '../response/PluralResponse'
 import { SingularPromise } from '../response/SingularPromise'
@@ -30,7 +32,7 @@ export class Builder<M extends Model = Model, S extends boolean = false> {
 
   private _query: Query
 
-  private readonly _httpClient: HttpClient
+  private readonly _requestHandler: Request
 
   /**
    * If true, then this function will in all cases return a {@link SingularResponse}. This is used by HasOne relation,
@@ -52,10 +54,8 @@ export class Builder<M extends Model = Model, S extends boolean = false> {
     const relatedResource = belongsToModel ? model.getResource() : undefined
 
     this._query = new Query(resource, relatedResource, belongsToModelId)
-    this._httpClient = model.getHttpClient()
+    this._requestHandler = new Request(this.model)
     this._forceSingular = !!forceSingular
-
-    assert(!!this._httpClient, ['You must define the HTTP Client'])
   }
 
   /**
@@ -63,30 +63,64 @@ export class Builder<M extends Model = Model, S extends boolean = false> {
    */
   public get<C extends Collection<M>>(
     collection?: C
-  ): S extends true ? SingularPromise<M> : PluralPromise<M>
+  ): S extends true ? SingularPromise<M> : PluralPromise<M, C>
   public get<C extends Collection<M>>(
     collection?: C
   ): SingularPromise<M> | PluralPromise<M, C> {
     if (this._forceSingular) {
-      return this._httpClient
-        .get(this._query.toString())
-        .then((response) => new SingularResponse<M>(response, this.model))
+      return this.first()
     }
 
-    return this._httpClient
-      .get(this._query.toString())
-      .then(
-        (response) => new PluralResponse<M, C>(response, this.model, collection)
+    let pluralResponse: PluralResponse<M, C>
+
+    return <PluralPromise<M, C>>this._requestHandler
+      .request(
+        {
+          url: this._query.toString(),
+          method: RequestMethod.GET
+        },
+        () => {
+          return new Promise((resolve) => {
+            resolve(RequestOperation.REQUEST_CONTINUE)
+          })
+        },
+        (response) => {
+          if (response) {
+            pluralResponse = new PluralResponse(
+              response,
+              this.model,
+              collection
+            )
+          }
+        }
       )
+      .then((response) => (response ? pluralResponse : null))
   }
 
   /**
    * Get the first record of a collection of records.
    */
   public first(): SingularPromise<M> {
-    return this._httpClient
-      .get(this._query.toString())
-      .then((response) => new SingularResponse(response, this.model))
+    let singularResponse: SingularResponse<M>
+
+    return this._requestHandler
+      .request(
+        {
+          url: this._query.toString(),
+          method: RequestMethod.GET
+        },
+        () => {
+          return new Promise((resolve) => {
+            resolve(RequestOperation.REQUEST_CONTINUE)
+          })
+        },
+        (response) => {
+          if (response) {
+            singularResponse = new SingularResponse(response, this.model)
+          }
+        }
+      )
+      .then((response) => (response ? singularResponse : null))
   }
 
   /**
@@ -95,9 +129,7 @@ export class Builder<M extends Model = Model, S extends boolean = false> {
   public find(id: string | number): SingularPromise<M> {
     this._query.setIdToFind(id)
 
-    return this._httpClient
-      .get(this._query.toString())
-      .then((response) => new SingularResponse(response, this.model))
+    return this.first()
   }
 
   /**
