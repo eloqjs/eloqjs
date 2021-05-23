@@ -30,6 +30,15 @@ class TaskController extends Controller
     }
 
     /**
+     * Find a task.
+     *
+     * @return JsonResponse
+     */
+    public function findTask($taskId) {
+      return response()->json(Task::query()->where('id', $taskId)->first());
+    }
+
+    /**
      * Creates a new task and returns it.
      *
      * @param Request $request

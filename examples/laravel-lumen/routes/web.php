@@ -13,5 +13,6 @@
 $router->addRoute('GET', '/', ['uses' => 'TaskController@showTasks']);
 $router->addRoute('POST', '/task', ['uses' => 'TaskController@createTask']);
 $router->addRoute('GET', '/task', ['uses' => 'TaskController@getTasks']);
+$router->addRoute('GET', '/task/{taskId}', ['uses' => 'TaskController@findTask']);
 $router->addRoute('DELETE', '/task/{taskId}', ['uses' => 'TaskController@deleteTask']);
 $router->addRoute('PATCH', '/task/{taskId}', ['uses' => 'TaskController@updateTask']);
