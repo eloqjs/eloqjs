@@ -53,22 +53,22 @@ export class AttrMap<T> extends Map<T> {
   /**
    * Determine if any of the given attribute(s) have been modified.
    */
-  public isDirty(attributes: string | string[] = []): boolean {
-    return this.hasChanges(this.getDirty(), forceArray(attributes))
+  public isDirty(attributes?: string | string[]): boolean {
+    return this.hasChanges(this.getDirty(), forceArray(attributes || []))
   }
 
   /**
    * Determine if all the given attribute(s) have remained the same.
    */
-  public isClean(attributes: string | string[] = []): boolean {
+  public isClean(attributes?: string | string[]): boolean {
     return !this.isDirty(attributes)
   }
 
   /**
    * Determine if any of the given attribute(s) have been modified.
    */
-  public wasChanged(attributes: string | string[] = []): boolean {
-    return this.hasChanges(this.getChanges(), forceArray(attributes))
+  public wasChanged(attributes?: string | string[]): boolean {
+    return this.hasChanges(this.getChanges(), forceArray(attributes || []))
   }
 
   /**

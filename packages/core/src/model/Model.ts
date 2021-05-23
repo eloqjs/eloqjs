@@ -703,7 +703,7 @@ export class Model {
   /**
    * Determine if the model or any of the given attribute(s) have been modified.
    */
-  public $isDirty(attributes: string | string[]): boolean {
+  public $isDirty(attributes?: string | string[]): boolean {
     return (
       this._attributes.isDirty(attributes) ||
       this._relationships.isDirty(attributes)
@@ -713,14 +713,14 @@ export class Model {
   /**
    * Determine if the model and all the given attribute(s) have remained the same.
    */
-  public $isClean(attributes: string | string[]): boolean {
+  public $isClean(attributes?: string | string[]): boolean {
     return !this.$isDirty(attributes)
   }
 
   /**
    * Determine if the model or any of the given attribute(s) have been modified.
    */
-  public $wasChanged(attributes: string | string[]): boolean {
+  public $wasChanged(attributes?: string | string[]): boolean {
     return (
       this._attributes.wasChanged(attributes) ||
       this._relationships.wasChanged(attributes)
