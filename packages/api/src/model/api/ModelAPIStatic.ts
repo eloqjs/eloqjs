@@ -8,13 +8,7 @@ import { DeletePromise } from '../../response/DeletePromise'
 import { PluralPromise } from '../../response/PluralPromise'
 import { SavePromise } from '../../response/SavePromise'
 import { SingularPromise } from '../../response/SingularPromise'
-import {
-  assert,
-  isModel,
-  isNull,
-  isNumber,
-  isString
-} from '../../support/Utils'
+import { isModel, isNumber, isString } from '../../support/Utils'
 
 export class ModelAPIStatic<M extends typeof Model = typeof Model> {
   /**
@@ -175,11 +169,6 @@ export class ModelAPIStatic<M extends typeof Model = typeof Model> {
     }
 
     const model = this._instantiate(record)
-
-    // Get ID before serialize, otherwise the ID may not be available.
-    const id = model.$id
-
-    assert(!isNull(id), ['Cannot delete a model with no ID.'])
 
     return this._operation(model).delete()
   }
