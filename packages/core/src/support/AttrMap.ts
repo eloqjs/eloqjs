@@ -51,6 +51,25 @@ export class AttrMap<T> extends Map<T> {
   }
 
   /**
+   * Resets all attributes back to their reference values (source of truth).
+   */
+  public reset(): void {
+    this.data = { ...this.reference }
+  }
+
+  public resetAttribute(attribute: string): void {
+    this.resetAttributes(attribute)
+  }
+
+  public resetAttributes(attributes: string | string[]): void {
+    attributes = forceArray(attributes)
+
+    for (const attribute of attributes) {
+      this.data[attribute] = { ...this.reference }[attribute]
+    }
+  }
+
+  /**
    * Determine if any of the given attribute(s) have been modified.
    */
   public isDirty(attributes?: string | string[]): boolean {

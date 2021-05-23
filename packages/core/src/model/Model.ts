@@ -795,6 +795,100 @@ export class Model {
   }
 
   /**
+   * Reverts all attributes and relationships back to their defaults. This will also sync the reference
+   * attributes and relationships, and is not reversible.
+   */
+  public $clear(): void {
+    this.$clearAttributes()
+    this.$clearRelationships()
+    this.$clearState()
+  }
+
+  /**
+   * Reverts all attributes back to their defaults. This will also sync the reference
+   * attributes, and is not reversible.
+   */
+  public $clearAttributes(): void {
+    const fields = this.$fields()
+
+    for (const key in this.$fields()) {
+      const field = fields[key]
+
+      if (field instanceof Attributes.Type) {
+        this[key] = undefined
+      }
+    }
+
+    this._attributes.syncReference()
+  }
+
+  /**
+   * Reverts all relationships back to their defaults. This will also sync the reference
+   * relationships, and is not reversible.
+   */
+  public $clearRelationships(): void {
+    const fields = this.$fields()
+
+    for (const key in this.$fields()) {
+      const field = fields[key]
+
+      if (field instanceof Attributes.Relation) {
+        this[key] = undefined
+      }
+    }
+
+    this._relationships.syncReference()
+  }
+
+  /**
+   * Resets model state, ie. `saving`, etc back to their initial states.
+   */
+  public $clearState(): void {
+    this.$saving = false
+    this.$deleting = false
+  }
+
+  /**
+   * Resets all attributes back to their reference values (source of truth).
+   * A good use case for this is when form fields are bound directly to the
+   * model's attributes. Changing values in the form fields will change the
+   * attributes on the model. On cancel, you can revert the model back to
+   * its saved, original state using reset().
+   */
+  public $reset(): void {
+    this._attributes.reset()
+    this._relationships.reset()
+  }
+
+  /**
+   * Resets a single attribute back to its reference value (source of truth).
+   */
+  public $resetAttribute(attribute: string): void {
+    this._attributes.resetAttribute(attribute)
+  }
+
+  /**
+   * Resets multiple attributes back to their reference values (source of truth).
+   */
+  public $resetAttributes(attributes: string | string[]): void {
+    this._attributes.resetAttributes(attributes)
+  }
+
+  /**
+   * Resets a single relationship back to its reference value (source of truth).
+   */
+  public $resetRelationship(relationship: string): void {
+    this._relationships.resetAttributes(relationship)
+  }
+
+  /**
+   * Resets multiple relationships back to their reference values (source of truth).
+   */
+  public $resetRelationships(relationships: string | string[]): void {
+    this._relationships.resetAttributes(relationships)
+  }
+
+  /**
    * Serialize this model as POJO.
    */
   protected toJSON(): Element {
