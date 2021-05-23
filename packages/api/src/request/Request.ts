@@ -1,6 +1,5 @@
 import { Model } from '@eloqjs/core'
 
-import { Builder } from '../builder/Builder'
 import {
   HttpClient,
   HttpClientPromise,
@@ -45,14 +44,6 @@ export class Request<M extends typeof Model = typeof Model> {
     this.model.setHttpClient(httpClient)
 
     return this.getHttpClient()
-  }
-
-  /**
-   * Get a {@link Builder} instance from {@link Request}
-   * so you can start querying.
-   */
-  public builder(): Builder<InstanceType<M>> {
-    return new Builder(this.model)
   }
 
   public request(

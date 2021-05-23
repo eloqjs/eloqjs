@@ -48,7 +48,7 @@ export class ModelAPIInstance<M extends Model = Model> {
     if (id) {
       return this.query()
         .find(id)
-        .then((response) => response.data)
+        .then((response) => (response ? response.data : null))
         .catch((error) => {
           // eslint-disable-next-line no-console
           console.error(error)
