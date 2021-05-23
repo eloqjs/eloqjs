@@ -1,10 +1,10 @@
 import { Model } from '@eloqjs/core'
 
-import { HttpClientResponse } from '../httpclient/HttpClientResponse'
 import { Request } from '../request/Request'
 import { RequestMethod } from '../request/RequestMethod'
 import { RequestOperation } from '../request/RequestOperation'
 import { RequestOptions } from '../request/RequestOptions'
+import { DeletePromise } from '../response/DeletePromise'
 import { SavePromise } from '../response/SavePromise'
 import { SaveResponse } from '../response/SaveResponse'
 import { assert, isEmpty, isNull } from '../support/Utils'
@@ -182,9 +182,7 @@ export class Operation<M extends Model = Model> {
   /**
    * Delete a record.
    */
-  public delete(
-    config?: Partial<RequestOptions>
-  ): Promise<HttpClientResponse | null> {
+  public delete(config?: Partial<RequestOptions>): DeletePromise {
     // Get ID before serialize, otherwise the ID may not be available.
     const id = this.model.$id
 

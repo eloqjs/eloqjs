@@ -1,8 +1,8 @@
 import { Item, Model } from '@eloqjs/core'
 
 import { Builder } from '../../builder/Builder'
-import { HttpClientResponse } from '../../httpclient'
 import { Operation } from '../../operation/Operation'
+import { DeletePromise } from '../../response/DeletePromise'
 import { SavePromise } from '../../response/SavePromise'
 import { assert, isEmpty, isNull } from '../../support/Utils'
 import { ModelAPIStatic } from './ModelAPIStatic'
@@ -70,7 +70,7 @@ export class ModelAPIInstance<M extends Model = Model> {
   /**
    * Delete a record.
    */
-  public delete(): Promise<HttpClientResponse | null> {
+  public delete(): DeletePromise {
     return this._api().delete(this.model)
   }
 
@@ -104,9 +104,7 @@ export class ModelAPIInstance<M extends Model = Model> {
   /**
    * Delete a related record and detach it from this {@link Model}.
    */
-  public detach<R extends Model>(
-    relationship: R
-  ): Promise<HttpClientResponse | null> {
+  public detach<R extends Model>(relationship: R): DeletePromise {
     this._hasRelation(relationship)
 
     const selfId = this.model.$id

@@ -1,10 +1,10 @@
-import { HttpClientResponse } from '@eloqjs/api'
 import { Collection, Element, Model } from '@eloqjs/core'
 
 import { Builder } from '../../builder/Builder'
 import { Operation } from '../../operation/Operation'
 import { FilterValue } from '../../query/specs/FilterSpec'
 import { OptionValue } from '../../query/specs/OptionSpec'
+import { DeletePromise } from '../../response/DeletePromise'
 import { PluralPromise } from '../../response/PluralPromise'
 import { SavePromise } from '../../response/SavePromise'
 import { SingularPromise } from '../../response/SingularPromise'
@@ -159,18 +159,16 @@ export class ModelAPIStatic<M extends typeof Model = typeof Model> {
     return this._operation(model).save()
   }
 
-  public delete(
-    record: InstanceType<M> | Element
-  ): Promise<HttpClientResponse | null>
+  public delete(record: InstanceType<M> | Element): DeletePromise
 
-  public delete(id: string | number): Promise<HttpClientResponse | null>
+  public delete(id: string | number): DeletePromise
 
   /**
    * Delete a record.
    */
   public delete(
     record: InstanceType<M> | Element | string | number
-  ): Promise<HttpClientResponse | null> {
+  ): DeletePromise {
     // If an ID was passed, assign it to model's primary key
     if (isString(record) || isNumber(record)) {
       record = { [this.model.primaryKey]: record }

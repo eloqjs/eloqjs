@@ -2,6 +2,7 @@ import { Collection, Element, Item, Model, Relations } from '@eloqjs/core'
 
 import { FilterValue } from '../query/specs/FilterSpec'
 import { OptionValue } from '../query/specs/OptionSpec'
+import { DeletePromise } from '../response/DeletePromise'
 import { PluralPromise } from '../response/PluralPromise'
 import { SavePromise } from '../response/SavePromise'
 import { SingularPromise } from '../response/SingularPromise'
@@ -151,7 +152,7 @@ export class Relation<
   /**
    * Delete a record of this relation and detach it from the parent {@link Model}.
    */
-  public detach(id: string | number): Promise<void> {
+  public detach(id: string | number): DeletePromise {
     return this.api().detach(id)
   }
 

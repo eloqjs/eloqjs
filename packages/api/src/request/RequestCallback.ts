@@ -1,5 +1,4 @@
-import { HttpClientResponse } from '@eloqjs/api'
-
+import { HttpClientResponse } from '../httpclient/HttpClientResponse'
 import { RequestOperation } from './RequestOperation'
 
 export type OnRequestCallback = () => Promise<RequestOperation | boolean>

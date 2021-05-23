@@ -3,6 +3,7 @@ import { Collection, Element, Item, Model } from '@eloqjs/core'
 import { Builder } from '../../builder/Builder'
 import { FilterValue } from '../../query/specs/FilterSpec'
 import { OptionValue } from '../../query/specs/OptionSpec'
+import { DeletePromise } from '../../response/DeletePromise'
 import { PluralPromise } from '../../response/PluralPromise'
 import { Response } from '../../response/Response'
 import { SavePromise } from '../../response/SavePromise'
@@ -216,7 +217,7 @@ export class RelationAPI<
   /**
    * Delete a record of this relation and detach it from the parent {@link Model}.
    */
-  public detach(id: string | number): Promise<void> {
+  public detach(id: string | number): DeletePromise {
     const relationship = new this.model({ [this.model.primaryKey]: id }) as M
     return this.belongsToModel.$api().detach(relationship)
   }
