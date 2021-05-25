@@ -95,6 +95,11 @@ export class Model {
   public $deleting: boolean = false
 
   /**
+   * Determines if the model is in fatal state.
+   */
+  public $fatal: boolean = false
+
+  /**
    * The unique ID for the model.
    */
   public readonly $uid!: string
@@ -846,6 +851,7 @@ export class Model {
   public $clearState(): void {
     this.$saving = false
     this.$deleting = false
+    this.$fatal = false
   }
 
   /**
