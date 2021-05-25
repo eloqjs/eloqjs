@@ -21,21 +21,12 @@ export class AttrMap<T> extends Map<T> {
   /**
    * Sync the reference attributes with the current.
    */
-  public syncReference(): void {
-    this.reference = { ...this.data }
-  }
+  public syncReference(attributes?: string | string[]): void {
+    if (!attributes) {
+      this.reference = { ...this.data }
+      return
+    }
 
-  /**
-   * Sync a single reference attribute with its current value.
-   */
-  public syncReferenceAttribute(attribute: string): void {
-    return this.syncReferenceAttributes(attribute)
-  }
-
-  /**
-   * Sync multiple reference attribute with their current values.
-   */
-  public syncReferenceAttributes(attributes: string | string[]): void {
     attributes = forceArray(attributes)
 
     for (const attribute of attributes) {
@@ -51,17 +42,14 @@ export class AttrMap<T> extends Map<T> {
   }
 
   /**
-   * Resets all attributes back to their reference values (source of truth).
+   * Resets attributes back to their reference values (source of truth).
    */
-  public reset(): void {
-    this.data = { ...this.reference }
-  }
+  public reset(attributes?: string | string[]): void {
+    if (!attributes) {
+      this.data = { ...this.reference }
+      return
+    }
 
-  public resetAttribute(attribute: string): void {
-    this.resetAttributes(attribute)
-  }
-
-  public resetAttributes(attributes: string | string[]): void {
     attributes = forceArray(attributes)
 
     for (const attribute of attributes) {

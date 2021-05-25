@@ -746,45 +746,9 @@ export class Model {
   /**
    * Sync the reference attributes with the current.
    */
-  public $syncReference(): this {
-    this._attributes.syncReference()
-    this._relationships.syncReference()
-
-    return this
-  }
-
-  /**
-   * Sync a single reference attribute with its current value.
-   */
-  public $syncReferenceAttribute(attribute: string): this {
-    this._attributes.syncReferenceAttribute(attribute)
-
-    return this
-  }
-
-  /**
-   * Sync multiple reference attribute with their current values.
-   */
-  public $syncReferenceAttributes(attributes: string | string[]): this {
-    this._attributes.syncReferenceAttributes(attributes)
-
-    return this
-  }
-
-  /**
-   * Sync a single reference relationship with its current value.
-   */
-  public $syncReferenceRelationship(relationship: string): this {
-    this._relationships.syncReferenceAttribute(relationship)
-
-    return this
-  }
-
-  /**
-   * Sync multiple reference relationship with their current values.
-   */
-  public $syncReferenceRelationships(relationships: string | string[]): this {
-    this._relationships.syncReferenceAttributes(relationships)
+  public $syncReference(attributes?: string | string[]): this {
+    this._attributes.syncReference(attributes)
+    this._relationships.syncReference(attributes)
 
     return this
   }
@@ -805,7 +769,6 @@ export class Model {
    */
   public $clear(): void {
     this.$clearAttributes()
-    this.$clearRelationships()
     this.$clearState()
   }
 
@@ -819,29 +782,15 @@ export class Model {
     for (const key in this.$fields()) {
       const field = fields[key]
 
-      if (field instanceof Attributes.Type) {
+      if (
+        field instanceof Attributes.Type ||
+        field instanceof Attributes.Relation
+      ) {
         this[key] = undefined
       }
     }
 
     this._attributes.syncReference()
-  }
-
-  /**
-   * Reverts all relationships back to their defaults. This will also sync the reference
-   * relationships, and is not reversible.
-   */
-  public $clearRelationships(): void {
-    const fields = this.$fields()
-
-    for (const key in this.$fields()) {
-      const field = fields[key]
-
-      if (field instanceof Attributes.Relation) {
-        this[key] = undefined
-      }
-    }
-
     this._relationships.syncReference()
   }
 
@@ -855,43 +804,17 @@ export class Model {
   }
 
   /**
-   * Resets all attributes back to their reference values (source of truth).
+   * Resets attributes back to their reference values (source of truth).
    * A good use case for this is when form fields are bound directly to the
    * model's attributes. Changing values in the form fields will change the
    * attributes on the model. On cancel, you can revert the model back to
    * its saved, original state using reset().
+   *
+   * It's also possible to pass an array of attributes to reset.
    */
-  public $reset(): void {
-    this._attributes.reset()
-    this._relationships.reset()
-  }
-
-  /**
-   * Resets a single attribute back to its reference value (source of truth).
-   */
-  public $resetAttribute(attribute: string): void {
-    this._attributes.resetAttribute(attribute)
-  }
-
-  /**
-   * Resets multiple attributes back to their reference values (source of truth).
-   */
-  public $resetAttributes(attributes: string | string[]): void {
-    this._attributes.resetAttributes(attributes)
-  }
-
-  /**
-   * Resets a single relationship back to its reference value (source of truth).
-   */
-  public $resetRelationship(relationship: string): void {
-    this._relationships.resetAttributes(relationship)
-  }
-
-  /**
-   * Resets multiple relationships back to their reference values (source of truth).
-   */
-  public $resetRelationships(relationships: string | string[]): void {
-    this._relationships.resetAttributes(relationships)
+  public $reset(attributes?: string | string[]): void {
+    this._attributes.reset(attributes)
+    this._relationships.reset(attributes)
   }
 
   /**
