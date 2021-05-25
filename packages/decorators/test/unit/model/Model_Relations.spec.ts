@@ -1,4 +1,5 @@
-import { Relations } from '@eloqjs/core'
+import { Collection, Relations } from '@eloqjs/core'
+import { assertInstanceOf } from '@eloqjs/test-utils'
 
 import { Attr, HasMany, HasOne } from '../../../src'
 import BaseModel from '../../dummy/models/BaseModel'
@@ -81,11 +82,11 @@ describe('Unit - Model – Relations', () => {
 
     expect(post.id).toBe(1)
 
-    expect(post.comments.data).toHaveLength(2)
-    expect(post.comments.data[0]).toBeInstanceOf(Comment)
-    expect(post.comments.data[1]).toBeInstanceOf(Comment)
-    expect(post.comments.data[0].id).toBe(1)
-    expect(post.comments.data[1].id).toBe(2)
+    assertInstanceOf(post.comments.data, Comment)
+    expect(post.comments.data).toBeInstanceOf(Collection)
+    expect(post.comments.data.models).toHaveLength(2)
+    expect(post.comments.data.models[0].id).toBe(1)
+    expect(post.comments.data.models[1].id).toBe(2)
   })
 
   it('can resolve empty has many relation', () => {
@@ -124,7 +125,8 @@ describe('Unit - Model – Relations', () => {
     expect(post).toBeInstanceOf(Post)
     expect(post.id).toBe(1)
     expect(post.comments.data).not.toBeNull()
-    expect(post.comments.data).toEqual([])
-    expect(post.comments.data).toHaveLength(0)
+    expect(post.comments.data).toBeInstanceOf(Collection)
+    expect(post.comments.data.models).toStrictEqual([])
+    expect(post.comments.data.models).toHaveLength(0)
   })
 })
