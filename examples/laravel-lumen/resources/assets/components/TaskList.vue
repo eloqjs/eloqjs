@@ -22,7 +22,7 @@
         <thead>
         <th width="50"></th>
         <th>Name</th>
-        <th width="300"></th>
+        <th width="200"></th>
         </thead>
         <tbody>
         <task v-for="task in tasks"
@@ -32,7 +32,7 @@
         </tbody>
       </table>
 
-      <!-- RESET BUTTON
+      <!-- RESET BUTTON -->
       <div>
         <el-button
             type="info"
@@ -42,7 +42,7 @@
           Reset
         </el-button>
       </div>
-      <hr> -->
+      <hr>
 
       <!-- PROGRESS -->
       <el-progress :percentage="tasks.progress" :status="status"></el-progress>

@@ -20,12 +20,6 @@
           @click="onDelete"
           :loading="task.$deleting">{{ deleteButtonText }}
       </el-button>
-      <el-button
-          type="info"
-          icon="el-icon-refresh-right"
-          size="small"
-          @click="onReset">Reset
-      </el-button>
     </td>
   </tr>
 </template>
@@ -63,14 +57,6 @@ export default {
         title: `[${this.task.$id}] - ${this.task.$.name}`,
         message: h('i', { style: `color: ${color}` }, message),
         duration: 2000
-      })
-    },
-
-    async onReset () {
-      await this.task.$reset().then(() => {
-        this.$message.success('Task reset successfully')
-      }).catch((error) => {
-        this.$message.error('Failed to reset task!')
       })
     },
 
