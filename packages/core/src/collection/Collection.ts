@@ -832,6 +832,16 @@ export class Collection<M extends Model = Model> {
   }
 
   /**
+   * Resets all models in this collection. This method delegates to each model
+   * so follows the same signature and effects as {@link Model.$reset}.
+   */
+  public reset(attributes?: string | string[]): void {
+    for (const model of this.models) {
+      model.$reset(attributes)
+    }
+  }
+
+  /**
    * Removes and returns the first model of this collection, if there was one.
    *
    * @returns Removed model or undefined if there were none.
