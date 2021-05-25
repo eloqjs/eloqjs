@@ -974,6 +974,16 @@ export class Collection<M extends Model = Model> {
   }
 
   /**
+   * Syncs the reference of all models in this collection. This method delegates to each model
+   * so follows the same signature and effects as {@link Model.$syncReference}.
+   */
+  public syncReference(attributes?: string | string[]): void {
+    for (const model of this.models) {
+      model.$syncReference(attributes)
+    }
+  }
+
+  /**
    * Returns a new collection with the specified number of models.
    *
    * You may also pass a negative integer to take the specified amount of models from the end of the collection.
