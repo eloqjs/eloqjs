@@ -123,7 +123,9 @@ export class Operation<M extends Model = Model> {
       .request(
         {
           url: config?.url || this.modelType.getResource() + '/' + id,
-          method: RequestMethod.PATCH,
+          method: this.model.$getOption('patch')
+            ? RequestMethod.PATCH
+            : RequestMethod.PUT,
           data: record
         },
         () => {
