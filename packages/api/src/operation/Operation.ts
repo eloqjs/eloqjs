@@ -115,7 +115,10 @@ export class Operation<M extends Model = Model> {
 
     assert(!isNull(id), ['Cannot update a model with no ID.'])
 
-    const record = this.model.$serialize({ isRequest: true, shouldPatch: true })
+    const record = this.model.$serialize({
+      isRequest: true,
+      shouldPatch: this.model.$getOption('patch')
+    })
 
     let saveResponse: SaveResponse<M>
 
