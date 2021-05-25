@@ -15,7 +15,8 @@ import {
   isNullish,
   isNumber,
   isString,
-  isUndefined
+  isUndefined,
+  ValueOf
 } from '../support/Utils'
 import { Element, Item } from '../types/Data'
 import * as Contracts from './Contracts'
@@ -28,8 +29,34 @@ export type ModelRegistry = Record<string, () => Attributes.Attribute>
 export type ModelReference<T> = Readonly<Omit<T, keyof Model>>
 
 export interface ModelOptions {
-  fill?: boolean
-  relations?: boolean
+  /**
+   * Whether this model should fill the given attributes on instantiate.
+   */
+  fill: boolean
+
+  /**
+   * Whether this model should fill relationships on instantiate.
+   */
+  relations: boolean
+
+  /**
+   * Whether this model should allow an existing identifier to be
+   * overwritten on update.
+   */
+  overwriteIdentifier: boolean
+
+  /**
+   * Whether this model should perform a "patch" on update,
+   * which will only send changed attributes in the request.
+   */
+  patch: boolean
+
+  /**
+   * Whether this model should save even if no attributes have changed
+   * since the last time they were synced. If set to `false` and no
+   * changes have been made, the request will be considered a success.
+   */
+  saveUnchanged: boolean
 }
 
 export class Model {
@@ -125,14 +152,19 @@ export class Model {
   private readonly _relationships: AttrMap<Relations.Relation> = new AttrMap<Relations.Relation>()
 
   /**
+   * The options of the record.
+   */
+  private readonly _options: Map<unknown> = new Map<unknown>()
+
+  /**
    * Create a new model instance.
    */
   public constructor(
     attributes?: Element,
     collection: Collection | Collection[] | null = null,
-    options: ModelOptions = {}
+    options: Partial<ModelOptions> = {}
   ) {
-    this._boot()
+    this._boot(options)
 
     // Register the given collection (if any) to the model. This is so that
     // the model can be added to the collection automatically when it is
@@ -141,9 +173,9 @@ export class Model {
       this.$registerCollection(collection as Collection<this>)
     }
 
-    const fill = options.fill ?? true
+    const fill = this.$getOption('fill') ?? true
 
-    fill && this.$fill(attributes, options)
+    fill && this.$fill(attributes)
   }
 
   /**
@@ -169,6 +201,13 @@ export class Model {
 
   public get $collections(): Collection<this>[] {
     return Object.values(this._collections.toArray())
+  }
+
+  /**
+   * The options of the model.
+   */
+  public static options(): Partial<ModelOptions> {
+    return {}
   }
 
   /**
@@ -509,6 +548,19 @@ export class Model {
   }
 
   /**
+   * Get the default options of the model.
+   */
+  private static _getDefaultOptions(): ModelOptions {
+    return {
+      fill: true,
+      relations: true,
+      overwriteIdentifier: false,
+      patch: false,
+      saveUnchanged: true
+    }
+  }
+
+  /**
    * Get the constructor of this model.
    */
   public $self(): typeof Model {
@@ -575,6 +627,48 @@ export class Model {
   }
 
   /**
+   * Set the model options.
+   */
+  public $setOptions(options: Partial<ModelOptions>): void {
+    const _options = {
+      ...this.$self()._getDefaultOptions(),
+      ...this.$self().options(),
+      ...options
+    }
+
+    for (const key in _options) {
+      this._options.set(key, _options[key])
+    }
+  }
+
+  /**
+   * Get the model options.
+   */
+  public $getOptions(): ModelOptions {
+    return (this._options.toArray() as unknown) as ModelOptions
+  }
+
+  /**
+   * Set a model's option.
+   */
+  public $setOption<K extends keyof ModelOptions>(
+    key: K,
+    value: ValueOf<ModelOptions, K>
+  ): void {
+    return this._options.set(key, value)
+  }
+
+  /**
+   * Get a model's option.
+   */
+  public $getOption<K extends keyof ModelOptions>(
+    key: K,
+    fallback?: ValueOf<ModelOptions, K>
+  ): ValueOf<ModelOptions, K> {
+    return (this._options.get(key) as ValueOf<ModelOptions, K>) ?? fallback
+  }
+
+  /**
    * Get the model fields for this model.
    */
   public $fields(): ModelFields {
@@ -585,11 +679,15 @@ export class Model {
    * Fill this model by the given attributes. Missing fields will be populated
    * by the attributes default value.
    */
-  public $fill(attributes: Element = {}, options: ModelOptions = {}): void {
+  public $fill(
+    attributes: Element = {},
+    options: Partial<ModelOptions> = {}
+  ): void {
     attributes =
       'data' in attributes ? (attributes.data as Element) : attributes
     const fields = this.$fields()
-    const fillRelation = options.relations ?? true
+    const fillRelation =
+      this.$getOption('relations') ?? options.relations ?? true
 
     for (const key in fields) {
       const field = fields[key]
@@ -825,9 +923,10 @@ export class Model {
   /**
    * Bootstrap this model.
    */
-  private _boot(): void {
+  private _boot(options: Partial<ModelOptions>): void {
     this.$self()._boot()
     this._generateUid()
+    this.$setOptions(options)
   }
 
   /**
