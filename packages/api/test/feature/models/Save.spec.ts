@@ -13,7 +13,7 @@ describe('Feature – Models – Save', () => {
 
       const user = await User.save({
         name: 'John Doe'
-      }).then((response) => response.data!)
+      }).then((response) => response.data)
 
       expect(user).toBeInstanceOf(User)
       assertModel(user, Data.User)
@@ -30,7 +30,7 @@ describe('Feature – Models – Save', () => {
       const user = await User.save({
         id: 1,
         name: 'Mary Doe'
-      }).then((response) => response.data!)
+      }).then((response) => response.data)
 
       expect(user).toBeInstanceOf(User)
       assertModel(user, expected)
@@ -47,7 +47,7 @@ describe('Feature – Models – Save', () => {
         name: 'John Doe'
       })
         .$save()
-        .then((response) => response.data!)
+        .then((response) => response.data)
 
       expect(user).toBeInstanceOf(User)
       assertModel(user, Data.User)
@@ -66,7 +66,7 @@ describe('Feature – Models – Save', () => {
         name: 'Mary Doe'
       })
         .$save()
-        .then((response) => response.data!)
+        .then((response) => response.data)
 
       expect(user).toBeInstanceOf(User)
       assertModel(user, expected)

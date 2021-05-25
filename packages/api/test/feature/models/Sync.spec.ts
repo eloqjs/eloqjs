@@ -29,7 +29,7 @@ describe('Feature – Models – Sync', () => {
 
     const post = await new User(Data.User)
       .$sync(new Post(Data.Post))
-      .then((response) => response.data!)
+      .then((response) => response.data)
 
     expect(post).toBeInstanceOf(Post)
     assertModel(post, Data.Post)
@@ -58,7 +58,7 @@ describe('Feature – Models – Sync', () => {
 
     const post = await new User(Data.User).posts
       .sync(new Post(Data.Post))
-      .then((response) => response.data!)
+      .then((response) => response.data)
 
     expect(post).toBeInstanceOf(Post)
     assertModel(post, Data.Post)
