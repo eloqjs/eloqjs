@@ -15,4 +15,14 @@ describe('Feature – Models – First', () => {
     expect(user).toBeInstanceOf(User)
     assertModel(user, Data.User)
   })
+
+  it('should return null when no data was provided', async () => {
+    axiosMock.onGet('http://localhost/users').reply(() => {
+      return [200]
+    })
+
+    const user = await User.first().then((response) => response!.data)
+
+    expect(user).toBeNull()
+  })
 })
