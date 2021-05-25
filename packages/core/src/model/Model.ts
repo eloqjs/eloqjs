@@ -30,6 +30,11 @@ export type ModelReference<T> = Readonly<Omit<T, keyof Model>>
 
 export interface ModelOptions {
   /**
+   * Allow custom options.
+   */
+  [key: string]: unknown
+
+  /**
    * Whether this model should fill the given attributes on instantiate.
    */
   fill: boolean
