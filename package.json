@@ -11,7 +11,8 @@
     "build": "lerna run build",
     "watch": "lerna run watch --stream --no-sort",
     "publish": "lerna publish",
-    "test": "lerna run test"
+    "test": "lerna run test",
+    "coverage": "lerna run coverage"
   },
   "devDependencies": {
     "@types/jest": "^26.0.20",
