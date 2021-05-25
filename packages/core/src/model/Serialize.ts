@@ -3,6 +3,12 @@ import { isArray, isCollection, isNull, isObject } from '../support/Utils'
 import { Element, Item } from '../types/Data'
 import { Model } from './Model'
 
+export interface Options {
+  relations?: boolean
+  isPayload?: boolean
+  isPatch?: boolean
+}
+
 /**
  * Serialize given value.
  */

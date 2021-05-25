@@ -30,8 +30,6 @@ export type ModelReference<T> = Readonly<Omit<T, keyof Model>>
 export interface ModelOptions {
   fill?: boolean
   relations?: boolean
-  isPayload?: boolean
-  isPatch?: boolean
 }
 
 export class Model {
@@ -623,8 +621,8 @@ export class Model {
   /**
    * Serialize given model POJO.
    */
-  public $serialize(options: ModelOptions = {}): Element {
-    const defaultOption: ModelOptions = {
+  public $serialize(options: Serialize.Options = {}): Element {
+    const defaultOption: Serialize.Options = {
       relations: true,
       isPayload: false,
       isPatch: false
@@ -632,7 +630,7 @@ export class Model {
     const _option = {
       ...defaultOption,
       ...options
-    } as Required<ModelOptions>
+    } as Required<Serialize.Options>
 
     const fields = this.$fields()
     const result: Element = {}
@@ -683,7 +681,7 @@ export class Model {
   /**
    * Serialize this model, or the given model, as POJO.
    */
-  public $toJson(model?: Model, options: ModelOptions = {}): Element {
+  public $toJson(model?: Model, options: Serialize.Options = {}): Element {
     return (model ?? this).$serialize(options)
   }
 
