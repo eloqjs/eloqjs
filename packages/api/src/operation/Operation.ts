@@ -60,9 +60,11 @@ export class Operation<M extends Model = Model> {
               resolve(RequestOperation.REQUEST_SKIP)
             }
 
-            // TODO: Force save if `saveUnchanged` option is enabled.
             // Don't save if no data has changed, but consider it a success.
-            if (this.model.$isClean()) {
+            if (
+              !this.model.$getOption('saveUnchanged') &&
+              this.model.$isClean()
+            ) {
               resolve(RequestOperation.REQUEST_REDUNDANT)
             }
 
@@ -134,9 +136,11 @@ export class Operation<M extends Model = Model> {
               resolve(RequestOperation.REQUEST_SKIP)
             }
 
-            // TODO: Force save if `saveUnchanged` option is enabled.
             // Don't save if no data has changed, but consider it a success.
-            if (this.model.$isClean()) {
+            if (
+              !this.model.$getOption('saveUnchanged') &&
+              this.model.$isClean()
+            ) {
               resolve(RequestOperation.REQUEST_REDUNDANT)
             }
 
