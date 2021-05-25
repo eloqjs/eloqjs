@@ -5,4 +5,4 @@ import { PluralResponse } from './PluralResponse'
 export type PluralPromise<
   M extends Model = Model,
   C extends Collection<M> = Collection<M>
-> = Promise<PluralResponse<M, C> | null>
+> = Promise<PluralResponse<M, C>>

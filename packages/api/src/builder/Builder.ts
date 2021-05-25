@@ -85,16 +85,10 @@ export class Builder<M extends Model = Model, S extends boolean = false> {
           })
         },
         (response) => {
-          if (response) {
-            pluralResponse = new PluralResponse(
-              response,
-              this.model,
-              collection
-            )
-          }
+          pluralResponse = new PluralResponse(response, this.model, collection)
         }
       )
-      .then((response) => (response ? pluralResponse : null))
+      .then(() => pluralResponse)
   }
 
   /**
@@ -115,12 +109,10 @@ export class Builder<M extends Model = Model, S extends boolean = false> {
           })
         },
         (response) => {
-          if (response) {
-            singularResponse = new SingularResponse(response, this.model)
-          }
+          singularResponse = new SingularResponse(response, this.model)
         }
       )
-      .then((response) => (response ? singularResponse : null))
+      .then(() => singularResponse)
   }
 
   /**

@@ -13,7 +13,7 @@ export class PluralResponse<
   public readonly data: C
 
   public constructor(
-    httpClientResponse: HttpClientResponse,
+    httpClientResponse: HttpClientResponse | null,
     model: typeof Model,
     collection?: C
   ) {
@@ -29,6 +29,10 @@ export class PluralResponse<
   }
 
   private _resolveData(): void {
+    if (!this.httpClientResponse) {
+      return
+    }
+
     let data = this.httpClientResponse.getData<
       PluralData | Wrapped<PluralData>
     >()

@@ -73,9 +73,7 @@ export class Operation<M extends Model = Model> {
           })
         },
         (response) => {
-          if (response) {
-            saveResponse = new SaveResponse(response, this.model)
-          }
+          saveResponse = new SaveResponse(response, this.model)
 
           // We need to sync changes before references
           this.model.$syncChanges()
@@ -102,7 +100,7 @@ export class Operation<M extends Model = Model> {
           this.modelType.executeMutationHooks('afterSave', this.model)
         }
       )
-      .then((response) => (response ? saveResponse : null))
+      .then(() => saveResponse)
   }
 
   /**
@@ -147,9 +145,7 @@ export class Operation<M extends Model = Model> {
           })
         },
         (response) => {
-          if (response) {
-            saveResponse = new SaveResponse(response, this.model)
-          }
+          saveResponse = new SaveResponse(response, this.model)
 
           // We need to sync changes before references
           this.model.$syncChanges()
@@ -176,7 +172,7 @@ export class Operation<M extends Model = Model> {
           this.modelType.executeMutationHooks('afterSave', this.model)
         }
       )
-      .then((response) => (response ? saveResponse : null))
+      .then(() => saveResponse)
   }
 
   /**

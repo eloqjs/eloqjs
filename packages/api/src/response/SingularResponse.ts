@@ -10,7 +10,7 @@ export class SingularResponse<M extends Model = Model> extends Response {
   public readonly data: Item<M> = null
 
   public constructor(
-    httpClientResponse: HttpClientResponse,
+    httpClientResponse: HttpClientResponse | null,
     model: typeof Model
   ) {
     super(httpClientResponse, model)
@@ -19,6 +19,10 @@ export class SingularResponse<M extends Model = Model> extends Response {
   }
 
   protected resolveData(): Item<M> {
+    if (!this.httpClientResponse) {
+      return null
+    }
+
     let data = this.httpClientResponse.getData<
       SingularData | Wrapped<SingularData>
     >()

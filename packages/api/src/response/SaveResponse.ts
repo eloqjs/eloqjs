@@ -9,13 +9,17 @@ export type SingularData = Element | Element[] | null | undefined
 export class SaveResponse<M extends Model = Model> extends Response {
   public readonly data: M
 
-  public constructor(httpClientResponse: HttpClientResponse, model: M) {
+  public constructor(httpClientResponse: HttpClientResponse | null, model: M) {
     super(httpClientResponse, model.$self())
 
     this.data = this.resolveData(model)
   }
 
   protected resolveData(model: M): M {
+    if (!this.httpClientResponse) {
+      return model
+    }
+
     let data = this.httpClientResponse.getData<
       SingularData | Wrapped<SingularData>
     >()
