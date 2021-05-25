@@ -5,7 +5,7 @@ import * as Data from './dummy/data'
 import Post from './dummy/models/Post'
 import User from './dummy/models/User'
 
-describe('Feature – Models – Attach', () => {
+describe('Feature – Models – For', () => {
   it('should create a new record via instance method', async () => {
     axiosMock.onPost('http://localhost/users/1/posts').reply((config) => {
       const data = JSON.parse(config.data)
@@ -24,7 +24,7 @@ describe('Feature – Models – Attach', () => {
       title: 'My awesome post!'
     })
       .$for(user)
-      .then((response) => response.data!)
+      .then((response) => response.data)
 
     expect(post).toBeInstanceOf(Post)
     assertModel(post, Data.Post)
