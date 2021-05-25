@@ -21,7 +21,7 @@ import { sortGreaterOrLessThan, sortNullish } from './Sort'
 import { compareValues, Operator } from './Where'
 
 export interface CollectionOptions {
-  model?: typeof Model
+  model: typeof Model
 }
 
 export class Collection<M extends Model = Model> {
@@ -34,13 +34,13 @@ export class Collection<M extends Model = Model> {
    */
   public readonly $uid!: string
 
-  private readonly _options: CollectionOptions
+  private readonly _options: Partial<CollectionOptions>
 
   private readonly _registry: Record<string, boolean> = {}
 
   public constructor(
     models: (M | Element)[] = [],
-    options: CollectionOptions = {}
+    options: Partial<CollectionOptions> = {}
   ) {
     this._options = options
 
@@ -1179,7 +1179,7 @@ export class Collection<M extends Model = Model> {
    */
   private _createCollection(
     models: (M | Element)[] = [],
-    options: CollectionOptions = {}
+    options: Partial<CollectionOptions> = {}
   ): this {
     return new (this.constructor as typeof Collection)(models, {
       ...this._options,
