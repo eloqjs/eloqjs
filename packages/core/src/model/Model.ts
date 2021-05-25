@@ -518,36 +518,6 @@ export class Model {
   }
 
   /**
-   * Adds this model to all registered collections.
-   */
-  // TODO: Use this method on save hook
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-ignore
-  private static _addFromAllCollections<M extends typeof Model>(
-    model: InstanceType<M>,
-    collections: Record<string, Collection<InstanceType<M>>>
-  ): void {
-    for (const collection in collections) {
-      collections[collection].add(model)
-    }
-  }
-
-  /**
-   * Removes this model from all registered collections.
-   */
-  // TODO: Use this method on delete hook
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-ignore
-  private static _removeFromAllCollections<M extends typeof Model>(
-    model: InstanceType<M>,
-    collections: Record<string, Collection<InstanceType<M>>>
-  ): void {
-    for (const collection in collections) {
-      collections[collection].remove(model)
-    }
-  }
-
-  /**
    * Get the default options of the model.
    */
   private static _getDefaultOptions(): ModelOptions {
