@@ -7,6 +7,7 @@
       <input class="name" v-model="task.name"></td>
     <td class="buttons">
       <el-button
+          v-show="task.$isDirty()"
           type="success"
           icon="el-icon-check"
           size="small"
