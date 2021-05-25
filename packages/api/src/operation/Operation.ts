@@ -82,15 +82,17 @@ export class Operation<M extends Model = Model> {
           // Automatically add to all registered collections.
           this.model.$addToAllCollections()
 
-          // Update saving state
+          // Update saving and fatal states
           this.model.$saving = false
+          this.model.$fatal = false
 
           this.modelType.executeMutationHooks('afterCreateSuccess', this.model)
           this.modelType.executeMutationHooks('afterSaveSuccess', this.model)
         },
         () => {
-          // Update saving state
+          // Update saving and fatal states
           this.model.$saving = false
+          this.model.$fatal = true
 
           this.modelType.executeMutationHooks('afterCreateFailure', this.model)
           this.modelType.executeMutationHooks('afterSaveFailure', this.model)
@@ -154,15 +156,17 @@ export class Operation<M extends Model = Model> {
           // Automatically add to all registered collections.
           this.model.$addToAllCollections()
 
-          // Update saving state
+          // Update saving and fatal states
           this.model.$saving = false
+          this.model.$fatal = false
 
           this.modelType.executeMutationHooks('afterUpdateSuccess', this.model)
           this.modelType.executeMutationHooks('afterSaveSuccess', this.model)
         },
         () => {
-          // Update saving state
+          // Update saving and fatal states
           this.model.$saving = false
+          this.model.$fatal = true
 
           this.modelType.executeMutationHooks('afterUpdateFailure', this.model)
           this.modelType.executeMutationHooks('afterSaveFailure', this.model)
@@ -209,14 +213,16 @@ export class Operation<M extends Model = Model> {
         // Automatically remove from all registered collections.
         this.model.$removeFromAllCollections()
 
-        // Update deleting state
+        // Update deleting and fatal states
         this.model.$deleting = false
+        this.model.$fatal = false
 
         this.modelType.executeMutationHooks('afterDeleteSuccess', this.model)
       },
       () => {
-        // Update deleting state
+        // Update deleting and fatal states
         this.model.$deleting = false
+        this.model.$fatal = true
 
         this.modelType.executeMutationHooks('afterDeleteFailure', this.model)
       },
