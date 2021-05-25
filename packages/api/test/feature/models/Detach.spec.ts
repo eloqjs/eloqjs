@@ -11,8 +11,7 @@ describe('Feature – Models – Detach', () => {
         return [200]
       })
 
-    const response = await new User(Data.User).$detach(new Post(Data.Post))
-    expect(response).toBeUndefined()
+    await new User(Data.User).$detach(new Post(Data.Post))
   })
 
   it('should create a new record via relation method', async () => {
@@ -22,8 +21,7 @@ describe('Feature – Models – Detach', () => {
         return [200]
       })
 
-    const response = await new User(Data.User).posts.detach(Data.Post.slug)
-    expect(response).toBeUndefined()
+    await new User(Data.User).posts.detach(Data.Post.slug)
   })
 
   it('should throw an error when parent model do not have an ID', async () => {

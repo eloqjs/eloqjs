@@ -9,8 +9,7 @@ describe('Feature – Models – Delete', () => {
         return [200]
       })
 
-      const response = await User.delete(1)
-      expect(response).toBeUndefined()
+      await User.delete(1)
     })
   })
 
@@ -20,8 +19,7 @@ describe('Feature – Models – Delete', () => {
         return [200]
       })
 
-      const response = await new User(Data.User).$delete()
-      expect(response).toBeUndefined()
+      await new User(Data.User).$delete()
     })
 
     it('should throw an error when the record do not have an ID', () => {
