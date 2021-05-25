@@ -23,10 +23,7 @@
     "clean": "rimraf -rf ./dist",
     "compile": "tsc -p tsconfig.build.json",
     "lint": "eslint --ext .ts,.js,.json .",
-    "lint:fix": "yarn lint --fix",
-    "test": "jest",
-    "test:watch": "jest --watch",
-    "coverage": "jest --collect-coverage"
+    "lint:fix": "yarn lint --fix"
   },
   "peerDependencies": {
     "@eloqjs/core": "0.0.0-development"
