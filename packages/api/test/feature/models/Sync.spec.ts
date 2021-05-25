@@ -7,61 +7,105 @@ import User from './dummy/models/User'
 
 describe('Feature – Models – Sync', () => {
   it('should update a new record via instance method', async () => {
+    const expected = { ...Data.Post }
+    expected.title = 'Updated Title'
+
+    axiosMock
+      .onPut(`http://localhost/users/1/posts/${Data.Post.slug}`)
+      .reply((config) => {
+        const data = JSON.parse(config.data)
+        const user = {
+          id: Data.Post.user.id
+        }
+
+        expect(data).toEqual({ ...expected, user })
+
+        return [200, expected]
+      })
+
+    const post = new Post(Data.Post)
+
+    post.title = 'Updated Title'
+
+    await new User(Data.User).$sync(post)
+
+    expect(post).toBeInstanceOf(Post)
+    assertModel(post, expected)
+  })
+
+  it('should update a new record via instance method with a PATCH request', async () => {
+    const expected = { ...Data.Post }
+    expected.title = 'Updated Title'
+
     axiosMock
       .onPatch(`http://localhost/users/1/posts/${Data.Post.slug}`)
       .reply((config) => {
         const data = JSON.parse(config.data)
-        // TODO: Expect that only modified data was added to payload.
-        // For now we can't deduce modified fields of relationships.
-        const expected = {
-          ...Data.Post,
-          ...{
-            user: {
-              id: Data.Post.user.id
-            }
-          }
-        }
 
-        expect(data).toEqual(expected)
+        expect(data).toEqual({ title: expected.title })
 
-        return [200, Data.Post]
+        return [200, expected]
       })
 
-    const post = await new User(Data.User)
-      .$sync(new Post(Data.Post))
-      .then((response) => response.data)
+    const post = new Post(Data.Post, null, { patch: true })
+
+    post.title = 'Updated Title'
+
+    await new User(Data.User).$sync(post)
 
     expect(post).toBeInstanceOf(Post)
-    assertModel(post, Data.Post)
+    assertModel(post, expected)
   })
 
   it('should update a new record via relation method', async () => {
+    const expected = { ...Data.Post }
+    expected.title = 'Updated Title'
+
+    axiosMock
+      .onPut(`http://localhost/users/1/posts/${Data.Post.slug}`)
+      .reply((config) => {
+        const data = JSON.parse(config.data)
+        const user = {
+          id: Data.Post.user.id
+        }
+
+        expect(data).toEqual({ ...expected, user })
+
+        return [200, expected]
+      })
+
+    const post = new Post(Data.Post)
+
+    post.title = 'Updated Title'
+
+    await new User(Data.User).posts.sync(post)
+
+    expect(post).toBeInstanceOf(Post)
+    assertModel(post, expected)
+  })
+
+  it('should update a new record via relation method with a PATCH request', async () => {
+    const expected = { ...Data.Post }
+    expected.title = 'Updated Title'
+
     axiosMock
       .onPatch(`http://localhost/users/1/posts/${Data.Post.slug}`)
       .reply((config) => {
         const data = JSON.parse(config.data)
-        // TODO: Expect that only modified data was added to payload.
-        // For now we can't deduce modified fields of relationships.
-        const expected = {
-          ...Data.Post,
-          ...{
-            user: {
-              id: Data.Post.user.id
-            }
-          }
-        }
 
-        expect(data).toEqual(expected)
+        expect(data).toEqual({ title: expected.title })
 
-        return [200, Data.Post]
+        return [200, expected]
       })
 
-    const post = await new User(Data.User).posts
-      .sync(new Post(Data.Post))
-      .then((response) => response.data)
+    const post = new Post(Data.Post, null, { patch: true })
+
+    post.title = 'Updated Title'
+
+    await new User(Data.User).posts.sync(post)
 
     expect(post).toBeInstanceOf(Post)
-    assertModel(post, Data.Post)
+    assertModel(post, expected)
   })
 
   it('should throw an error when parent model do not have an ID', async () => {
