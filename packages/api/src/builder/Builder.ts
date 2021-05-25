@@ -30,7 +30,7 @@ import { SortDirection } from './SortDirection'
 export class Builder<M extends Model = Model, S extends boolean = false> {
   protected model: typeof Model
 
-  private _query: Query
+  private readonly _query: Query
 
   private readonly _requestHandler: Request
 
