@@ -4,9 +4,27 @@ import { Element, Item } from '../types/Data'
 import { Model } from './Model'
 
 export interface Options {
-  relations?: boolean
-  isPayload?: boolean
-  isPatch?: boolean
+  /**
+   * Whether the relationships should be serialized.
+   * If set to `false`, only ID's will be included.
+   */
+  relations: boolean
+
+  /**
+   * Whether the serialization is for a request.
+   */
+  isRequest: boolean
+
+  /**
+   * Whether the request is a PATCH request.
+   */
+  shouldPatch: boolean
+}
+
+export const defaultOptions: Options = {
+  relations: true,
+  isRequest: false,
+  shouldPatch: false
 }
 
 /**
@@ -53,14 +71,14 @@ export function object(o: Record<string, unknown>): Record<string, unknown> {
  */
 export function relation(
   relation: Item | Collection,
-  isPayload: boolean = false
+  isRequest: boolean = false
 ): Element | Element[] | null {
   if (isNull(relation)) {
     return null
   }
 
   function resolve(model: Model) {
-    if (isPayload) {
+    if (isRequest) {
       return {
         [model.$primaryKey()]: model.$id
       }

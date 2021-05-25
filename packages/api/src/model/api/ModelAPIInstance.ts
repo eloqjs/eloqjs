@@ -87,7 +87,7 @@ export class ModelAPIInstance<M extends Model = Model> {
     ])
 
     const record = relationship.$serialize({
-      isPayload: true
+      isRequest: true
     })
 
     assert(!isEmpty(record), [

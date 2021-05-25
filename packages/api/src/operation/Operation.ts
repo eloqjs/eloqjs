@@ -34,7 +34,7 @@ export class Operation<M extends Model = Model> {
    * Create a record.
    */
   public create(config?: Partial<RequestOptions>): SavePromise<M> {
-    const record = this.model.$serialize({ isPayload: true })
+    const record = this.model.$serialize({ isRequest: true })
 
     assert(!isEmpty(record), [
       'Cannot create a new record, because no data was provided.'
@@ -115,7 +115,7 @@ export class Operation<M extends Model = Model> {
 
     assert(!isNull(id), ['Cannot update a model with no ID.'])
 
-    const record = this.model.$serialize({ isPayload: true, isPatch: true })
+    const record = this.model.$serialize({ isRequest: true, shouldPatch: true })
 
     let saveResponse: SaveResponse<M>
 

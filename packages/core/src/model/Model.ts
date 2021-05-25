@@ -689,16 +689,11 @@ export class Model {
   /**
    * Serialize given model POJO.
    */
-  public $serialize(options: Serialize.Options = {}): Element {
-    const defaultOption: Serialize.Options = {
-      relations: true,
-      isPayload: false,
-      isPatch: false
-    }
+  public $serialize(options: Partial<Serialize.Options> = {}): Element {
     const _option = {
-      ...defaultOption,
+      ...Serialize.defaultOptions,
       ...options
-    } as Required<Serialize.Options>
+    }
 
     const fields = this.$fields()
     const result: Element = {}
@@ -709,7 +704,7 @@ export class Model {
       switch (true) {
         default:
         case field instanceof Attributes.Type: {
-          if (_option.isPatch && this._attributes.isClean(key)) {
+          if (_option.shouldPatch && this._attributes.isClean(key)) {
             continue
           }
 
@@ -723,14 +718,14 @@ export class Model {
           break
         }
         case field instanceof Attributes.Relation: {
-          if (_option.isPatch && this._relationships.isClean(key)) {
+          if (_option.shouldPatch && this._relationships.isClean(key)) {
             continue
           }
 
           const value = this._relationships.get(key).data
 
           result[key] = _option.relations
-            ? Serialize.relation(value, _option.isPayload)
+            ? Serialize.relation(value, _option.isRequest)
             : Serialize.emptyRelation(value)
         }
       }
@@ -749,7 +744,10 @@ export class Model {
   /**
    * Serialize this model, or the given model, as POJO.
    */
-  public $toJson(model?: Model, options: Serialize.Options = {}): Element {
+  public $toJson(
+    model?: Model,
+    options: Partial<Serialize.Options> = {}
+  ): Element {
     return (model ?? this).$serialize(options)
   }
 
