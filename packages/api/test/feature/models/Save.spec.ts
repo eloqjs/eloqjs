@@ -20,10 +20,14 @@ describe('Feature – Models – Save', () => {
     })
 
     it('should update a record by passing in the id', async () => {
-      const expected = Data.User
+      const expected = { ...Data.User }
       expected.name = 'Mary Doe'
 
-      axiosMock.onPut('http://localhost/users/1').reply(() => {
+      axiosMock.onPut('http://localhost/users/1').reply((config) => {
+        const data = JSON.parse(config.data)
+
+        expect(data).toEqual(expected)
+
         return [200, expected]
       })
 
@@ -39,7 +43,15 @@ describe('Feature – Models – Save', () => {
 
   describe('#instance', () => {
     it('should create a new record', async () => {
-      axiosMock.onPost('http://localhost/users').reply(() => {
+      axiosMock.onPost('http://localhost/users').reply((config) => {
+        const data = JSON.parse(config.data)
+        const expected = {
+          ...Data.User,
+          id: null
+        }
+
+        expect(data).toEqual(expected)
+
         return [200, Data.User]
       })
 
@@ -54,40 +66,45 @@ describe('Feature – Models – Save', () => {
     })
 
     it('should update a record by passing in the id', async () => {
-      const expected = Data.User
+      const expected = { ...Data.User }
       expected.name = 'Mary Doe'
 
-      axiosMock.onPut('http://localhost/users/1').reply(() => {
+      axiosMock.onPut('http://localhost/users/1').reply((config) => {
+        const data = JSON.parse(config.data)
+
+        expect(data).toEqual(expected)
+
         return [200, expected]
       })
 
-      const user = await new User({
+      const user = new User({
         id: 1,
         name: 'Mary Doe'
       })
-        .$save()
-        .then((response) => response.data)
+
+      await user.$save()
 
       expect(user).toBeInstanceOf(User)
       assertModel(user, expected)
     })
 
-    it('should update a record with a PATCH request', async () => {
-      const expected = Data.User
+    it('should update a record by passing in the id with a PATCH request', async () => {
+      const expected = { ...Data.User }
       expected.name = 'Mary Doe'
 
-      axiosMock.onPatch('http://localhost/users/1').reply(() => {
+      axiosMock.onPatch('http://localhost/users/1').reply((config) => {
+        const data = JSON.parse(config.data)
+
+        expect(data).toEqual({ name: expected.name })
+
         return [200, expected]
       })
 
-      const user = await new User({
-        id: 1,
-        name: 'Mary Doe'
-      })
+      const user = new User(Data.User, null, { patch: true })
 
-      user.$setOption('patch', true)
+      user.name = 'Mary Doe'
 
-      user.$save().then((response) => response.data)
+      await user.$save()
 
       expect(user).toBeInstanceOf(User)
       assertModel(user, expected)
