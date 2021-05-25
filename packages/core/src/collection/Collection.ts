@@ -773,11 +773,12 @@ export class Collection<M extends Model = Model> {
       return model.map((m) => this.remove(m)).filter((m): m is M => !!m)
     }
 
-    // Objects should be converted to model instances first, then removed.
+    // Objects should be used to find the model first, then removed.
     if (isPlainObject(model)) {
-      return this.remove(
-        this._self()._createModel<M>(model, this._options.model)
+      const m = this.models.find(
+        (m) => m[m.$primaryKey()] === model[m.$primaryKey()]
       )
+      return m ? this.remove(m) : undefined
     }
 
     // At this point, `model` should be an instance of Model.
