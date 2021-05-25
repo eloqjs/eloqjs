@@ -39,7 +39,7 @@ export class PluralResponse<
 
     for (let record of data) {
       // TODO: Improve format support
-      record = 'data' in record ? (record.data as Element) : record
+      record = unwrap(record)
 
       this.data.add(record)
     }
