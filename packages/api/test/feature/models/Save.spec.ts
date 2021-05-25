@@ -23,7 +23,7 @@ describe('Feature – Models – Save', () => {
       const expected = Data.User
       expected.name = 'Mary Doe'
 
-      axiosMock.onPatch('http://localhost/users/1').reply(() => {
+      axiosMock.onPut('http://localhost/users/1').reply(() => {
         return [200, expected]
       })
 
@@ -57,7 +57,7 @@ describe('Feature – Models – Save', () => {
       const expected = Data.User
       expected.name = 'Mary Doe'
 
-      axiosMock.onPatch('http://localhost/users/1').reply(() => {
+      axiosMock.onPut('http://localhost/users/1').reply(() => {
         return [200, expected]
       })
 
@@ -67,6 +67,27 @@ describe('Feature – Models – Save', () => {
       })
         .$save()
         .then((response) => response.data)
+
+      expect(user).toBeInstanceOf(User)
+      assertModel(user, expected)
+    })
+
+    it('should update a record with a PATCH request', async () => {
+      const expected = Data.User
+      expected.name = 'Mary Doe'
+
+      axiosMock.onPatch('http://localhost/users/1').reply(() => {
+        return [200, expected]
+      })
+
+      const user = await new User({
+        id: 1,
+        name: 'Mary Doe'
+      })
+
+      user.$setOption('patch', true)
+
+      user.$save().then((response) => response.data)
 
       expect(user).toBeInstanceOf(User)
       assertModel(user, expected)
