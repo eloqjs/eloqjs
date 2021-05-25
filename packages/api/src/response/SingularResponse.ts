@@ -1,7 +1,7 @@
 import { Element, Item, Model } from '@eloqjs/core'
 
 import { HttpClientResponse } from '../httpclient/HttpClientResponse'
-import { forceArray, unwrap, variadic, Wrapped } from '../support/Utils'
+import { unwrap, variadic, Wrapped } from '../support/Utils'
 import { Response } from './Response'
 
 export type SingularData = Element | Element[] | null | undefined
@@ -9,16 +9,12 @@ export type SingularData = Element | Element[] | null | undefined
 export class SingularResponse<M extends Model = Model> extends Response {
   public readonly data: Item<M> = null
 
-  private readonly _hooks: string[]
-
   public constructor(
     httpClientResponse: HttpClientResponse,
-    model: typeof Model,
-    hooks: string | string[] = []
+    model: typeof Model
   ) {
     super(httpClientResponse, model)
 
-    this._hooks = forceArray(hooks)
     this.data = this.resolveData()
   }
 
@@ -33,10 +29,7 @@ export class SingularResponse<M extends Model = Model> extends Response {
       data = this._mutate(data)
     }
 
-    return this._hooks.reduce((model, on) => {
-      this.model.executeMutationHooks(on, model)
-      return model
-    }, data as Item<M>)
+    return data as Item<M>
   }
 
   private _mutate(record: Element): M {
