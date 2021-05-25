@@ -605,7 +605,7 @@ export class Model {
             this._defineAttribute(<Attributes.Type>field, key)
           }
 
-          this[key] = value ?? this._attributes.get(key)
+          this[key] = isUndefined(value) ? this._attributes.get(key) : value
 
           break
         }
@@ -614,7 +614,7 @@ export class Model {
             this._defineRelation(<Attributes.Relation>field, key)
           }
 
-          this[key] = value ?? this._relationships.get(key)
+          this[key] = isUndefined(value) ? this._relationships.get(key) : value
         }
       }
     }
