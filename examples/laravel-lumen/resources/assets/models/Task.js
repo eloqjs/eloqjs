@@ -9,6 +9,12 @@ export default class Task extends Model {
     return 'task'
   }
 
+  static options() {
+    return {
+      patch: true
+    }
+  }
+
   static fields() {
     return {
       id: this.attr(null),
