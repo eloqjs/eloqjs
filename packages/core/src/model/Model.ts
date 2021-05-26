@@ -630,7 +630,7 @@ export class Model {
     key: K,
     value: ValueOf<ModelOptions, K>
   ): void {
-    return this._options.set(key, value)
+    return this._options.set(key as string, value)
   }
 
   /**
@@ -640,7 +640,9 @@ export class Model {
     key: K,
     fallback?: ValueOf<ModelOptions, K>
   ): ValueOf<ModelOptions, K> {
-    return (this._options.get(key) as ValueOf<ModelOptions, K>) ?? fallback
+    return (
+      (this._options.get(key as string) as ValueOf<ModelOptions, K>) ?? fallback
+    )
   }
 
   /**
