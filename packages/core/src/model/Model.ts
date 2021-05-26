@@ -881,6 +881,21 @@ export class Model {
   }
 
   /**
+   * Returns whether this model should perform a "patch" on update, which will
+   * only send changed data in the request, rather than all attributes.
+   */
+  public $shouldPatch(): boolean {
+    return Boolean(this.$getOption('patch'))
+  }
+
+  /**
+   * Returns whether this model allows an existing identifier to be overwritten on update.
+   */
+  public $shouldAllowIdentifierOverwrite(): boolean {
+    return Boolean(this.$getOption('overwriteIdentifier'))
+  }
+
+  /**
    * Serialize this model as POJO.
    */
   protected toJSON(): Element {
