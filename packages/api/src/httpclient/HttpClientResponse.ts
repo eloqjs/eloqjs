@@ -1,5 +1,5 @@
 export interface HttpClientResponse {
-  getData<T = unknown>(): T
+  getData<T = any>(): T
 
-  getUnderlying(): unknown
+  getUnderlying(): any
 }

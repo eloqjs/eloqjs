@@ -9,11 +9,11 @@ export class AxiosHttpClientResponse implements HttpClientResponse {
     this._axiosResponse = axiosResponse
   }
 
-  public getData<T = unknown>(): T {
+  public getData<T = any>(): T {
     return this._axiosResponse.data
   }
 
-  public getUnderlying(): unknown {
+  public getUnderlying(): AxiosResponse {
     return this._axiosResponse
   }
 }
