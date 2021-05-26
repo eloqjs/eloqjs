@@ -3,8 +3,8 @@ import { Collection, Element, Item, Model } from '@eloqjs/core'
 import { Builder } from '../../builder/Builder'
 import { FilterValue } from '../../query/specs/FilterSpec'
 import { OptionValue } from '../../query/specs/OptionSpec'
+import { CollectionPromise } from '../../response/CollectionPromise'
 import { DeletePromise } from '../../response/DeletePromise'
-import { PluralPromise } from '../../response/PluralPromise'
 import { ResponsePromise } from '../../response/ResponsePromise'
 import { SavePromise } from '../../response/SavePromise'
 import { SingularPromise } from '../../response/SingularPromise'
@@ -55,7 +55,7 @@ export class RelationAPI<
   /**
    * Get a collection of records.
    */
-  public get(): S extends true ? SingularPromise<M> : PluralPromise<M>
+  public get(): S extends true ? SingularPromise<M> : CollectionPromise<M>
 
   /**
    * Get a collection of records.

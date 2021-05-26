@@ -6,8 +6,8 @@ import { HttpClientOptions } from '../../httpclient/HttpClientOptions'
 import { Operation } from '../../operation/Operation'
 import { FilterValue } from '../../query/specs/FilterSpec'
 import { OptionValue } from '../../query/specs/OptionSpec'
+import { CollectionPromise } from '../../response/CollectionPromise'
 import { DeletePromise } from '../../response/DeletePromise'
-import { PluralPromise } from '../../response/PluralPromise'
 import { SavePromise } from '../../response/SavePromise'
 import { SingularPromise } from '../../response/SingularPromise'
 import { isModel, isNumber, isString } from '../../support/Utils'
@@ -32,8 +32,11 @@ export class ModelAPIStatic<M extends typeof Model = typeof Model> {
    */
   public all<C extends Collection<InstanceType<M>>>(
     collection?: C
-  ): PluralPromise<InstanceType<M>, C> {
-    return this._query().get(collection) as PluralPromise<InstanceType<M>, C>
+  ): CollectionPromise<InstanceType<M>, C> {
+    return this._query().get(collection) as CollectionPromise<
+      InstanceType<M>,
+      C
+    >
   }
 
   /**

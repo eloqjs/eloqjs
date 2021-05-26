@@ -15,8 +15,8 @@ import { OptionSpec, OptionValue } from '../query/specs/OptionSpec'
 import { Request } from '../request/Request'
 import { RequestMethod } from '../request/RequestMethod'
 import { RequestOperation } from '../request/RequestOperation'
-import { PluralPromise } from '../response/PluralPromise'
-import { PluralResponse } from '../response/PluralResponse'
+import { CollectionPromise } from '../response/CollectionPromise'
+import { CollectionResponse } from '../response/CollectionResponse'
 import { SingularPromise } from '../response/SingularPromise'
 import { SingularResponse } from '../response/SingularResponse'
 import {
@@ -64,17 +64,17 @@ export class Builder<M extends Model = Model, S extends boolean = false> {
    */
   public get<C extends Collection<M>>(
     collection?: C
-  ): S extends true ? SingularPromise<M> : PluralPromise<M, C>
+  ): S extends true ? SingularPromise<M> : CollectionPromise<M, C>
   public get<C extends Collection<M>>(
     collection?: C
-  ): SingularPromise<M> | PluralPromise<M, C> {
+  ): SingularPromise<M> | CollectionPromise<M, C> {
     if (this._forceSingular) {
       return this.first()
     }
 
-    let pluralResponse: PluralResponse<M, C>
+    let pluralResponse: CollectionResponse<M, C>
 
-    return <PluralPromise<M, C>>this._requestHandler
+    return <CollectionPromise<M, C>>this._requestHandler
       .request(
         {
           url: this._query.toString(),
@@ -86,7 +86,11 @@ export class Builder<M extends Model = Model, S extends boolean = false> {
           })
         },
         (response) => {
-          pluralResponse = new PluralResponse(response, this.model, collection)
+          pluralResponse = new CollectionResponse(
+            response,
+            this.model,
+            collection
+          )
         }
       )
       .then(() => pluralResponse)

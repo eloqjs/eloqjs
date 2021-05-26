@@ -4,7 +4,7 @@ import { HttpClientResponse } from '../httpclient/HttpClientResponse'
 import { assert, isArray, isNull } from '../support/Utils'
 import { Response } from './Response'
 
-export class PluralResponse<
+export class CollectionResponse<
   M extends Model = Model,
   C extends Collection<M> = Collection<M>
 > extends Response {

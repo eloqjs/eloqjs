@@ -50,7 +50,7 @@ declare module '@eloqjs/core' {
      * response headers, as well as manipulate the data as you see fit.
      *
      * @returns {Element|Element[]} The data to pass on. Must be a record for {@link SingularResponse}
-     *   and an array of records for {@link PluralResponse}.
+     *   and an array of records for {@link CollectionResponse}.
      */
     dataTransformer?: (response: HttpClientResponse) => Element | Element[]
   }

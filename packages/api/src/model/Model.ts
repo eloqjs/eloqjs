@@ -5,8 +5,8 @@ import { Builder } from '../builder/Builder'
 import { HttpClientOptions } from '../httpclient/HttpClientOptions'
 import { FilterValue } from '../query/specs/FilterSpec'
 import { OptionValue } from '../query/specs/OptionSpec'
+import { CollectionPromise } from '../response/CollectionPromise'
 import { DeletePromise } from '../response/DeletePromise'
-import { PluralPromise } from '../response/PluralPromise'
 import { SavePromise } from '../response/SavePromise'
 import { SingularPromise } from '../response/SingularPromise'
 import { assert } from '../support/Utils'
@@ -19,7 +19,7 @@ export class Model extends BaseModel {
   public static all<
     M extends typeof Model,
     C extends Collection<InstanceType<M>>
-  >(this: M, collection?: C): PluralPromise<InstanceType<M>, C> {
+  >(this: M, collection?: C): CollectionPromise<InstanceType<M>, C> {
     return this._api().all(collection)
   }
 
