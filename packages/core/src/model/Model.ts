@@ -322,7 +322,14 @@ export class Model {
     this: M,
     record: InstanceType<M> | Element
   ): boolean {
-    return !isNull(this.getIdFromRecord(record))
+    return this.isValidId(this.getIdFromRecord(record))
+  }
+
+  /**
+   * Determines whether the ID is valid.
+   */
+  public static isValidId(value: unknown): boolean {
+    return Boolean(value)
   }
 
   /**
@@ -895,6 +902,13 @@ export class Model {
    */
   public $shouldAllowIdentifierOverwrite(): boolean {
     return Boolean(this.$getOption('overwriteIdentifier'))
+  }
+
+  /**
+   * Determines whether the ID is valid.
+   */
+  public $isValidId(value: unknown): boolean {
+    return this.$self().isValidId(value)
   }
 
   /**
