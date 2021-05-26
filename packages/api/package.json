@@ -31,6 +31,9 @@
   "peerDependencies": {
     "@eloqjs/core": "0.0.0-development"
   },
+  "dependencies": {
+    "merge": "^2.1.1"
+  },
   "devDependencies": {
     "@eloqjs/core": "0.0.0-development",
     "@eloqjs/test-utils": "0.0.0-development",
