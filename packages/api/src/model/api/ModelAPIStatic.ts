@@ -1,6 +1,8 @@
 import { Collection, Element, Model } from '@eloqjs/core'
+import merge from 'merge'
 
 import { Builder } from '../../builder/Builder'
+import { HttpClientOptions } from '../../httpclient/HttpClientOptions'
 import { Operation } from '../../operation/Operation'
 import { FilterValue } from '../../query/specs/FilterSpec'
 import { OptionValue } from '../../query/specs/OptionSpec'
@@ -15,6 +17,8 @@ export class ModelAPIStatic<M extends typeof Model = typeof Model> {
    * The type of the model.
    */
   protected model: M
+
+  private _config: Partial<HttpClientOptions> = {}
 
   /**
    * Create a new api instance.
@@ -144,6 +148,17 @@ export class ModelAPIStatic<M extends typeof Model = typeof Model> {
   }
 
   /**
+   * Define the configuration of the request.
+   *
+   * @param {HttpClientOptions} config - The configuration of the request.
+   */
+  public config(config: Partial<HttpClientOptions>): this {
+    merge.recursive(this._config, config)
+
+    return this
+  }
+
+  /**
    * Save or update a record.
    * If the record doesn't have an ID, a new record will be created, otherwise the record will be updated.
    */
@@ -173,8 +188,11 @@ export class ModelAPIStatic<M extends typeof Model = typeof Model> {
     return this._operation(model).delete()
   }
 
-  private _operation(model: InstanceType<M>): Operation<InstanceType<M>> {
-    return new Operation(model)
+  private _operation(
+    model: InstanceType<M>,
+    config?: Partial<HttpClientOptions>
+  ): Operation<InstanceType<M>> {
+    return new Operation(model, config).config(this._getConfig())
   }
 
   /**
@@ -182,7 +200,14 @@ export class ModelAPIStatic<M extends typeof Model = typeof Model> {
    * so you can start querying.
    */
   private _query(): Builder<InstanceType<M>> {
-    return new Builder(this.model)
+    return new Builder<InstanceType<M>>(this.model).config(this._getConfig())
+  }
+
+  /**
+   * Get the current request config.
+   */
+  private _getConfig(): Partial<HttpClientOptions> {
+    return this._config
   }
 
   private _instantiate(record: InstanceType<M> | Element): InstanceType<M> {

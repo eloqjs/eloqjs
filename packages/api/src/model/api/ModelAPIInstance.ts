@@ -1,6 +1,8 @@
 import { Item, Model } from '@eloqjs/core'
+import merge from 'merge'
 
 import { Builder } from '../../builder/Builder'
+import { HttpClientOptions } from '../../httpclient/HttpClientOptions'
 import { Operation } from '../../operation/Operation'
 import { DeletePromise } from '../../response/DeletePromise'
 import { SavePromise } from '../../response/SavePromise'
@@ -14,14 +16,15 @@ export class ModelAPIInstance<M extends Model = Model> {
   protected model: M
 
   /**
+   * The request config.
+   */
+  private _config: Partial<HttpClientOptions> = {}
+
+  /**
    * Create a new api instance.
    */
   public constructor(model: M) {
     this.model = model
-  }
-
-  private static _operation<T extends Model>(model: T): Operation<T> {
-    return new Operation(model)
   }
 
   /**
@@ -94,11 +97,9 @@ export class ModelAPIInstance<M extends Model = Model> {
       'Cannot create a new record, because no data was provided.'
     ])
 
-    return this._self()
-      ._operation(relationship)
-      .create({
-        url: `${this.model.$resource}/${selfId}/${relationship.$resource}`
-      })
+    return this._operation(relationship).create(
+      `${this.model.$resource}/${selfId}/${relationship.$resource}`
+    )
   }
 
   /**
@@ -117,11 +118,9 @@ export class ModelAPIInstance<M extends Model = Model> {
 
     assert(!isNull(relationId), ['Cannot detach a related model with no ID.'])
 
-    return this._self()
-      ._operation(relationship)
-      .delete({
-        url: `${this.model.$resource}/${selfId}/${relationship.$resource}/${relationId}`
-      })
+    return this._operation(relationship).delete(
+      `${this.model.$resource}/${selfId}/${relationship.$resource}/${relationId}`
+    )
   }
 
   /**
@@ -141,11 +140,9 @@ export class ModelAPIInstance<M extends Model = Model> {
 
     assert(!isNull(relationId), ['Cannot sync a related model with no ID.'])
 
-    return this._self()
-      ._operation(relationship)
-      .update({
-        url: `${this.model.$resource}/${selfId}/${relationship.$resource}/${relationId}`
-      })
+    return this._operation(relationship).update(
+      `${this.model.$resource}/${selfId}/${relationship.$resource}/${relationId}`
+    )
   }
 
   /**
@@ -155,8 +152,23 @@ export class ModelAPIInstance<M extends Model = Model> {
     return model.$api().attach(this.model)
   }
 
+  /**
+   * Define the configuration of the request.
+   *
+   * @param {HttpClientOptions} config - The configuration of the request.
+   */
+  public config(config: Partial<HttpClientOptions>): this {
+    merge.recursive(this._config, config)
+
+    return this
+  }
+
+  private _operation<T extends Model>(model: T): Operation<T> {
+    return new Operation(model).config(this._getConfig())
+  }
+
   private _api(): ModelAPIStatic {
-    return new ModelAPIStatic(this.model.$self())
+    return new ModelAPIStatic(this.model.$self()).config(this._getConfig())
   }
 
   private _hasRelation<R extends Model>(relationship: R): void {
@@ -168,7 +180,10 @@ export class ModelAPIInstance<M extends Model = Model> {
     ])
   }
 
-  private _self(): typeof ModelAPIInstance {
-    return this.constructor as typeof ModelAPIInstance
+  /**
+   * Get the current request config.
+   */
+  private _getConfig() {
+    return this._config
   }
 }

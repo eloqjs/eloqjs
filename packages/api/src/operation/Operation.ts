@@ -1,9 +1,9 @@
 import { Model } from '@eloqjs/core'
 
+import { HttpClientOptions } from '../httpclient/HttpClientOptions'
 import { Request } from '../request/Request'
 import { RequestMethod } from '../request/RequestMethod'
 import { RequestOperation } from '../request/RequestOperation'
-import { RequestOptions } from '../request/RequestOptions'
 import { DeletePromise } from '../response/DeletePromise'
 import { SavePromise } from '../response/SavePromise'
 import { SaveResponse } from '../response/SaveResponse'
@@ -14,26 +14,26 @@ export class Operation<M extends Model = Model> {
   protected modelType: typeof Model
   protected requestHandler: Request
 
-  public constructor(model: M) {
+  public constructor(model: M, config: Partial<HttpClientOptions> = {}) {
     this.model = model
     this.modelType = model.$self()
-    this.requestHandler = new Request(this.modelType)
+    this.requestHandler = new Request(this.modelType, config)
   }
 
   /**
    * Save or update a record.
    * If the record doesn't have an ID, a new record will be created, otherwise the record will be updated.
    */
-  public save(config?: Partial<RequestOptions>): SavePromise<M> {
+  public save(url?: string): SavePromise<M> {
     return this.modelType.hasId(this.model)
-      ? this.update(config)
-      : this.create(config)
+      ? this.update(url)
+      : this.create(url)
   }
 
   /**
    * Create a record.
    */
-  public create(config?: Partial<RequestOptions>): SavePromise<M> {
+  public create(url?: string): SavePromise<M> {
     const record = this.model.$serialize({ isRequest: true })
 
     assert(!isEmpty(record), [
@@ -45,7 +45,7 @@ export class Operation<M extends Model = Model> {
     return this.requestHandler
       .request(
         {
-          url: config?.url || this.modelType.getResource(),
+          url: url || this.modelType.getResource(),
           method: RequestMethod.POST,
           data: record
         },
@@ -110,7 +110,7 @@ export class Operation<M extends Model = Model> {
   /**
    * Update a record.
    */
-  public update(config?: Partial<RequestOptions>): SavePromise<M> {
+  public update(url?: string): SavePromise<M> {
     const id = this.model.$id
 
     assert(!isNull(id), ['Cannot update a model with no ID.'])
@@ -125,7 +125,7 @@ export class Operation<M extends Model = Model> {
     return this.requestHandler
       .request(
         {
-          url: config?.url || this.modelType.getResource() + '/' + id,
+          url: url || this.modelType.getResource() + '/' + id,
           method: this.model.$getOption('patch')
             ? RequestMethod.PATCH
             : RequestMethod.PUT,
@@ -191,7 +191,7 @@ export class Operation<M extends Model = Model> {
   /**
    * Delete a record.
    */
-  public delete(config?: Partial<RequestOptions>): DeletePromise {
+  public delete(url?: string): DeletePromise {
     // Get ID before serialize, otherwise the ID may not be available.
     const id = this.model.$id
 
@@ -199,7 +199,7 @@ export class Operation<M extends Model = Model> {
 
     return this.requestHandler.request(
       {
-        url: config?.url || this.modelType.getResource() + '/' + id,
+        url: url || this.modelType.getResource() + '/' + id,
         method: RequestMethod.DELETE
       },
       () => {
@@ -239,5 +239,16 @@ export class Operation<M extends Model = Model> {
         this.modelType.executeMutationHooks('afterDelete', this.model)
       }
     )
+  }
+
+  /**
+   * Define the configuration of the request.
+   *
+   * @param {HttpClientOptions} config - The configuration of the request.
+   */
+  public config(config: Partial<HttpClientOptions>): this {
+    this.requestHandler.setConfig(config)
+
+    return this
   }
 }

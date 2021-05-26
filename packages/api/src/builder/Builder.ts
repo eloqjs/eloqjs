@@ -1,5 +1,6 @@
 import { Collection, Model } from '@eloqjs/core'
 
+import { HttpClientOptions } from '../httpclient/HttpClientOptions'
 import { Query } from '../query/Query'
 import {
   AppendSpec,
@@ -292,6 +293,17 @@ export class Builder<M extends Model = Model, S extends boolean = false> {
     ])
 
     this._query.setResource(resources)
+
+    return this
+  }
+
+  /**
+   * Define the configuration of the request.
+   *
+   * @param {HttpClientOptions} config - The configuration of the request.
+   */
+  public config(config: Partial<HttpClientOptions>): this {
+    this._requestHandler.setConfig(config)
 
     return this
   }

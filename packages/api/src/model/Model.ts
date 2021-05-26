@@ -2,6 +2,7 @@ import { Collection, Element, Item, Model as BaseModel } from '@eloqjs/core'
 
 import * as Attributes from '../attributes'
 import { Builder } from '../builder/Builder'
+import { HttpClientOptions } from '../httpclient/HttpClientOptions'
 import { FilterValue } from '../query/specs/FilterSpec'
 import { OptionValue } from '../query/specs/OptionSpec'
 import { DeletePromise } from '../response/DeletePromise'
@@ -172,6 +173,18 @@ export class Model extends BaseModel {
   }
 
   /**
+   * Define the configuration of the request.
+   *
+   * @param {HttpClientOptions} config - The configuration of the request.
+   */
+  public static config<M extends typeof Model>(
+    this: M,
+    config: Partial<HttpClientOptions>
+  ): ModelAPIStatic<M> {
+    return this._api().config(config)
+  }
+
+  /**
    * Delete a record.
    */
   public static delete(id: string | number): DeletePromise {
@@ -217,7 +230,8 @@ export class Model extends BaseModel {
    *
    * * the representation of this {@link Model} instance in the API if this {@link Model} has an ID and this ID can.
    * be found in the API too
-   * * `null` if this {@link Model} instance has no ID or if there _is_ an ID, but a {@link Model} with this ID cannot be found in the backend.
+   * * `null` if this {@link Model} instance has no ID or if there _is_ an ID, but a {@link Model} with this ID cannot
+   *   be found in the backend.
    */
   public $fresh(): Promise<Item<this>> {
     return this._$api().fresh()
@@ -264,6 +278,15 @@ export class Model extends BaseModel {
    */
   public $for<T extends Model>(model: T): SavePromise<this> {
     return this._$api().for(model)
+  }
+
+  /**
+   * Define the configuration of the request.
+   *
+   * @param {HttpClientOptions} config - The configuration of the request.
+   */
+  public $config(config: Partial<HttpClientOptions>): ModelAPIInstance<this> {
+    return this._$api().config(config)
   }
 
   /**
