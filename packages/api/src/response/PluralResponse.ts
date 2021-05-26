@@ -1,10 +1,8 @@
 import { Collection, Element, Model } from '@eloqjs/core'
 
 import { HttpClientResponse } from '../httpclient/HttpClientResponse'
-import { unwrap, Wrapped } from '../support/Utils'
+import { assert, isArray, isNull } from '../support/Utils'
 import { Response } from './Response'
-
-export type PluralData = Element[] | null | undefined
 
 export class PluralResponse<
   M extends Model = Model,
@@ -19,32 +17,34 @@ export class PluralResponse<
   ) {
     super(httpClientResponse, model)
 
-    this.data =
-      collection ||
-      (new Collection<M>([], {
-        model: this.model
-      }) as C)
-
-    this._resolveData()
+    this.data = this._resolveCollection(collection)
+    this._addModelsToCollection()
   }
 
-  private _resolveData(): void {
-    if (!this.httpClientResponse) {
+  private _resolveCollection(collection?: C): C {
+    if (collection) {
+      return collection
+    }
+
+    return new Collection<M>([], {
+      model: this.model
+    }) as C
+  }
+
+  private _addModelsToCollection(): void {
+    const data = this.getDataFromResponse<Element[]>()
+
+    if (isNull(data)) {
       return
     }
 
-    let data = this.httpClientResponse.getData<
-      PluralData | Wrapped<PluralData>
-    >()
+    assert(isArray(data), [
+      'Response data must be an array of records.',
+      `Received ${typeof data}.`,
+      'See `dataKey` and `dataTransformer` options.'
+    ])
 
-    if (!data || !(data = unwrap(data))) {
-      return
-    }
-
-    for (let record of data) {
-      // TODO: Improve format support
-      record = unwrap(record)
-
+    for (const record of data) {
       this.data.add(record)
     }
   }

@@ -1,6 +1,6 @@
-import { Collection, Item } from '@eloqjs/core'
+import { Collection, Element, Item } from '@eloqjs/core'
 
-import { HttpClient } from '../httpclient/HttpClient'
+import { HttpClient, HttpClientResponse } from '../httpclient'
 import { ModelAPIInstance, ModelAPIStatic } from '../model/api'
 import { RelationAPI } from '../relations/api'
 
@@ -35,6 +35,24 @@ declare module '@eloqjs/core' {
      * Get an [Instance API]{@link ModelAPIInstance} instance from a {@link Model} instance.
      */
     $api<M extends this>(): ModelAPIInstance<M>
+  }
+
+  interface ModelOptions {
+    /**
+     * The resource key your elements may be nested under in the response body.
+     */
+    dataKey?: string
+
+    /**
+     * Intercept and transform the response.
+     *
+     * The method will receive a {@link HttpClientResponse} object allowing you to access response properties such as
+     * response headers, as well as manipulate the data as you see fit.
+     *
+     * @returns {Element|Element[]} The data to pass on. Must be a record for {@link SingularResponse}
+     *   and an array of records for {@link PluralResponse}.
+     */
+    dataTransformer?: (response: HttpClientResponse) => Element | Element[]
   }
 
   namespace Relations {

@@ -1,7 +1,7 @@
 import { Element, Item, Model } from '@eloqjs/core'
 
 import { HttpClientResponse } from '../httpclient/HttpClientResponse'
-import { unwrap, variadic, Wrapped } from '../support/Utils'
+import { assert, isNullish, isObject, variadic } from '../support/Utils'
 import { Response } from './Response'
 
 export type SingularData = Element | Element[] | null | undefined
@@ -19,21 +19,19 @@ export class SingularResponse<M extends Model = Model> extends Response {
   }
 
   protected resolveData(): Item<M> {
-    if (!this.httpClientResponse) {
+    let data = this.getDataFromResponse()
+
+    if (isNullish((data = variadic(data)))) {
       return null
     }
 
-    let data = this.httpClientResponse.getData<
-      SingularData | Wrapped<SingularData>
-    >()
+    assert(isObject(data), [
+      'Response data must be an object.',
+      `Received ${typeof data}.`,
+      'See `dataKey` and `dataTransformer` options.'
+    ])
 
-    if (!data || !(data = unwrap(data)) || !(data = variadic(data))) {
-      data = null
-    } else {
-      data = this._mutate(data)
-    }
-
-    return data as Item<M>
+    return this._mutate(data)
   }
 
   private _mutate(record: Element): M {

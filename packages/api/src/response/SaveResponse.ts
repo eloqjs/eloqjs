@@ -1,7 +1,7 @@
 import { Element, Model } from '@eloqjs/core'
 
 import { HttpClientResponse } from '../httpclient/HttpClientResponse'
-import { unwrap, variadic, Wrapped } from '../support/Utils'
+import { isNull } from '../support/Utils'
 import { Response } from './Response'
 
 export type SingularData = Element | Element[] | null | undefined
@@ -16,15 +16,9 @@ export class SaveResponse<M extends Model = Model> extends Response {
   }
 
   protected resolveData(model: M): M {
-    if (!this.httpClientResponse) {
-      return model
-    }
+    const data = this.getDataFromResponse<Element>()
 
-    let data = this.httpClientResponse.getData<
-      SingularData | Wrapped<SingularData>
-    >()
-
-    if (data && (data = unwrap(data)) && (data = variadic(data))) {
+    if (!isNull(data)) {
       model.$fill(data)
     }
 
