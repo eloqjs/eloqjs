@@ -8,20 +8,20 @@ export interface Options {
    * Whether the relationships should be serialized.
    * If set to `false`, only ID's will be included.
    */
-  relations: boolean
+  relations?: boolean
 
   /**
    * Whether the serialization is for a request.
    */
-  isRequest: boolean
+  isRequest?: boolean
 
   /**
    * Whether the request is a PATCH request.
    */
-  shouldPatch: boolean
+  shouldPatch?: boolean
 }
 
-export const defaultOptions: Options = {
+export const defaultOptions: Required<Options> = {
   relations: true,
   isRequest: false,
   shouldPatch: false

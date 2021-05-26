@@ -30,38 +30,38 @@ export type ModelReference<T> = Readonly<Omit<T, keyof Model>>
 
 export interface ModelOptions {
   /**
-   * Allow custom options.
-   */
-  [key: string]: unknown
-
-  /**
    * Whether this model should fill the given attributes on instantiate.
    */
-  fill: boolean
+  fill?: boolean
 
   /**
    * Whether this model should fill relationships on instantiate.
    */
-  relations: boolean
+  relations?: boolean
 
   /**
    * Whether this model should allow an existing identifier to be
    * overwritten on update.
    */
-  overwriteIdentifier: boolean
+  overwriteIdentifier?: boolean
 
   /**
    * Whether this model should perform a "patch" on update,
    * which will only send changed attributes in the request.
    */
-  patch: boolean
+  patch?: boolean
 
   /**
    * Whether this model should save even if no attributes have changed
    * since the last time they were synced. If set to `false` and no
    * changes have been made, the request will be considered a success.
    */
-  saveUnchanged: boolean
+  saveUnchanged?: boolean
+
+  /**
+   * Allow custom options.
+   */
+  [key: string]: unknown
 }
 
 export class Model {
@@ -167,7 +167,7 @@ export class Model {
   public constructor(
     attributes?: Element,
     collection: Collection | Collection[] | null = null,
-    options: Partial<ModelOptions> = {}
+    options: ModelOptions = {}
   ) {
     this._boot(options)
 
@@ -211,7 +211,7 @@ export class Model {
   /**
    * The options of the model.
    */
-  public static options(): Partial<ModelOptions> {
+  public static options(): ModelOptions {
     return {}
   }
 
@@ -604,7 +604,7 @@ export class Model {
   /**
    * Set the model options.
    */
-  public $setOptions(options: Partial<ModelOptions>): void {
+  public $setOptions(options: ModelOptions): void {
     const _options = {
       ...this.$self()._getDefaultOptions(),
       ...this.$self().options(),
@@ -654,10 +654,7 @@ export class Model {
    * Fill this model by the given attributes. Missing fields will be populated
    * by the attributes default value.
    */
-  public $fill(
-    attributes: Element = {},
-    options: Partial<ModelOptions> = {}
-  ): void {
+  public $fill(attributes: Element = {}, options: ModelOptions = {}): void {
     attributes =
       'data' in attributes ? (attributes.data as Element) : attributes
     const fields = this.$fields()
@@ -694,7 +691,7 @@ export class Model {
   /**
    * Serialize given model POJO.
    */
-  public $serialize(options: Partial<Serialize.Options> = {}): Element {
+  public $serialize(options: Serialize.Options = {}): Element {
     const _option = {
       ...Serialize.defaultOptions,
       ...options
@@ -749,10 +746,7 @@ export class Model {
   /**
    * Serialize this model, or the given model, as POJO.
    */
-  public $toJson(
-    model?: Model,
-    options: Partial<Serialize.Options> = {}
-  ): Element {
+  public $toJson(model?: Model, options: Serialize.Options = {}): Element {
     return (model ?? this).$serialize(options)
   }
 
@@ -896,7 +890,7 @@ export class Model {
   /**
    * Bootstrap this model.
    */
-  private _boot(options: Partial<ModelOptions>): void {
+  private _boot(options: ModelOptions): void {
     this.$self()._boot()
     this._generateUid()
     this.$setOptions(options)
