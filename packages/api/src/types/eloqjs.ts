@@ -49,7 +49,7 @@ declare module '@eloqjs/core' {
      * The method will receive a {@link HttpClientResponse} object allowing you to access response properties such as
      * response headers, as well as manipulate the data as you see fit.
      *
-     * @returns {Element|Element[]} The data to pass on. Must be a record for {@link SingularResponse}
+     * @returns {Element|Element[]} The data to pass on. Must be a record for {@link RecordResponse}
      *   and an array of records for {@link CollectionResponse}.
      */
     dataTransformer?: (response: HttpClientResponse) => Element | Element[]

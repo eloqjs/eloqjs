@@ -6,7 +6,7 @@ import { Response } from './Response'
 
 export type SingularData = Element | Element[] | null | undefined
 
-export class SingularResponse<M extends Model = Model> extends Response {
+export class RecordResponse<M extends Model = Model> extends Response {
   public readonly data: Item<M> = null
 
   public constructor(

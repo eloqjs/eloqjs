@@ -7,8 +7,8 @@ import { FilterValue } from '../query/specs/FilterSpec'
 import { OptionValue } from '../query/specs/OptionSpec'
 import { CollectionPromise } from '../response/CollectionPromise'
 import { DeletePromise } from '../response/DeletePromise'
+import { RecordPromise } from '../response/RecordPromise'
 import { SavePromise } from '../response/SavePromise'
-import { SingularPromise } from '../response/SingularPromise'
 import { assert } from '../support/Utils'
 import { ModelAPIInstance, ModelAPIStatic } from './api'
 
@@ -28,7 +28,7 @@ export class Model extends BaseModel {
    */
   public static first<M extends typeof Model>(
     this: M
-  ): SingularPromise<InstanceType<M>> {
+  ): RecordPromise<InstanceType<M>> {
     return this._api().first()
   }
 
@@ -38,7 +38,7 @@ export class Model extends BaseModel {
   public static find<M extends typeof Model>(
     this: M,
     id: string | number
-  ): SingularPromise<InstanceType<M>> {
+  ): RecordPromise<InstanceType<M>> {
     return this._api().find(id)
   }
 

@@ -17,8 +17,8 @@ import { RequestMethod } from '../request/RequestMethod'
 import { RequestOperation } from '../request/RequestOperation'
 import { CollectionPromise } from '../response/CollectionPromise'
 import { CollectionResponse } from '../response/CollectionResponse'
-import { SingularPromise } from '../response/SingularPromise'
-import { SingularResponse } from '../response/SingularResponse'
+import { RecordPromise } from '../response/RecordPromise'
+import { RecordResponse } from '../response/RecordResponse'
 import {
   assert,
   forceArray,
@@ -36,7 +36,7 @@ export class Builder<M extends Model = Model, S extends boolean = false> {
   private readonly _requestHandler: Request
 
   /**
-   * If true, then this function will in all cases return a {@link SingularResponse}. This is used by HasOne relation,
+   * If true, then this function will in all cases return a {@link RecordResponse}. This is used by HasOne relation,
    * which when queried spawn a Builder with this property set to true.
    */
   private readonly _forceSingular: boolean
@@ -64,10 +64,10 @@ export class Builder<M extends Model = Model, S extends boolean = false> {
    */
   public get<C extends Collection<M>>(
     collection?: C
-  ): S extends true ? SingularPromise<M> : CollectionPromise<M, C>
+  ): S extends true ? RecordPromise<M> : CollectionPromise<M, C>
   public get<C extends Collection<M>>(
     collection?: C
-  ): SingularPromise<M> | CollectionPromise<M, C> {
+  ): RecordPromise<M> | CollectionPromise<M, C> {
     if (this._forceSingular) {
       return this.first()
     }
@@ -99,8 +99,8 @@ export class Builder<M extends Model = Model, S extends boolean = false> {
   /**
    * Get the first record of a collection of records.
    */
-  public first(): SingularPromise<M> {
-    let singularResponse: SingularResponse<M>
+  public first(): RecordPromise<M> {
+    let singularResponse: RecordResponse<M>
 
     return this._requestHandler
       .request(
@@ -114,7 +114,7 @@ export class Builder<M extends Model = Model, S extends boolean = false> {
           })
         },
         (response) => {
-          singularResponse = new SingularResponse(response, this.model)
+          singularResponse = new RecordResponse(response, this.model)
         }
       )
       .then(() => singularResponse)
@@ -123,7 +123,7 @@ export class Builder<M extends Model = Model, S extends boolean = false> {
   /**
    * Find an specific record.
    */
-  public find(id: string | number): SingularPromise<M> {
+  public find(id: string | number): RecordPromise<M> {
     this._query.setIdToFind(id)
 
     return this.first()

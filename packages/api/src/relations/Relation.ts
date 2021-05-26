@@ -4,8 +4,8 @@ import { FilterValue } from '../query/specs/FilterSpec'
 import { OptionValue } from '../query/specs/OptionSpec'
 import { CollectionPromise } from '../response/CollectionPromise'
 import { DeletePromise } from '../response/DeletePromise'
+import { RecordPromise } from '../response/RecordPromise'
 import { SavePromise } from '../response/SavePromise'
-import { SingularPromise } from '../response/SingularPromise'
 import { RelationAPI } from './api'
 
 export class Relation<
@@ -16,26 +16,26 @@ export class Relation<
   /**
    * Get a collection of records.
    */
-  public get(): S extends true ? SingularPromise<M> : CollectionPromise<M>
+  public get(): S extends true ? RecordPromise<M> : CollectionPromise<M>
 
   /**
    * Get a collection of records.
    */
-  public get(): SingularPromise<M> | CollectionPromise<M> {
+  public get(): RecordPromise<M> | CollectionPromise<M> {
     return this.api().get()
   }
 
   /**
    * Get the first record of a collection of records.
    */
-  public first(): SingularPromise<M> {
+  public first(): RecordPromise<M> {
     return this.api().first()
   }
 
   /**
    * Find an specific record.
    */
-  public find(id: string | number): SingularPromise<M> {
+  public find(id: string | number): RecordPromise<M> {
     return this.api().find(id)
   }
 

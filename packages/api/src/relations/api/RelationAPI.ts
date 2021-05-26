@@ -5,9 +5,9 @@ import { FilterValue } from '../../query/specs/FilterSpec'
 import { OptionValue } from '../../query/specs/OptionSpec'
 import { CollectionPromise } from '../../response/CollectionPromise'
 import { DeletePromise } from '../../response/DeletePromise'
+import { RecordPromise } from '../../response/RecordPromise'
 import { ResponsePromise } from '../../response/ResponsePromise'
 import { SavePromise } from '../../response/SavePromise'
-import { SingularPromise } from '../../response/SingularPromise'
 import { isModel } from '../../support/Utils'
 
 export class RelationAPI<
@@ -55,7 +55,7 @@ export class RelationAPI<
   /**
    * Get a collection of records.
    */
-  public get(): S extends true ? SingularPromise<M> : CollectionPromise<M>
+  public get(): S extends true ? RecordPromise<M> : CollectionPromise<M>
 
   /**
    * Get a collection of records.
@@ -71,7 +71,7 @@ export class RelationAPI<
   /**
    * Get the first record of a collection of records.
    */
-  public first(): SingularPromise<M> {
+  public first(): RecordPromise<M> {
     const response = this.query.first()
 
     this._updateRelation(response, true)
@@ -82,7 +82,7 @@ export class RelationAPI<
   /**
    * Find an specific record.
    */
-  public find(id: string | number): SingularPromise<M> {
+  public find(id: string | number): RecordPromise<M> {
     const response = this.query.find(id)
 
     this._updateRelation(response, true)

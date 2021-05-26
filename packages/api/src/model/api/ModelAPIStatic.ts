@@ -8,8 +8,8 @@ import { FilterValue } from '../../query/specs/FilterSpec'
 import { OptionValue } from '../../query/specs/OptionSpec'
 import { CollectionPromise } from '../../response/CollectionPromise'
 import { DeletePromise } from '../../response/DeletePromise'
+import { RecordPromise } from '../../response/RecordPromise'
 import { SavePromise } from '../../response/SavePromise'
-import { SingularPromise } from '../../response/SingularPromise'
 import { isModel, isNumber, isString } from '../../support/Utils'
 
 export class ModelAPIStatic<M extends typeof Model = typeof Model> {
@@ -42,14 +42,14 @@ export class ModelAPIStatic<M extends typeof Model = typeof Model> {
   /**
    * Get the first record of a collection of records.
    */
-  public first(): SingularPromise<InstanceType<M>> {
+  public first(): RecordPromise<InstanceType<M>> {
     return this._query().first()
   }
 
   /**
    * Find an specific record.
    */
-  public find(id: string | number): SingularPromise<InstanceType<M>> {
+  public find(id: string | number): RecordPromise<InstanceType<M>> {
     return this._query().find(id)
   }
 
