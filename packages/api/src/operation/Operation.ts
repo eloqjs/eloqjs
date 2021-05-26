@@ -117,7 +117,7 @@ export class Operation<M extends Model = Model> {
 
     const record = this.model.$serialize({
       isRequest: true,
-      shouldPatch: this.model.$getOption('patch')
+      shouldPatch: this.model.$shouldPatch()
     })
 
     let saveResponse: SaveResponse<M>
@@ -126,7 +126,7 @@ export class Operation<M extends Model = Model> {
       .request(
         {
           url: url || this.modelType.getResource() + '/' + id,
-          method: this.model.$getOption('patch')
+          method: this.model.$shouldPatch()
             ? RequestMethod.PATCH
             : RequestMethod.PUT,
           data: record
