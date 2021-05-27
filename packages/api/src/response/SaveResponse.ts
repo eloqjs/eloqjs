@@ -1,7 +1,6 @@
 import { Element, Model } from '@eloqjs/core'
 
 import { HttpClientResponse } from '../httpclient/HttpClientResponse'
-import { isNull } from '../support/Utils'
 import { Response } from './Response'
 
 export type SingularData = Element | Element[] | null | undefined
@@ -18,9 +17,7 @@ export class SaveResponse<M extends Model = Model> extends Response {
   protected resolveData(model: M): M {
     const data = this.getDataFromResponse<Element>()
 
-    if (!isNull(data)) {
-      model.$fill(data)
-    }
+    model.$update(data)
 
     return model
   }
