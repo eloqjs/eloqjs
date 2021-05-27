@@ -681,47 +681,133 @@ export class Model {
   }
 
   /**
+   * Get a model field for this model.
+   */
+  public $getField(attribute: string): Attributes.Attribute {
+    const fields = this.$fields()
+
+    assert(attribute in fields, [
+      `You must define the attribute "${attribute}" in fields().`
+    ])
+
+    return fields[attribute]
+  }
+
+  /**
+   * Set the value of an attribute and registers the magic "getter". This method should always be
+   * used when setting the value of an attribute.
+   *
+   * @return The value that was set.
+   */
+  public $set<T = any>(attribute: string, value: T): T | undefined {
+    const defined = attribute in this
+
+    // Only register the pass-through property if it's not already set up.
+    // If it already exists on the instance, we know it has been.
+    if (!defined) {
+      this._registerAttribute(attribute)
+      this._registerReference(attribute)
+    }
+
+    const field = this.$getField(attribute)
+
+    // If the field is an attribute and the value is undefined, then apply default value of the field.
+    // Or if the field is a relation, then apply the relation class.
+    if (isUndefined(value) || field instanceof Attributes.Relation) {
+      value = field.make(value, this, attribute, false) as T
+    }
+
+    // Set the attribute value.
+    this._setAttribute(attribute, value)
+
+    return value
+  }
+
+  /**
+   * Return an attribute's value or a fallback value
+   * if this model doesn't have the attribute.
+   *
+   * @return The value of the attribute or `fallback` if not found.
+   */
+  public $get(attribute: string, fallback?: unknown): any {
+    let value = this._getAttribute(attribute)
+    const field = this.$getField(attribute)
+
+    // Use the fallback if the value is undefined.
+    if (isUndefined(value)) {
+      value = fallback
+    }
+
+    // We don't want to mutate relationships.
+    if (field instanceof Attributes.Relation) {
+      return value
+    }
+
+    return field.make(value, this, attribute)
+  }
+
+  /**
+   * Return an attribute's reference value or a fallback value
+   * if this model doesn't have the attribute.
+   *
+   * This is useful in cases where you want to display an attribute but also
+   * change it. For example, a modal with a title based on a model field, but
+   * you're also editing that field. The title will be updating reactively if
+   * it's bound to the active attribute, so bind to the saved one instead.
+   *
+   * @return The value of the attribute's reference or `fallback` if not found.
+   */
+  public $saved(attribute: string, fallback?: unknown): any {
+    let value = this._getReference(attribute)
+    const field = this.$getField(attribute)
+
+    // Use the fallback if the value is undefined.
+    if (isUndefined(value)) {
+      value = fallback
+    }
+
+    // We don't want to mutate relationships.
+    if (field instanceof Attributes.Relation) {
+      return value
+    }
+
+    return field.make(value, this.$, attribute)
+  }
+
+  /**
    * Fill this model by the given attributes. Missing fields will be populated
    * by the attributes default value.
    */
   public $fill(attributes: Element = {}, options: ModelOptions = {}): void {
-    attributes =
-      'data' in attributes ? (attributes.data as Element) : attributes
     const fields = this.$fields()
     const fillRelation =
-      this.$getOption('relations') ?? options.relations ?? true
+      options.relations ?? this.$getOption('relations') ?? true
 
     for (const key in fields) {
       const field = fields[key]
-      const value = attributes[key]
+      let value = attributes[key]
 
-      // Define the getters and setters of attributes and relationships
-      switch (true) {
-        default:
-        case field instanceof Attributes.Type: {
-          if (!(key in this)) {
-            this._defineAttribute(<Attributes.Type>field, key)
-          }
-
-          this[key] = isUndefined(value) ? this._attributes.get(key) : value
-
-          break
-        }
-        case field instanceof Attributes.Relation && fillRelation: {
-          if (!(key in this)) {
-            this._defineRelation(<Attributes.Relation>field, key)
-          }
-
-          this[key] = isUndefined(value) ? this._relationships.get(key) : value
-        }
+      // Some times we might not want to fill relationships
+      if (field instanceof Attributes.Relation && !fillRelation) {
+        continue
       }
+
+      // It's not a requirement to respond with a complete dataset, so we merge with current data.
+      if (isUndefined(value)) {
+        value = this._getAttribute(key)
+      }
+
+      this.$set(key, value)
     }
   }
 
   /**
    * Update this model by the given attributes.
    */
-  public $update(attributes?: Element | string | number | null): void {
+  public $update(
+    attributes: Element | string | number | null | undefined = undefined,
+    options: ModelOptions = {}
+  ): void {
     // No content means we don't want to update the model at all.
     // The attributes that we passed in the request should now be considered
     // the source of truth, so we should update the reference attributes here.
@@ -734,7 +820,7 @@ export class Model {
       // It's not a requirement to respond with a complete dataset,
       // eg. a response to a patch request might return partial data.
     } else if (isPlainObject(attributes)) {
-      this.$fill(attributes)
+      this.$fill(attributes, options)
 
       // We need to sync changes before references
       this.$syncChanges()
@@ -1013,67 +1099,108 @@ export class Model {
   }
 
   /**
-   * Define an attribute in {@link _attributes}, then define its mutable field.
-   *
-   * @param field - The type of attribute field.
-   * @param key - The key of the attribute.
+   * Register an attribute on this model so that it can be accessed directly
+   * on the model, passing through `get` and `set`.
    */
-  private _defineAttribute(field: Attributes.Type, key: string) {
-    const _attributes = this._attributes
-
-    // Create a new field for the attribute.
-    Object.defineProperty(this, key, {
-      // Get the attribute, then apply the field mutation.
-      get() {
-        return field.make(_attributes.get(key), this, key)
-      },
-
-      // Set the new value to the attribute.
-      set(newValue: unknown) {
-        // If undefined, apply default value of the field.
-        if (isUndefined(newValue)) {
-          newValue = field.make(newValue, this, key, false)
-        }
-
-        // Set the new value to the attribute.
-        _attributes.set(key, newValue)
-      }
-    })
-
-    Object.defineProperty(this.$, key, {
-      // Get the attribute, then apply the field mutation.
-      get() {
-        return field.make(_attributes.$get(key), this, key)
-      },
-
-      set() {
-        assert(false, ["The saved state of a property can't be overridden."])
-      }
+  private _registerAttribute(attribute: string): void {
+    // Create dynamic accessors and mutations so that we can update the
+    // model directly while also keeping the model attributes in sync.
+    Object.defineProperty(this, attribute, {
+      get: (): any => this.$get(attribute),
+      set: <T>(value: T): T | undefined => this.$set(attribute, value)
     })
   }
 
   /**
-   * Define a relationship in {@link _relationships}, then define its field.
-   *
-   * @param field - The type of attribute field.
-   * @param key - The key of the attribute.
+   * Register an attribute's reference on this model so that it can be accessed directly
+   * on the model, passing through `get`.
    */
-  private _defineRelation(field: Attributes.Relation, key: string) {
-    // Create a new field for the attribute.
-    Object.defineProperty(this, key, {
-      // Get the attribute, then apply the field mutation.
-      get() {
-        return this._relationships.get(key)
-      },
+  private _registerReference(attribute: string): void {
+    // Create dynamic accessors and mutations so that we can update the
+    // model directly while also keeping the model attributes in sync.
+    Object.defineProperty(this.$, attribute, {
+      get: (): any => this.$saved(attribute),
 
-      // Set the new value to the attribute.
-      set(newValue: Element | Element[]) {
-        // Initiate relation class.
-        newValue = field.make(newValue, this, key)
-
-        // Set the new value to the relation.
-        this._relationships.set(key, newValue)
-      }
+      set: (): void =>
+        assert(false, ["The saved state of a property can't be overridden."])
     })
+  }
+
+  /**
+   * Set an attribute in `{@link _attributes}` or {@link _relationships}, based on field type.
+   */
+  private _setAttribute(attribute: string, value: any): any {
+    const field = this.$getField(attribute)
+
+    // Set the attribute based on field type.
+    switch (true) {
+      default:
+      case field instanceof Attributes.Type: {
+        this._attributes.set(attribute, value)
+
+        break
+      }
+      case field instanceof Attributes.Relation: {
+        this._relationships.set(attribute, value)
+
+        break
+      }
+    }
+
+    return value
+  }
+
+  /**
+   * Get an attribute from {@link _attributes} or {@link _relationships}, based on field type.
+   *
+   * @return The unmutated value of attribute.
+   */
+  private _getAttribute(attribute: string): any {
+    const field = this.$getField(attribute)
+    let value: any
+
+    // Get the attribute based on field type.
+    switch (true) {
+      default:
+      case field instanceof Attributes.Type: {
+        value = this._attributes.get(attribute)
+
+        break
+      }
+      case field instanceof Attributes.Relation: {
+        value = this._relationships.get(attribute)
+
+        break
+      }
+    }
+
+    return value
+  }
+
+  /**
+   * Get an attribute's reference from {@link _attributes} or {@link _relationships}, based on field type.
+   *
+   * @return The unmutated value of attribute's reference.
+   */
+  private _getReference(attribute: string): any {
+    const field = this.$getField(attribute)
+    let value: any
+
+    // Get the attribute based on field type.
+    switch (true) {
+      default:
+      case field instanceof Attributes.Type: {
+        value = this._attributes.$get(attribute)
+
+        break
+      }
+      case field instanceof Attributes.Relation: {
+        value = this._relationships.$get(attribute)
+
+        break
+      }
+    }
+
+    return value
   }
 }
