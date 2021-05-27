@@ -726,6 +726,8 @@ export class Model {
     // The attributes that we passed in the request should now be considered
     // the source of truth, so we should update the reference attributes here.
     if (!attributes || (isObject(attributes) && isEmpty(attributes))) {
+      // We need to sync changes before references
+      this.$syncChanges()
       this.$syncReference()
 
       // A plain object implies that we want to update the model data.
@@ -733,6 +735,9 @@ export class Model {
       // eg. a response to a patch request might return partial data.
     } else if (isPlainObject(attributes)) {
       this.$fill(attributes)
+
+      // We need to sync changes before references
+      this.$syncChanges()
       this.$syncReference()
 
       // There is some data, but it's not an object, so we can assume that the
