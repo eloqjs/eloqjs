@@ -191,6 +191,13 @@ export class Model {
   }
 
   /**
+   * Get the primary key for the model.
+   */
+  public get $primaryKey(): string {
+    return this.$self().primaryKey
+  }
+
+  /**
    * Get the resource route of the model.
    */
   public get $resource(): string {
@@ -554,13 +561,6 @@ export class Model {
    */
   public $self(): typeof Model {
     return this.constructor as typeof Model
-  }
-
-  /**
-   * Get the primary key for the model.
-   */
-  public $primaryKey(): string {
-    return this.$self().primaryKey
   }
 
   /**

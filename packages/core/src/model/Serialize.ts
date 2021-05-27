@@ -80,7 +80,7 @@ export function relation(
   function resolve(model: Model) {
     if (isRequest) {
       return {
-        [model.$primaryKey()]: model.$id
+        [model.$primaryKey]: model.$id
       }
     }
 
