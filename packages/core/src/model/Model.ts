@@ -198,6 +198,13 @@ export class Model {
   }
 
   /**
+   * Determines whether the model has an ID.
+   */
+  public get $hasId(): boolean {
+    return this.$isValidId(this.$id)
+  }
+
+  /**
    * Get the resource route of the model.
    */
   public get $resource(): string {
