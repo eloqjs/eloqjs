@@ -77,10 +77,6 @@ export class Operation<M extends Model = Model> {
         (response) => {
           saveResponse = new SaveResponse(response, this.model)
 
-          // We need to sync changes before references
-          this.model.$syncChanges()
-          this.model.$syncReference()
-
           // Automatically add to all registered collections.
           this.model.$addToAllCollections()
 
@@ -157,10 +153,6 @@ export class Operation<M extends Model = Model> {
         },
         (response) => {
           saveResponse = new SaveResponse(response, this.model)
-
-          // We need to sync changes before references
-          this.model.$syncChanges()
-          this.model.$syncReference()
 
           // Automatically add to all registered collections.
           this.model.$addToAllCollections()
