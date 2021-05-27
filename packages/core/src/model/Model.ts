@@ -204,7 +204,7 @@ export class Model {
    * Determines whether the model has an ID.
    */
   public get $hasId(): boolean {
-    return this.$isValidId(this.$id)
+    return this.$self().isValidId(this.$id)
   }
 
   /**
@@ -739,7 +739,7 @@ export class Model {
       // It's possible that the response didn't actually return a valid
       // ID, so before we try to use it we should make sure that
       // we're not accidentally assigning the wrong data as ID.
-      if (this.$isValidId(id)) {
+      if (this.$self().isValidId(id)) {
         // If an ID already exists on this model and the returned
         // ID is not the same, this almost definitely indicates
         // an unexpected state. The default is to protect against this
@@ -966,13 +966,6 @@ export class Model {
    */
   public $shouldAllowIdentifierOverwrite(): boolean {
     return Boolean(this.$getOption('overwriteIdentifier'))
-  }
-
-  /**
-   * Determines whether the ID is valid.
-   */
-  public $isValidId(value: unknown): boolean {
-    return this.$self().isValidId(value)
   }
 
   /**
