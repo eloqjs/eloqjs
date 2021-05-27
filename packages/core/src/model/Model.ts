@@ -8,12 +8,15 @@ import { Uid as UidGenerator } from '../support/Uid'
 import {
   assert,
   isArray,
+  isEmpty,
   isEmptyString,
   isFunction,
   isModel,
   isNull,
   isNullish,
   isNumber,
+  isObject,
+  isPlainObject,
   isString,
   isUndefined,
   ValueOf
@@ -707,6 +710,53 @@ export class Model {
 
           this[key] = isUndefined(value) ? this._relationships.get(key) : value
         }
+      }
+    }
+  }
+
+  /**
+   * Update this model by the given attributes.
+   */
+  public $update(attributes?: Element | string | number | null): void {
+    // No content means we don't want to update the model at all.
+    // The attributes that we passed in the request should now be considered
+    // the source of truth, so we should update the reference attributes here.
+    if (!attributes || (isObject(attributes) && isEmpty(attributes))) {
+      this.$syncReference()
+
+      // A plain object implies that we want to update the model data.
+      // It's not a requirement to respond with a complete dataset,
+      // eg. a response to a patch request might return partial data.
+    } else if (isPlainObject(attributes)) {
+      this.$fill(attributes)
+      this.$syncReference()
+
+      // There is some data, but it's not an object, so we can assume that the
+      // response only returned an ID for this model.
+    } else {
+      const id = this.$self().parseId(attributes)
+
+      // It's possible that the response didn't actually return a valid
+      // ID, so before we try to use it we should make sure that
+      // we're not accidentally assigning the wrong data as ID.
+      if (this.$isValidId(id)) {
+        // If an ID already exists on this model and the returned
+        // ID is not the same, this almost definitely indicates
+        // an unexpected state. The default is to protect against this
+        // and fail hard, but this might not always be what we want.
+        if (this.$hasId && id !== this.$id) {
+          if (!this.$shouldAllowIdentifierOverwrite()) {
+            assert(true, ['Not allowed to overwrite model ID.'])
+          }
+        }
+
+        // Update the ID and sync the saved attributes.
+        this[this.$primaryKey] = id
+        this.$syncReference()
+      } else {
+        assert(true, [
+          'Expected an empty response, object, or valid identifier.'
+        ])
       }
     }
   }
