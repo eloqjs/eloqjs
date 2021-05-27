@@ -309,6 +309,13 @@ export class Model {
   }
 
   /**
+   * @returns {*} A potential ID parsed from response data.
+   */
+  public static parseId<T = unknown>(data: T): T {
+    return data
+  }
+
+  /**
    * Get the resource route of the model.
    */
   public static getResource(): string {
