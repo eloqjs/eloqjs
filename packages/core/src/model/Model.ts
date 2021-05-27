@@ -314,11 +314,7 @@ export class Model {
    * Get correct index id, which is `string` | `number`, from the given value.
    */
   public static getIdFromValue(value: unknown): string | number | null {
-    if (isString(value) && !isEmptyString(value)) {
-      return value
-    }
-
-    if (isNumber(value)) {
+    if (this.isValidId(value)) {
       return value
     }
 
@@ -352,8 +348,16 @@ export class Model {
   /**
    * Determines whether the ID is valid.
    */
-  public static isValidId(value: unknown): boolean {
-    return Boolean(value)
+  public static isValidId(value: unknown): value is string | number {
+    if (isString(value) && !isEmptyString(value)) {
+      return true
+    }
+
+    if (isNumber(value)) {
+      return true
+    }
+
+    return false
   }
 
   /**
