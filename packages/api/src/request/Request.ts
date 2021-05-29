@@ -1,5 +1,5 @@
 import { Model } from '@eloqjs/core'
-import merge from 'merge'
+import defu from 'defu'
 
 import {
   HttpClient,
@@ -65,7 +65,7 @@ export class Request<M extends typeof Model = typeof Model> {
    * Allows you to set the current request config.
    */
   public setConfig(config: Partial<HttpClientOptions>): void {
-    merge.recursive(this._config, config)
+    this._config = defu(config, this._config)
   }
 
   public request(

@@ -1,5 +1,5 @@
 import { Collection, Element, Model } from '@eloqjs/core'
-import merge from 'merge'
+import defu from 'defu'
 
 import { Builder } from '../../builder/Builder'
 import { HttpClientOptions } from '../../httpclient/HttpClientOptions'
@@ -156,7 +156,7 @@ export class ModelAPIStatic<M extends typeof Model = typeof Model> {
    * @param {HttpClientOptions} config - The configuration of the request.
    */
   public config(config: Partial<HttpClientOptions>): this {
-    merge.recursive(this._config, config)
+    this._config = defu(config, this._config)
 
     return this
   }

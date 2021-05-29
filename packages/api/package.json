@@ -32,7 +32,7 @@
     "@eloqjs/core": "0.0.0-development"
   },
   "dependencies": {
-    "merge": "^2.1.1"
+    "defu": "^5.0.0"
   },
   "devDependencies": {
     "@eloqjs/core": "0.0.0-development",

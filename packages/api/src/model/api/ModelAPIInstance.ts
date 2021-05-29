@@ -1,5 +1,5 @@
 import { Item, Model } from '@eloqjs/core'
-import merge from 'merge'
+import defu from 'defu'
 
 import { Builder } from '../../builder/Builder'
 import { HttpClientOptions } from '../../httpclient/HttpClientOptions'
@@ -158,7 +158,7 @@ export class ModelAPIInstance<M extends Model = Model> {
    * @param {HttpClientOptions} config - The configuration of the request.
    */
   public config(config: Partial<HttpClientOptions>): this {
-    merge.recursive(this._config, config)
+    this._config = defu(config, this._config)
 
     return this
   }
