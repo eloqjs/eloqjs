@@ -50,13 +50,18 @@ export class Operation<M extends Model = Model> {
           data: record
         },
         () => {
-          this.model.$emit('beforeSave')
-          this.model.$emit('beforeCreate')
+          const beforeSave = this.model.$emit('beforeSave')
+          const beforeCreate = this.model.$emit('beforeCreate')
 
           return new Promise((resolve) => {
             // Don't save if we're already busy saving this model.
             // This prevents things like accidental double-clicks.
-            if (this.model.$saving) {
+            // Also don't save if some hook return false.
+            if (
+              this.model.$saving ||
+              beforeSave === false ||
+              beforeCreate === false
+            ) {
               return resolve(RequestOperation.REQUEST_SKIP)
             }
 
@@ -128,13 +133,18 @@ export class Operation<M extends Model = Model> {
           data: record
         },
         () => {
-          this.model.$emit('beforeSave')
-          this.model.$emit('beforeUpdate')
+          const beforeSave = this.model.$emit('beforeSave')
+          const beforeUpdate = this.model.$emit('beforeUpdate')
 
           return new Promise((resolve) => {
             // Don't save if we're already busy saving this model.
             // This prevents things like accidental double-clicks.
-            if (this.model.$saving) {
+            // Also don't save if some hook return false.
+            if (
+              this.model.$saving ||
+              beforeSave === false ||
+              beforeUpdate === false
+            ) {
               return resolve(RequestOperation.REQUEST_SKIP)
             }
 
@@ -196,12 +206,13 @@ export class Operation<M extends Model = Model> {
         method: RequestMethod.DELETE
       },
       () => {
-        this.model.$emit('beforeDelete')
+        const beforeDelete = this.model.$emit('beforeDelete')
 
         return new Promise((resolve) => {
           // Don't delete if we're already busy deleting this model.
           // This prevents things like accidental double-clicks.
-          if (this.model.$deleting) {
+          // Also don't delete if some hook return false.
+          if (this.model.$deleting || beforeDelete === false) {
             return resolve(RequestOperation.REQUEST_SKIP)
           }
 
