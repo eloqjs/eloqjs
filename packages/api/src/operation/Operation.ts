@@ -128,6 +128,7 @@ export class Operation<M extends Model = Model> {
           data: record
         },
         () => {
+          this.modelType.executeMutationHooks('beforeSave', this.model)
           this.modelType.executeMutationHooks('beforeUpdate', this.model)
 
           return new Promise((resolve) => {
