@@ -12,7 +12,6 @@ import {
   isEmptyString,
   isFunction,
   isModel,
-  isNull,
   isNullish,
   isNumber,
   isObject,
@@ -21,7 +20,7 @@ import {
   isUndefined,
   ValueOf
 } from '../support/Utils'
-import { Element, Item } from '../types/Data'
+import { Element } from '../types/Data'
 import * as Contracts from './Contracts'
 import * as Serialize from './Serialize'
 
@@ -423,22 +422,6 @@ export class Model {
 
       return true
     })
-  }
-
-  /**
-   * Execute mutation hooks to the given model.
-   */
-  public static executeMutationHooks<M extends Item>(on: string, model: M): M {
-    const hooks = this._buildHooks(on) as Contracts.MutationHook[]
-
-    if (hooks.length === 0 || isNull(model)) {
-      return model
-    }
-
-    return hooks.reduce((m, hook) => {
-      hook(m as Model, this.entity)
-      return m
-    }, model)
   }
 
   /**
