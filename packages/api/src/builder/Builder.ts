@@ -82,7 +82,7 @@ export class Builder<M extends Model = Model, S extends boolean = false> {
         },
         () => {
           return new Promise((resolve) => {
-            resolve(RequestOperation.REQUEST_CONTINUE)
+            return resolve(RequestOperation.REQUEST_CONTINUE)
           })
         },
         (response) => {
@@ -110,7 +110,7 @@ export class Builder<M extends Model = Model, S extends boolean = false> {
         },
         () => {
           return new Promise((resolve) => {
-            resolve(RequestOperation.REQUEST_CONTINUE)
+            return resolve(RequestOperation.REQUEST_CONTINUE)
           })
         },
         (response) => {

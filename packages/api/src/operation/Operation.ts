@@ -57,7 +57,7 @@ export class Operation<M extends Model = Model> {
             // Don't save if we're already busy saving this model.
             // This prevents things like accidental double-clicks.
             if (this.model.$saving) {
-              resolve(RequestOperation.REQUEST_SKIP)
+              return resolve(RequestOperation.REQUEST_SKIP)
             }
 
             // Don't save if no data has changed, but consider it a success.
@@ -65,13 +65,13 @@ export class Operation<M extends Model = Model> {
               !this.model.$getOption('saveUnchanged') &&
               this.model.$isClean()
             ) {
-              resolve(RequestOperation.REQUEST_REDUNDANT)
+              return resolve(RequestOperation.REQUEST_REDUNDANT)
             }
 
             // Update saving state
             this.model.$saving = true
 
-            resolve(RequestOperation.REQUEST_CONTINUE)
+            return resolve(RequestOperation.REQUEST_CONTINUE)
           })
         },
         (response) => {
@@ -135,7 +135,7 @@ export class Operation<M extends Model = Model> {
             // Don't save if we're already busy saving this model.
             // This prevents things like accidental double-clicks.
             if (this.model.$saving) {
-              resolve(RequestOperation.REQUEST_SKIP)
+              return resolve(RequestOperation.REQUEST_SKIP)
             }
 
             // Don't save if no data has changed, but consider it a success.
@@ -143,13 +143,13 @@ export class Operation<M extends Model = Model> {
               !this.model.$getOption('saveUnchanged') &&
               this.model.$isClean()
             ) {
-              resolve(RequestOperation.REQUEST_REDUNDANT)
+              return resolve(RequestOperation.REQUEST_REDUNDANT)
             }
 
             // Update saving state
             this.model.$saving = true
 
-            resolve(RequestOperation.REQUEST_CONTINUE)
+            return resolve(RequestOperation.REQUEST_CONTINUE)
           })
         },
         (response) => {
@@ -202,13 +202,13 @@ export class Operation<M extends Model = Model> {
           // Don't delete if we're already busy deleting this model.
           // This prevents things like accidental double-clicks.
           if (this.model.$deleting) {
-            resolve(RequestOperation.REQUEST_SKIP)
+            return resolve(RequestOperation.REQUEST_SKIP)
           }
 
           // Update deleting state
           this.model.$deleting = true
 
-          resolve(RequestOperation.REQUEST_CONTINUE)
+          return resolve(RequestOperation.REQUEST_CONTINUE)
         })
       },
       () => {
