@@ -1064,6 +1064,25 @@ export class Model {
   }
 
   /**
+   * Execute mutation hooks to the given model.
+   */
+  public $emit(event: string): void | false {
+    const hooks = this.$self()._buildHooks(event) as Contracts.MutationHook[]
+
+    if (hooks.length === 0) {
+      return
+    }
+
+    for (const hook of hooks) {
+      const shouldBreak = hook(this, this.$entity)
+
+      if (shouldBreak === false) {
+        return false
+      }
+    }
+  }
+
+  /**
    * Serialize this model as POJO.
    */
   protected toJSON(): Element {
