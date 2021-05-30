@@ -50,8 +50,8 @@ export class Operation<M extends Model = Model> {
           data: record
         },
         () => {
-          this.modelType.executeMutationHooks('beforeSave', this.model)
-          this.modelType.executeMutationHooks('beforeCreate', this.model)
+          this.model.$emit('beforeSave')
+          this.model.$emit('beforeCreate')
 
           return new Promise((resolve) => {
             // Don't save if we're already busy saving this model.
@@ -84,20 +84,20 @@ export class Operation<M extends Model = Model> {
           this.model.$saving = false
           this.model.$fatal = false
 
-          this.modelType.executeMutationHooks('afterCreateSuccess', this.model)
-          this.modelType.executeMutationHooks('afterSaveSuccess', this.model)
+          this.model.$emit('afterCreateSuccess')
+          this.model.$emit('afterSaveSuccess')
         },
         () => {
           // Update saving and fatal states
           this.model.$saving = false
           this.model.$fatal = true
 
-          this.modelType.executeMutationHooks('afterCreateFailure', this.model)
-          this.modelType.executeMutationHooks('afterSaveFailure', this.model)
+          this.model.$emit('afterCreateFailure')
+          this.model.$emit('afterSaveFailure')
         },
         () => {
-          this.modelType.executeMutationHooks('afterCreate', this.model)
-          this.modelType.executeMutationHooks('afterSave', this.model)
+          this.model.$emit('afterCreate')
+          this.model.$emit('afterSave')
         }
       )
       .then(() => saveResponse)
@@ -128,8 +128,8 @@ export class Operation<M extends Model = Model> {
           data: record
         },
         () => {
-          this.modelType.executeMutationHooks('beforeSave', this.model)
-          this.modelType.executeMutationHooks('beforeUpdate', this.model)
+          this.model.$emit('beforeSave')
+          this.model.$emit('beforeUpdate')
 
           return new Promise((resolve) => {
             // Don't save if we're already busy saving this model.
@@ -162,20 +162,20 @@ export class Operation<M extends Model = Model> {
           this.model.$saving = false
           this.model.$fatal = false
 
-          this.modelType.executeMutationHooks('afterUpdateSuccess', this.model)
-          this.modelType.executeMutationHooks('afterSaveSuccess', this.model)
+          this.model.$emit('afterUpdateSuccess')
+          this.model.$emit('afterSaveSuccess')
         },
         () => {
           // Update saving and fatal states
           this.model.$saving = false
           this.model.$fatal = true
 
-          this.modelType.executeMutationHooks('afterUpdateFailure', this.model)
-          this.modelType.executeMutationHooks('afterSaveFailure', this.model)
+          this.model.$emit('afterUpdateFailure')
+          this.model.$emit('afterSaveFailure')
         },
         () => {
-          this.modelType.executeMutationHooks('afterUpdate', this.model)
-          this.modelType.executeMutationHooks('afterSave', this.model)
+          this.model.$emit('afterUpdate')
+          this.model.$emit('afterSave')
         }
       )
       .then(() => saveResponse)
@@ -196,7 +196,7 @@ export class Operation<M extends Model = Model> {
         method: RequestMethod.DELETE
       },
       () => {
-        this.modelType.executeMutationHooks('beforeDelete', this.model)
+        this.model.$emit('beforeDelete')
 
         return new Promise((resolve) => {
           // Don't delete if we're already busy deleting this model.
@@ -219,17 +219,17 @@ export class Operation<M extends Model = Model> {
         this.model.$deleting = false
         this.model.$fatal = false
 
-        this.modelType.executeMutationHooks('afterDeleteSuccess', this.model)
+        this.model.$emit('afterDeleteSuccess')
       },
       () => {
         // Update deleting and fatal states
         this.model.$deleting = false
         this.model.$fatal = true
 
-        this.modelType.executeMutationHooks('afterDeleteFailure', this.model)
+        this.model.$emit('afterDeleteFailure')
       },
       () => {
-        this.modelType.executeMutationHooks('afterDelete', this.model)
+        this.model.$emit('afterDelete')
       }
     )
   }
