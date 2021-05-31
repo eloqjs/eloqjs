@@ -24,6 +24,7 @@ import {
   forceArray,
   isArray,
   isObject,
+  isString,
   isUndefined
 } from '../support/Utils'
 import { SortDirection } from './SortDirection'
@@ -203,13 +204,29 @@ export class Builder<M extends Model = Model, S extends boolean = false> {
   /**
    * Specify the fields that should be included in the returned object graph.
    */
-  public select(field: string | string[]): this {
+  public select(field: string | string[] | Record<string, string | string[]>): this {
     assert(!isUndefined(field), ['The `field` of `select` is required.'])
 
-    field = forceArray(field)
+    const addFields = (fields: string | string[], key: string = this.model.entity): void => {
+      fields = forceArray(fields)
 
-    for (const value of field) {
-      this._query.addField(new FieldSpec(this.model.entity, value))
+      for (const field of fields) {
+        this._query.addField(new FieldSpec(key, field))
+      }
+
+      return
+    }
+
+    // Single entity .select(['age', 'firstname'])
+    if (isArray(field) || isString(field)) {
+      addFields(field)
+    }
+
+    // Related entities .select({ posts: ['title', 'content'], user: ['age', 'firstname'] })
+    if (isObject(field)) {
+      Object.entries(field).forEach(([key, fields]) => {
+        addFields(fields, key)
+      })
     }
 
     return this
