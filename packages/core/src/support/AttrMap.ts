@@ -53,7 +53,7 @@ export class AttrMap<T> extends Map<T> {
     attributes = forceArray(attributes)
 
     for (const attribute of attributes) {
-      this.data[attribute] = { ...this.reference }[attribute]
+      this.data[attribute] = this.reference[attribute]
     }
   }
 
