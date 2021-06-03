@@ -109,12 +109,12 @@ export class Model {
   /**
    * The global lifecycle hook registries.
    */
-  private static _hooks: Contracts.GlobalHooks = {}
+  private static _globalHooks: Contracts.GlobalHooks = {}
 
   /**
    * The counter to generate the UID for global hooks.
    */
-  private static _lastHookId: number = 0
+  private static _lastGlobalHookId: number = 0
 
   /**
    * Determines if the model is in saving state.
@@ -140,6 +140,16 @@ export class Model {
    * The saved state of attributes.
    */
   public readonly $: ModelReference<this> = {} as ModelReference<this>
+
+  /**
+   * The local hook registries.
+   */
+  private _localHooks: Contracts.LocalHooks = {}
+
+  /**
+   * The counter to generate the UID for local hooks.
+   */
+  private _lastLocalHookId: number = 0
 
   /**
    * The collections of the record.
@@ -394,13 +404,13 @@ export class Model {
    * it to unregister hooks.
    */
   public static on(on: string, callback: Contracts.HookableClosure): number {
-    const id = ++this._lastHookId
+    const id = ++this._lastGlobalHookId
 
-    if (!this._hooks[on]) {
-      this._hooks[on] = []
+    if (!this._globalHooks[on]) {
+      this._globalHooks[on] = []
     }
 
-    this._hooks[on].push({ id, callback })
+    this._globalHooks[on].push({ id, callback })
 
     return id
   }
@@ -409,8 +419,8 @@ export class Model {
    * Unregister global hook with the given id.
    */
   public static off(id: number): boolean {
-    return Object.keys(this._hooks).some((on) => {
-      const hooks = this._hooks[on]
+    return Object.keys(this._globalHooks).some((on) => {
+      const hooks = this._globalHooks[on]
 
       const index = hooks.findIndex((h) => h.id === id)
 
@@ -519,11 +529,11 @@ export class Model {
   /**
    * Build executable hook collection for the given hook.
    */
-  private static _buildHooks(on: string): Contracts.HookableClosure[] {
+  private static _buildGlobalHooks(on: string): Contracts.HookableClosure[] {
     const hooks = this._getGlobalHookAsArray(on)
-    const localHook = this[on] as Contracts.HookableClosure | undefined
+    const staticHook = this[on] as Contracts.HookableClosure | undefined
 
-    localHook && hooks.push(localHook.bind(this))
+    staticHook && hooks.push(staticHook.bind(this))
 
     return hooks
   }
@@ -535,7 +545,7 @@ export class Model {
   private static _getGlobalHookAsArray(
     on: string
   ): Contracts.HookableClosure[] {
-    const hooks = this._hooks[on]
+    const hooks = this._globalHooks[on]
 
     return hooks ? hooks.map((h) => h.callback.bind(this)) : []
   }
@@ -1050,19 +1060,60 @@ export class Model {
    * Execute mutation hooks to the given model.
    */
   public $emit(event: string): void | false {
-    const hooks = this.$self()._buildHooks(event) as Contracts.MutationHook[]
+    const hooks: Contracts.MutationHook[] = []
+
+    // Build global hooks
+    hooks.push(...this.$self()._buildGlobalHooks(event))
+
+    // Build local hooks
+    hooks.push(...this._buildLocalHooks(event))
 
     if (hooks.length === 0) {
       return
     }
 
     for (const hook of hooks) {
-      const shouldBreak = hook(this, this.$entity)
+      const result = hook(this, this.$entity)
 
-      if (shouldBreak === false) {
+      if (result === false) {
         return false
       }
     }
+  }
+
+  /**
+   * Register a local hook. It will return ID for the hook that users may use
+   * it to unregister hooks.
+   */
+  public $on(on: string, callback: Contracts.HookableClosure): number {
+    const id = ++this._lastLocalHookId
+
+    if (!this._localHooks[on]) {
+      this._localHooks[on] = []
+    }
+
+    this._localHooks[on].push({ id, callback })
+
+    return id
+  }
+
+  /**
+   * Unregister local hook with the given id.
+   */
+  public $off(id: number): boolean {
+    return Object.keys(this._localHooks).some((on) => {
+      const hooks = this._localHooks[on]
+
+      const index = hooks.findIndex((h) => h.id === id)
+
+      if (index === -1) {
+        return false
+      }
+
+      hooks.splice(index, 1)
+
+      return true
+    })
   }
 
   /**
@@ -1204,5 +1255,22 @@ export class Model {
     }
 
     return value
+  }
+
+  /**
+   * Get local hook of the given name as array by stripping id key and keep
+   * only hook functions.
+   */
+  private _getLocalHookAsArray(on: string): Contracts.HookableClosure[] {
+    const hooks = this._localHooks[on]
+
+    return hooks ? hooks.map((h) => h.callback.bind(this)) : []
+  }
+
+  /**
+   * Build executable hook collection for the given hook.
+   */
+  private _buildLocalHooks(on: string): Contracts.HookableClosure[] {
+    return this._getLocalHookAsArray(on)
   }
 }

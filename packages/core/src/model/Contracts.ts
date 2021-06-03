@@ -12,6 +12,15 @@ export interface GlobalHook {
   callback: HookableClosure
 }
 
+export interface LocalHook {
+  id: number
+  callback: HookableClosure
+}
+
 export interface GlobalHooks {
   [on: string]: GlobalHook[]
+}
+
+export interface LocalHooks {
+  [on: string]: LocalHook[]
 }
