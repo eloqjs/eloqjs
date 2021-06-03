@@ -1059,7 +1059,7 @@ export class Model {
   /**
    * Execute mutation hooks to the given model.
    */
-  public $emit(event: string): void | false {
+  public $emit(event: string, context: Record<string, any> = {}): void | false {
     const hooks: Contracts.MutationHook[] = []
 
     // Build global hooks
@@ -1072,8 +1072,10 @@ export class Model {
       return
     }
 
+    context = defu(context, this._getDefaultEventContext())
+
     for (const hook of hooks) {
-      const result = hook(this, this.$entity)
+      const result = hook(context as Parameters<Contracts.MutationHook>['0'])
 
       if (result === false) {
         return false
@@ -1272,5 +1274,14 @@ export class Model {
    */
   private _buildLocalHooks(on: string): Contracts.HookableClosure[] {
     return this._getLocalHookAsArray(on)
+  }
+
+  /**
+   * Returns the default context for all events emitted by this instance.
+   *
+   * @returns {Object}
+   */
+  private _getDefaultEventContext(): { model: Model; entity: string } {
+    return { model: this, entity: this.$entity }
   }
 }
