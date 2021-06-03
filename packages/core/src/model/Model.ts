@@ -706,7 +706,7 @@ export class Model {
     }
 
     // Current value of the attribute, or `undefined` if not set
-    const previous: any = this.$get(attribute)
+    const previous: any = this._getAttribute(attribute)
     const field = this.$getField(attribute)
 
     // If the field is an attribute and the value is undefined, then apply default value of the field.
