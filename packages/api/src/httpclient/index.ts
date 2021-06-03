@@ -3,8 +3,8 @@ export {
   AxiosHttpClientPromise,
   AxiosHttpClientResponse
 } from './axios'
-export { HttpClient } from './HttpClient'
-export { HttpClientOptions } from './HttpClientOptions'
-export { HttpClientPromise } from './HttpClientPromise'
-export { HttpClientResponse } from './HttpClientResponse'
-export { Thenable } from './Thenable'
+export type { HttpClient } from './HttpClient'
+export type { HttpClientOptions } from './HttpClientOptions'
+export type { HttpClientPromise } from './HttpClientPromise'
+export type { HttpClientResponse } from './HttpClientResponse'
+export type { Thenable } from './Thenable'
