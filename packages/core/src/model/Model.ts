@@ -1,3 +1,5 @@
+import defu from 'defu'
+
 import * as Attributes from '../attributes'
 import { Mutator, Mutators } from '../attributes/Contracts'
 import { Collection } from '../collection/Collection'
@@ -7,6 +9,7 @@ import { Map } from '../support/Map'
 import { Uid as UidGenerator } from '../support/Uid'
 import {
   assert,
+  forceArray,
   isArray,
   isEmpty,
   isEmptyString,
@@ -702,6 +705,8 @@ export class Model {
       this._registerReference(attribute)
     }
 
+    // Current value of the attribute, or `undefined` if not set
+    const previous: any = this.$get(attribute)
     const field = this.$getField(attribute)
 
     // If the field is an attribute and the value is undefined, then apply default value of the field.
@@ -712,6 +717,15 @@ export class Model {
 
     // Set the attribute value.
     this._setAttribute(attribute, value)
+
+    // TODO: Deep equality comparison
+    // Only consider a change if the attribute was already defined.
+    const changed: boolean = defined && previous !== value
+
+    if (changed) {
+      // Emit the change event after
+      this.$emit('change', { attribute, previous, value })
+    }
 
     return value
   }
@@ -971,8 +985,24 @@ export class Model {
    * Sync the reference attributes with the current.
    */
   public $syncReference(attributes?: string | string[]): this {
+    // A copy of the saved state before the attributes were synced.
+    const before = this._getReferences()
+
+    // Sync attributes
     this._attributes.syncReference(attributes)
     this._relationships.syncReference(attributes)
+
+    // A copy of the saved state after the attributes were synced.
+    const after = this._getReferences()
+
+    // Emit syncReference event
+    this.$emit('syncReference', {
+      attributes: attributes
+        ? forceArray(attributes)
+        : Object.keys(this.$fields()),
+      before,
+      after
+    })
 
     return this
   }
@@ -981,8 +1011,21 @@ export class Model {
    * Sync the changed attributes.
    */
   public $syncChanges(): this {
+    // A copy of the state before the changes were synced.
+    const before = this.$getChanges()
+
+    // Sync changes
     this._attributes.syncChanges()
     this._relationships.syncChanges()
+
+    // A copy of the state after the changes were synced.
+    const after = this.$getChanges()
+
+    // Emit syncChanges event
+    this.$emit('syncChanges', {
+      before,
+      after
+    })
 
     return this
   }
@@ -992,8 +1035,21 @@ export class Model {
    * attributes and relationships, and is not reversible.
    */
   public $clear(): void {
+    // A copy of the active state before the attributes were cleared.
+    const before = this._getAttributes()
+
+    // Clear attributes and state
     this.$clearAttributes()
     this.$clearState()
+
+    // A copy of the active state after the attributes were cleared.
+    const after = this._getAttributes()
+
+    // Emit clear event
+    this.$emit('clear', {
+      before,
+      after
+    })
   }
 
   /**
@@ -1037,8 +1093,24 @@ export class Model {
    * It's also possible to pass an array of attributes to reset.
    */
   public $reset(attributes?: string | string[]): void {
+    // A copy of the active state before the attributes were reset.
+    const before = this._getAttributes()
+
+    // Reset attributes
     this._attributes.reset(attributes)
     this._relationships.reset(attributes)
+
+    // A copy of the active state after the attributes were reset.
+    const after = this._getAttributes()
+
+    // Emit reset event
+    this.$emit('reset', {
+      attributes: attributes
+        ? forceArray(attributes)
+        : Object.keys(this.$fields()),
+      before,
+      after
+    })
   }
 
   /**
@@ -1233,6 +1305,24 @@ export class Model {
   }
 
   /**
+   * Get all attributes from {@link _attributes} and {@link _relationships}.
+   *
+   * Do not confuse with the public method {@link $getAttributes},
+   * which serializes the model and get all attributes without relationships.
+   *
+   * @return The unmutated attributes.
+   */
+  private _getAttributes(): Record<string, any> {
+    const attributes = {}
+
+    for (const field of Object.keys(this.$fields())) {
+      attributes[field] = this._getAttribute(field)
+    }
+
+    return attributes
+  }
+
+  /**
    * Get an attribute's reference from {@link _attributes} or {@link _relationships}, based on field type.
    *
    * @return The unmutated value of attribute's reference.
@@ -1257,6 +1347,21 @@ export class Model {
     }
 
     return value
+  }
+
+  /**
+   * Get references of all attributes from {@link _attributes} and {@link _relationships}.
+   *
+   * @return The unmutated references of attributes.
+   */
+  private _getReferences(): Record<string, any> {
+    const references = {}
+
+    for (const field of Object.keys(this.$fields())) {
+      references[field] = this._getReference(field)
+    }
+
+    return references
   }
 
   /**
