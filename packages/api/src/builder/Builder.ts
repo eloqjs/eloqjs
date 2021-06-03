@@ -204,10 +204,15 @@ export class Builder<M extends Model = Model, S extends boolean = false> {
   /**
    * Specify the fields that should be included in the returned object graph.
    */
-  public select(field: string | string[] | Record<string, string | string[]>): this {
+  public select(
+    field: string | string[] | Record<string, string | string[]>
+  ): this {
     assert(!isUndefined(field), ['The `field` of `select` is required.'])
 
-    const addFields = (fields: string | string[], key: string = this.model.entity): void => {
+    const addFields = (
+      fields: string | string[],
+      key: string = this.model.entity
+    ): void => {
       fields = forceArray(fields)
 
       for (const field of fields) {
@@ -261,13 +266,30 @@ export class Builder<M extends Model = Model, S extends boolean = false> {
    * Specify a custom query parameter to add to the resulting HTTP request URL.
    *
    * @param {string} parameter - The name of the parameter, e.g. 'bar' in "http://foo.com?bar=baz"
-   * @param {string} value - The value of the parameter, e.g. 'baz' in "http://foo.com?bar=baz"
+   * @param {OptionValue | OptionValue[]} value - The value of the parameter, e.g. 'baz' in "http://foo.com?bar=baz"
    */
-  public option(parameter: string, value: OptionValue | OptionValue[]): this {
-    value = forceArray(value)
+  public option(
+    parameter: string | Record<string, OptionValue | OptionValue[]>,
+    value?: OptionValue | OptionValue[]
+  ): this {
+    const addOption = (param: string, values: OptionValue | OptionValue[]) => {
+      values = forceArray(values)
 
-    for (const val of value) {
-      this._query.addOption(new OptionSpec(parameter, val))
+      for (const val of values) {
+        this._query.addOption(new OptionSpec(param, val))
+      }
+    }
+
+    // Single parameter .option('foo', true)
+    if (isString(parameter)) {
+      addOption(parameter, value || [])
+    }
+
+    // Multiple parameters .option({ foo: true, bar: 'baz' })
+    if (isObject(parameter)) {
+      for (const param in parameter) {
+        addOption(param, parameter[param])
+      }
     }
 
     return this

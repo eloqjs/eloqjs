@@ -114,11 +114,11 @@ export class ModelAPIStatic<M extends typeof Model = typeof Model> {
    * Specify a custom query parameter to add to the resulting HTTP request URL.
    *
    * @param {string} parameter - The name of the parameter, e.g. 'bar' in "http://foo.com?bar=baz"
-   * @param {string} value - The value of the parameter, e.g. 'baz' in "http://foo.com?bar=baz"
+   * @param {OptionValue | OptionValue[]} value - The value of the parameter, e.g. 'baz' in "http://foo.com?bar=baz"
    */
   public option(
-    parameter: string,
-    value: OptionValue | OptionValue[]
+    parameter: string | Record<string, OptionValue | OptionValue[]>,
+    value?: OptionValue | OptionValue[]
   ): Builder<InstanceType<M>> {
     return this._query().option(parameter, value)
   }
