@@ -7,14 +7,19 @@
   ],
   "scripts": {
     "clean": "lerna run clean",
-    "build": "lerna run build",
+    "build": "lerna run build && yarn run docs",
+    "docs": "scripty",
     "watch": "lerna run watch --stream --no-sort",
+    "compile:types": "lerna run compile:types",
     "lint": "lerna run lint --no-bail",
     "test": "lerna run test",
     "coverage": "lerna run coverage",
     "release:canary": "lerna publish --canary --preid dev --pre-dist-tag dev --exact --force-publish='*' --no-push --no-git-tag-version --no-changelog --no-verify-access --yes"
   },
   "devDependencies": {
+    "@microsoft/api-documenter": "^7.17.0",
+    "@microsoft/api-extractor": "^7.20.0",
+    "@microsoft/tsdoc": "^0.13.2",
     "@types/jest": "^27.0.2",
     "@types/node": "^16.11.6",
     "@typescript-eslint/eslint-plugin": "^5.2.0",
@@ -27,10 +32,12 @@
     "eslint-plugin-jest-formatting": "^3.0.0",
     "eslint-plugin-prettier": "^4.0.0",
     "eslint-plugin-simple-import-sort": "^7.0.0",
+    "fs-extra": "^10.0.1",
     "jest": "^27.3.1",
     "lerna": "^4.0.0",
     "prettier": "^2.4.1",
     "rimraf": "^3.0.2",
+    "scripty": "^2.0.0",
     "siroc": "^0.16.0",
     "ts-jest": "^27.0.7",
     "typescript": "^4.4.4"
