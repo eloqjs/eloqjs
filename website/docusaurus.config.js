@@ -46,7 +46,10 @@ module.exports = {
       {
         docs: {
           sidebarPath: require.resolve('./sidebars.js'),
-          editUrl: 'https://github.com/eloqjs/eloqjs/edit/dev/website/'
+          editUrl: 'https://github.com/eloqjs/eloqjs/edit/dev/website/',
+          remarkPlugins: [
+            [require('@docusaurus/remark-plugin-npm2yarn'), { sync: true }]
+          ]
         },
         blog: {
           showReadingTime: true,
