@@ -33,7 +33,6 @@ module.exports = {
           position: 'left',
           label: 'API'
         },
-        { to: '/blog', label: 'Blog', position: 'left' },
         {
           href: 'https://github.com/eloqjs/eloqjs',
           label: 'GitHub',
