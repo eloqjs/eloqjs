@@ -19,7 +19,7 @@ export type Operator =
  * @param {string} regex
  * @param {string} value
  * @param {number|number[]} index
- * @return {string|string[]}
+ * @returns {string|string[]}
  */
 function extractValue<T extends number | number[]>(
   regex: string,

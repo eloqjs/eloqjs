@@ -693,7 +693,7 @@ export class Model {
    * Set the value of an attribute and registers the magic "getter". This method should always be
    * used when setting the value of an attribute.
    *
-   * @return The value that was set.
+   * @returns The value that was set.
    */
   public $set<T = any>(attribute: string, value: T): T | undefined {
     const defined = attribute in this
@@ -734,7 +734,7 @@ export class Model {
    * Return an attribute's value or a fallback value
    * if this model doesn't have the attribute.
    *
-   * @return The value of the attribute or `fallback` if not found.
+   * @returns The value of the attribute or `fallback` if not found.
    */
   public $get(attribute: string, fallback?: unknown): any {
     let value = this._getAttribute(attribute)
@@ -762,7 +762,7 @@ export class Model {
    * you're also editing that field. The title will be updating reactively if
    * it's bound to the active attribute, so bind to the saved one instead.
    *
-   * @return The value of the attribute's reference or `fallback` if not found.
+   * @returns The value of the attribute's reference or `fallback` if not found.
    */
   public $saved(attribute: string, fallback?: unknown): any {
     let value = this._getReference(attribute)
@@ -1280,7 +1280,7 @@ export class Model {
   /**
    * Get an attribute from {@link _attributes} or {@link _relationships}, based on field type.
    *
-   * @return The unmutated value of attribute.
+   * @returns The unmutated value of attribute.
    */
   private _getAttribute(attribute: string): any {
     const field = this.$getField(attribute)
@@ -1310,7 +1310,7 @@ export class Model {
    * Do not confuse with the public method {@link $getAttributes},
    * which serializes the model and get all attributes without relationships.
    *
-   * @return The unmutated attributes.
+   * @returns The unmutated attributes.
    */
   private _getAttributes(): Record<string, any> {
     const attributes = {}
@@ -1325,7 +1325,7 @@ export class Model {
   /**
    * Get an attribute's reference from {@link _attributes} or {@link _relationships}, based on field type.
    *
-   * @return The unmutated value of attribute's reference.
+   * @returns The unmutated value of attribute's reference.
    */
   private _getReference(attribute: string): any {
     const field = this.$getField(attribute)
@@ -1352,7 +1352,7 @@ export class Model {
   /**
    * Get references of all attributes from {@link _attributes} and {@link _relationships}.
    *
-   * @return The unmutated references of attributes.
+   * @returns The unmutated references of attributes.
    */
   private _getReferences(): Record<string, any> {
     const references = {}

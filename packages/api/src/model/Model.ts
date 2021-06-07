@@ -226,7 +226,7 @@ export class Model extends BaseModel {
   /**
    * Get a fresh instance of this {@link Model}.
    *
-   * @return A {@link Promise} resolving to:
+   * @returns A {@link Promise} resolving to:
    *
    * * the representation of this {@link Model} instance in the API if this {@link Model} has an ID and this ID can.
    * be found in the API too

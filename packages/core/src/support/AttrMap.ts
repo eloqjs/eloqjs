@@ -96,7 +96,7 @@ export class AttrMap<T> extends Map<T> {
   /**
    * Get the attributes that were changed.
    *
-   * @return array
+   * @returns array
    */
   public getChanges(): Record<string, T> {
     return this.changes

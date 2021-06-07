@@ -715,7 +715,7 @@ export class Collection<M extends Model = Model> {
    * @param models Model to remove, which can be a model instance, an object to filter by, a function to filter by,
    * or an array of model instances and objects to remove multiple.
    *
-   * @return The deleted model or an array of models if a filter or array type was given.
+   * @returns The deleted model or an array of models if a filter or array type was given.
    *
    * @throws {Error} If the model is an invalid type.
    */
@@ -727,7 +727,7 @@ export class Collection<M extends Model = Model> {
    * @param predicate Model to remove, which can be a model instance, an object to filter by, a function to filter by,
    * or an array of model instances and objects to remove multiple.
    *
-   * @return The deleted model or an array of models if a filter or array type was given.
+   * @returns The deleted model or an array of models if a filter or array type was given.
    *
    * @throws {Error} If the model is an invalid type.
    */
@@ -741,7 +741,7 @@ export class Collection<M extends Model = Model> {
    * @param model Model to remove, which can be a model instance, an object to filter by, a function to filter by,
    * or an array of model instances and objects to remove multiple.
    *
-   * @return The deleted model or an array of models if a filter or array type was given.
+   * @returns The deleted model or an array of models if a filter or array type was given.
    *
    * @throws {Error} If the model is an invalid type.
    */
@@ -753,7 +753,7 @@ export class Collection<M extends Model = Model> {
    * @param model Model to remove, which can be a model instance, an object, a function to filter by,
    * or an array of model instances and objects to remove multiple.
    *
-   * @return The deleted model or an array of models if a filter or array type was given.
+   * @returns The deleted model or an array of models if a filter or array type was given.
    *
    * @throws {Error} If the model is an invalid type.
    */
@@ -952,7 +952,7 @@ export class Collection<M extends Model = Model> {
    * Returns the sum of a property of all models in the collection.
    *
    * @param {string|string[]|Function} key
-   * @return {number}
+   * @returns {number}
    */
   public sum(
     key: keyof ModelReference<M> | string | ((model: M) => string | number)
@@ -1091,7 +1091,7 @@ export class Collection<M extends Model = Model> {
   /**
    * Return the zero-based index of the given model in this collection.
    *
-   * @return {number} the index of a model in this collection, or -1 if not found.
+   * @returns {number} the index of a model in this collection, or -1 if not found.
    */
   private _indexOf(model: Model): number {
     if (!this._hasModelInRegistry(model)) {
@@ -1111,7 +1111,7 @@ export class Collection<M extends Model = Model> {
   }
 
   /**
-   * @return {Boolean} true if this collection has the model in its registry.
+   * @returns {Boolean} true if this collection has the model in its registry.
    */
   private _hasModelInRegistry(model: Model): boolean {
     return !!this._registry[model.$uid]
@@ -1153,7 +1153,7 @@ export class Collection<M extends Model = Model> {
    *
    * @param {Model} model
    *
-   * @return {Model}
+   * @returns {Model}
    */
   private _removeModel(model: M): M | undefined {
     return this._removeModelAtIndex(this._indexOf(model))
