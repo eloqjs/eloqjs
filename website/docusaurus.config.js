@@ -16,10 +16,6 @@ module.exports = {
     },
     navbar: {
       title: 'ELOQJS',
-      logo: {
-        alt: 'My Site Logo',
-        src: 'img/logo.svg'
-      },
       items: [
         {
           type: 'doc',
