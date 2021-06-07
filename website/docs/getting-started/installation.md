@@ -1,0 +1,54 @@
+---
+id: installation
+title: Installation
+---
+
+Add **@eloqjs/core** dependency to your project:
+
+```bash npm2yarn
+npm install @eloqjs/core
+```
+
+## Installing the API plugin
+
+Add **@eloqjs/api** dependency to your project:
+
+```bash npm2yarn
+npm install @eloqjs/api
+```
+
+### Nuxt
+
+Create a plugin **~/plugins/eloqjs.js**
+
+```js title="~/plugins/eloqjs.js"
+import axios from 'axios'
+
+import ELOQJS from '@eloqjs/core'
+import ELOQJSAPI, { AxiosHttpClient } from '@eloqjs/api'
+
+ELOQJS.use(ELOQJSAPI, { httpClient: new AxiosHttpClient(axios) })
+```
+
+And register it on **nuxt.config.js**
+
+```js title="nuxt.config.js"
+export default {
+  plugins: [
+    '~/plugins/eloqjs'
+  ],
+}
+```
+
+### Vue
+
+Set up on **src/main.js**
+
+```js title="src/main.js"
+import axios from 'axios'
+
+import ELOQJS from '@eloqjs/core'
+import ELOQJSAPI, { AxiosHttpClient } from '@eloqjs/api'
+
+ELOQJS.use(ELOQJSAPI, { httpClient: new AxiosHttpClient(axios) })
+```
