@@ -695,7 +695,19 @@ export class Model {
    *
    * @returns The value that was set.
    */
-  public $set<T = any>(attribute: string, value: T): T | undefined {
+  public $set<T = any>(
+    attribute: string | Record<string, any>,
+    value?: T
+  ): T | undefined {
+    // Allow batch set of multiple attributes at once, ie. $set({...});
+    if (isPlainObject(attribute)) {
+      for (const key in attribute) {
+        this.$set(key, attribute[key])
+      }
+
+      return
+    }
+
     const defined = attribute in this
 
     // Only register the pass-through property if it's not already set up.
