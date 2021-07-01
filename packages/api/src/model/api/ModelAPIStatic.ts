@@ -53,12 +53,45 @@ export class ModelAPIStatic<M extends typeof Model = typeof Model> {
     return this._query().find(id)
   }
 
+  /**
+   * Add a basic "where" clause to the query.
+   *
+   * @param {object} query - The query to filter.
+   */
+  public where(query: Record<string, any>): Builder<InstanceType<M>>
+
+  /**
+   * Add a basic "where" clause to the query.
+   *
+   * @param {string | string[]} attribute - The attribute being tested.
+   * @param {string} value - The value the attribute should be equal.
+   */
   public where(
     attribute: string | string[],
     value: FilterValue
+  ): Builder<InstanceType<M>>
+
+  /**
+   * @internal
+   */
+  public where(
+    attribute: string | string[] | Record<string, any>,
+    value?: FilterValue
+  ): Builder<InstanceType<M>>
+
+  public where(
+    attribute: string | string[] | Record<string, any>,
+    value?: FilterValue
   ): Builder<InstanceType<M>> {
     return this._query().where(attribute, value)
   }
+
+  /**
+   * Add a "where in" clause to the query.
+   *
+   * @param {object} query - The query to filter.
+   */
+  public whereIn(query: Record<string, any>): Builder<InstanceType<M>>
 
   /**
    * Add a "where in" clause to the query.
@@ -69,6 +102,19 @@ export class ModelAPIStatic<M extends typeof Model = typeof Model> {
   public whereIn(
     attribute: string | string[],
     values: FilterValue[]
+  ): Builder<InstanceType<M>>
+
+  /**
+   * @internal
+   */
+  public whereIn(
+    attribute: string | string[] | Record<string, any>,
+    values?: FilterValue[]
+  ): Builder<InstanceType<M>>
+
+  public whereIn(
+    attribute: string | string[] | Record<string, any>,
+    values?: FilterValue[]
   ): Builder<InstanceType<M>> {
     return this._query().whereIn(attribute, values)
   }
