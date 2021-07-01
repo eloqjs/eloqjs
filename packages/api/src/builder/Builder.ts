@@ -24,9 +24,11 @@ import {
   forceArray,
   isArray,
   isObject,
+  isPlainObject,
   isString,
   isUndefined
 } from '../support/Utils'
+import { mapFilterQuery } from './MapFilterQuery'
 import { SortDirection } from './SortDirection'
 
 export class Builder<M extends Model = Model, S extends boolean = false> {
@@ -133,11 +135,37 @@ export class Builder<M extends Model = Model, S extends boolean = false> {
   /**
    * Add a basic "where" clause to the query.
    *
+   * @param {object} query - The query to filter.
+   */
+  public where(query: Record<string, any>): this
+
+  /**
+   * Add a basic "where" clause to the query.
+   *
    * @param {string | string[]} attribute - The attribute being tested.
    * @param {string} value - The value the attribute should be equal.
    */
-  public where(attribute: string | string[], value: FilterValue): this {
-    assert(!isUndefined(attribute) && !isUndefined(value), [
+  public where(attribute: string | string[], value: FilterValue): this
+
+  /**
+   * @internal
+   */
+  public where(
+    attribute: string | string[] | Record<string, any>,
+    value?: FilterValue
+  ): this
+
+  /**
+   * Add a basic "where" clause to the query.
+   *
+   * @param {string | string[]} attribute - The attribute being tested.
+   * @param {string} value - The value the attribute should be equal.
+   */
+  public where(
+    attribute: string | string[] | Record<string, any>,
+    value?: FilterValue
+  ): this {
+    assert(!isUndefined(attribute), [
       'The `attribute` and `value` of `where` are required.'
     ])
 
@@ -145,7 +173,15 @@ export class Builder<M extends Model = Model, S extends boolean = false> {
       'The `value` of `where` must be primitive.'
     ])
 
-    this._query.addFilter(new FilterSpec(attribute, value))
+    if (isPlainObject(attribute)) {
+      for (const [attr, val] of mapFilterQuery(attribute)) {
+        this.where(attr, val)
+      }
+    } else if (value) {
+      this._query.addFilter(new FilterSpec(attribute, value))
+    } else {
+      assert(!isUndefined(value), ['The `value` of `where` is required.'])
+    }
 
     return this
   }
@@ -153,20 +189,54 @@ export class Builder<M extends Model = Model, S extends boolean = false> {
   /**
    * Add a "where in" clause to the query.
    *
+   * @param {object} query - The query to filter.
+   */
+  public whereIn(query: Record<string, any>): this
+
+  /**
+   * Add a "where in" clause to the query.
+   *
    * @param {string | string[]} attribute - The attribute being tested.
    * @param {string} values - The values the attribute should be equal.
    */
-  public whereIn(attribute: string | string[], values: FilterValue[]): this {
-    assert(!isUndefined(attribute) && !isUndefined(values), [
+  public whereIn(attribute: string | string[], values: FilterValue[]): this
+
+  /**
+   * @internal
+   */
+  public whereIn(
+    attribute: string | string[] | Record<string, any>,
+    values?: FilterValue[]
+  ): this
+
+  /**
+   * Add a "where in" clause to the query.
+   *
+   * @param {string | string[]} attribute - The attribute being tested.
+   * @param {string} values - The values the attribute should be equal.
+   */
+  public whereIn(
+    attribute: string | string[] | Record<string, any>,
+    values?: FilterValue[]
+  ): this {
+    assert(!isUndefined(attribute), [
       'The `attribute` and `values` of `whereIn` are required.'
     ])
 
-    assert(isArray(values), [
+    assert(isUndefined(values) || isArray(values), [
       'The `value` of `whereIn` must be an array of primitives.'
     ])
 
-    for (const value of values) {
-      this._query.addFilter(new FilterSpec(attribute, value))
+    if (isPlainObject(attribute)) {
+      for (const [attr, val] of mapFilterQuery(attribute)) {
+        this.whereIn(attr, val)
+      }
+    } else if (values) {
+      for (const value of values) {
+        this._query.addFilter(new FilterSpec(attribute, value))
+      }
+    } else {
+      assert(!isUndefined(values), ['The `values` of `whereIn` is required.'])
     }
 
     return this

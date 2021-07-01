@@ -53,13 +53,54 @@ export class Model extends BaseModel {
     return this._api().save(record)
   }
 
+  /**
+   * Add a basic "where" clause to the query.
+   *
+   * @param {object} query - The query to filter.
+   */
+  public static where<M extends typeof Model>(
+    this: M,
+    query: Record<string, any>
+  ): Builder<InstanceType<M>>
+
+  /**
+   * Add a basic "where" clause to the query.
+   *
+   * @param {string | string[]} attribute - The attribute being tested.
+   * @param {string} value - The value the attribute should be equal.
+   */
   public static where<M extends typeof Model>(
     this: M,
     attribute: string | string[],
     value: FilterValue
+  ): Builder<InstanceType<M>>
+
+  /**
+   * @internal
+   */
+  public static where<M extends typeof Model>(
+    this: M,
+    attribute: string | string[] | Record<string, any>,
+    value?: FilterValue
+  ): Builder<InstanceType<M>>
+
+  public static where<M extends typeof Model>(
+    this: M,
+    attribute: string | string[] | Record<string, any>,
+    value?: FilterValue
   ): Builder<InstanceType<M>> {
     return this._api().where(attribute, value)
   }
+
+  /**
+   * Add a "where in" clause to the query.
+   *
+   * @param {object} query - The query to filter.
+   */
+  public static whereIn<M extends typeof Model>(
+    this: M,
+    query: Record<string, any>
+  ): Builder<InstanceType<M>>
 
   /**
    * Add a "where in" clause to the query.
@@ -71,6 +112,21 @@ export class Model extends BaseModel {
     this: M,
     attribute: string | string[],
     values: FilterValue[]
+  ): Builder<InstanceType<M>>
+
+  /**
+   * @internal
+   */
+  public static whereIn<M extends typeof Model>(
+    this: M,
+    attribute: string | string[] | Record<string, any>,
+    values?: FilterValue[]
+  ): Builder<InstanceType<M>>
+
+  public static whereIn<M extends typeof Model>(
+    this: M,
+    attribute: string | string[] | Record<string, any>,
+    values?: FilterValue[]
   ): Builder<InstanceType<M>> {
     return this._api().whereIn(attribute, values)
   }
