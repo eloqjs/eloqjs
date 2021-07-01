@@ -174,6 +174,7 @@ export class Builder<M extends Model = Model, S extends boolean = false> {
 
   /**
    * Specify a relation that should be eager loaded in the returned object graph.
+   *
    * @param {string | string[]} relationship - The relationship that should be eager loaded.
    */
   public with(relationship: string | string[]): this {
@@ -184,6 +185,15 @@ export class Builder<M extends Model = Model, S extends boolean = false> {
     }
 
     return this
+  }
+
+  /**
+   * Alias for the "with" method.
+   *
+   * @param {string | string[]} relationship - The relationship that should be eager loaded.
+   */
+  public include(relationship: string | string[]): this {
+    return this.with(relationship)
   }
 
   /**

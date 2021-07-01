@@ -75,10 +75,20 @@ export class ModelAPIStatic<M extends typeof Model = typeof Model> {
 
   /**
    * Specify a relation that should be eager loaded in the returned object graph.
+   *
    * @param {string | string[]} relationship - The relationship that should be eager loaded.
    */
   public with(relationship: string | string[]): Builder<InstanceType<M>> {
     return this._query().with(relationship)
+  }
+
+  /**
+   * Alias for the "with" method.
+   *
+   * @param {string | string[]} relationship - The relationship that should be eager loaded.
+   */
+  public include(relationship: string | string[]): Builder<InstanceType<M>> {
+    return this.with(relationship)
   }
 
   /**

@@ -77,6 +77,7 @@ export class Model extends BaseModel {
 
   /**
    * Specify a relation that should be eager loaded in the returned object graph.
+   *
    * @param {string | string[]} relationship - The relationship that should be eager loaded.
    */
   public static with<M extends typeof Model>(
@@ -84,6 +85,18 @@ export class Model extends BaseModel {
     relationship: string | string[]
   ): Builder<InstanceType<M>> {
     return this._api().with(relationship)
+  }
+
+  /**
+   * Alias for the "with" method.
+   *
+   * @param {string | string[]} relationship - The relationship that should be eager loaded.
+   */
+  public static include<M extends typeof Model>(
+    this: M,
+    relationship: string | string[]
+  ): Builder<InstanceType<M>> {
+    return this.with(relationship)
   }
 
   /**
