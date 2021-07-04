@@ -208,12 +208,6 @@ export class Model extends BaseModel {
     direction?: 'asc' | 'desc'
   ): Builder<InstanceType<M>>
 
-  /**
-   * Specify an attribute to sort by and the direction to sort in.
-   *
-   * @param {string} attribute - The attribute to sort by.
-   * @param {string} [direction] - The direction to sort in.
-   */
   public static orderBy<M extends typeof Model>(
     this: M,
     attribute: string | string[] | Record<string, 'asc' | 'desc'>,
@@ -225,7 +219,7 @@ export class Model extends BaseModel {
   /**
    * Specify a custom query parameter to add to the resulting HTTP request URL.
    *
-   * @param {string} query - The custom query parameters, e.g. '{ bar: 'baz }' in "http://foo.com?bar=baz"
+   * @param {object} query - The custom query parameters, e.g. '{ bar: 'baz }' in "http://foo.com?bar=baz"
    */
   public static params<M extends typeof Model>(
     this: M,
@@ -253,12 +247,6 @@ export class Model extends BaseModel {
     value?: ParamValue | ParamValue[]
   ): Builder<InstanceType<M>>
 
-  /**
-   * Specify a custom query parameter to add to the resulting HTTP request URL.
-   *
-   * @param {string} parameter - The name of the parameter, e.g. 'bar' in "http://foo.com?bar=baz"
-   * @param {ParamValue | ParamValue[]} value - The value of the parameter, e.g. 'baz' in "http://foo.com?bar=baz"
-   */
   public static params<M extends typeof Model>(
     this: M,
     parameter: string | string[] | Record<string, any>,

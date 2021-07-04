@@ -340,12 +340,6 @@ export class Builder<M extends Model = Model, S extends boolean = false> {
     direction?: 'asc' | 'desc'
   ): this
 
-  /**
-   * Specify an attribute to sort by and the direction to sort in.
-   *
-   * @param {string | string[]} attribute - The attribute to sort by.
-   * @param {string} [direction] - The direction to sort in.
-   */
   public orderBy(
     attribute: string | string[] | Record<string, 'asc' | 'desc'>,
     direction?: 'asc' | 'desc'
@@ -384,7 +378,7 @@ export class Builder<M extends Model = Model, S extends boolean = false> {
   /**
    * Specify a custom query parameter to add to the resulting HTTP request URL.
    *
-   * @param {string} query - The custom query parameters, e.g. '{ bar: 'baz }' in "http://foo.com?bar=baz"
+   * @param {object} query - The custom query parameters, e.g. '{ bar: 'baz }' in "http://foo.com?bar=baz"
    */
   public params(query: Record<string, any>): this
 
@@ -407,12 +401,6 @@ export class Builder<M extends Model = Model, S extends boolean = false> {
     value?: ParamValue | ParamValue[]
   ): this
 
-  /**
-   * Specify a custom query parameter to add to the resulting HTTP request URL.
-   *
-   * @param {string} parameter - The name of the parameter, e.g. 'bar' in "http://foo.com?bar=baz"
-   * @param {ParamValue | ParamValue[]} value - The value of the parameter, e.g. 'baz' in "http://foo.com?bar=baz"
-   */
   public params(
     parameter: string | string[] | Record<string, any>,
     value?: ParamValue | ParamValue[]
