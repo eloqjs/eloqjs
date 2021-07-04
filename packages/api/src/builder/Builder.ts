@@ -349,10 +349,13 @@ export class Builder<M extends Model = Model, S extends boolean = false> {
    * @param {ParamValue | ParamValue[]} value - The value of the parameter, e.g. 'baz' in "http://foo.com?bar=baz"
    */
   public params(
-    parameter: string | Record<string, ParamValue | ParamValue[]>,
+    parameter: string | string[] | Record<string, ParamValue | ParamValue[]>,
     value?: ParamValue | ParamValue[]
   ): this {
-    const addParam = (param: string, values: ParamValue | ParamValue[]) => {
+    const addParam = (
+      param: string | string[],
+      values: ParamValue | ParamValue[]
+    ) => {
       values = forceArray(values)
 
       for (const val of values) {
@@ -360,15 +363,15 @@ export class Builder<M extends Model = Model, S extends boolean = false> {
       }
     }
 
-    // Single parameter .option('foo', true)
-    if (isString(parameter)) {
-      addParam(parameter, value || [])
+    // Single parameter .params('foo', true)
+    if (isString(parameter) || isArray(parameter)) {
+      addParam(parameter, value ?? [])
     }
 
-    // Multiple parameters .option({ foo: true, bar: 'baz' })
-    if (isObject(parameter)) {
-      for (const param in parameter) {
-        addParam(param, parameter[param])
+    // Multiple parameters .params({ foo: true, bar: 'baz' })
+    if (isPlainObject(parameter)) {
+      for (const [param, val] of mapFilterQuery(parameter)) {
+        addParam(param, val)
       }
     }
 
