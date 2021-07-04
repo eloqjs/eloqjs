@@ -185,7 +185,7 @@ export class Model extends BaseModel {
    */
   public static orderBy<M extends typeof Model>(
     this: M,
-    attribute: string,
+    attribute: string | string[],
     direction?: 'asc' | 'desc'
   ): Builder<InstanceType<M>> {
     return this._api().orderBy(attribute, direction)

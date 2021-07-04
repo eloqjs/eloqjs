@@ -320,24 +320,33 @@ export class Builder<M extends Model = Model, S extends boolean = false> {
   /**
    * Specify an attribute to sort by and the direction to sort in.
    *
-   * @param {string} attribute - The attribute to sort by.
+   * @param {string | string[]} attribute - The attribute to sort by.
    * @param {string} [direction] - The direction to sort in.
    */
-  public orderBy(attribute: string, direction?: 'asc' | 'desc'): this {
-    let _direction: typeof direction | SortDirection = direction
+  public orderBy(
+    attribute: string | string[],
+    direction?: 'asc' | 'desc'
+  ): this {
+    const addSort = (attributes: string | string[], dir?: boolean) => {
+      attributes = forceArray(attributes)
 
-    switch (_direction) {
-      default:
-      case 'asc':
-        _direction = SortDirection.ASC
-        break
-      case 'desc':
-        _direction = SortDirection.DESC
+      for (const attr of attributes) {
+        this._query.addSort(new SortSpec(attr, dir))
+      }
     }
 
-    this._query.addSort(
-      new SortSpec(attribute, _direction === SortDirection.ASC)
-    )
+    let _direction: boolean | undefined = undefined
+
+    switch (direction) {
+      case SortDirection.ASC:
+        _direction = true
+        break
+      case SortDirection.DESC:
+        _direction = false
+        break
+    }
+
+    addSort(attribute, _direction)
 
     return this
   }
