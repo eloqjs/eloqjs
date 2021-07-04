@@ -194,12 +194,43 @@ export class Model extends BaseModel {
   /**
    * Specify a custom query parameter to add to the resulting HTTP request URL.
    *
+   * @param {string} query - The custom query parameters, e.g. '{ bar: 'baz }' in "http://foo.com?bar=baz"
+   */
+  public static params<M extends typeof Model>(
+    this: M,
+    query: Record<string, any>
+  ): Builder<InstanceType<M>>
+
+  /**
+   * Specify a custom query parameter to add to the resulting HTTP request URL.
+   *
    * @param {string} parameter - The name of the parameter, e.g. 'bar' in "http://foo.com?bar=baz"
    * @param {ParamValue | ParamValue[]} value - The value of the parameter, e.g. 'baz' in "http://foo.com?bar=baz"
    */
   public static params<M extends typeof Model>(
     this: M,
-    parameter: string | Record<string, ParamValue | ParamValue[]>,
+    parameter: string | string[],
+    value: ParamValue | ParamValue[]
+  ): Builder<InstanceType<M>>
+
+  /**
+   * @internal
+   */
+  public static params<M extends typeof Model>(
+    this: M,
+    parameter: string | string[] | Record<string, any>,
+    value?: ParamValue | ParamValue[]
+  ): Builder<InstanceType<M>>
+
+  /**
+   * Specify a custom query parameter to add to the resulting HTTP request URL.
+   *
+   * @param {string} parameter - The name of the parameter, e.g. 'bar' in "http://foo.com?bar=baz"
+   * @param {ParamValue | ParamValue[]} value - The value of the parameter, e.g. 'baz' in "http://foo.com?bar=baz"
+   */
+  public static params<M extends typeof Model>(
+    this: M,
+    parameter: string | string[] | Record<string, any>,
     value?: ParamValue | ParamValue[]
   ): Builder<InstanceType<M>> {
     return this._api().params(parameter, value)
