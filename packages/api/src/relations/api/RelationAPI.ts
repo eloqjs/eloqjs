@@ -2,7 +2,7 @@ import { Collection, Element, Item, Model } from '@eloqjs/core'
 
 import { Builder } from '../../builder/Builder'
 import { FilterValue } from '../../query/specs/FilterSpec'
-import { OptionValue } from '../../query/specs/OptionSpec'
+import { ParamValue } from '../../query/specs/ParamSpec'
 import { CollectionPromise } from '../../response/CollectionPromise'
 import { DeletePromise } from '../../response/DeletePromise'
 import { RecordPromise } from '../../response/RecordPromise'
@@ -162,8 +162,8 @@ export class RelationAPI<
    * @param {string} parameter - The name of the parameter, e.g. 'bar' in "http://foo.com?bar=baz"
    * @param {string} value - The value of the parameter, e.g. 'baz' in "http://foo.com?bar=baz"
    */
-  public option(parameter: string, value: OptionValue | OptionValue[]): this {
-    this.query.option(parameter, value)
+  public option(parameter: string, value: ParamValue | ParamValue[]): this {
+    this.query.params(parameter, value)
 
     return this
   }

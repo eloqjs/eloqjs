@@ -8,8 +8,8 @@ import {
   FilterSpec,
   IncludeSpec,
   LimitSpec,
-  OptionSpec,
   PageSpec,
+  ParamSpec,
   SortSpec
 } from './specs'
 
@@ -34,7 +34,7 @@ export class Query {
 
   protected sort: SortSpec[]
 
-  protected options: OptionSpec[]
+  protected params: ParamSpec[]
 
   protected page?: PageSpec
 
@@ -61,7 +61,7 @@ export class Query {
     this.fields = []
     this.filters = []
     this.include = []
-    this.options = []
+    this.params = []
     this.sort = []
 
     if (Query.parameters.append) {
@@ -97,7 +97,7 @@ export class Query {
    * Groups the values of specs by parameter.
    */
   private static _groupByParameter(
-    specs: (FieldSpec | FilterSpec | OptionSpec)[]
+    specs: (FieldSpec | FilterSpec | ParamSpec)[]
   ): Map<string, string> {
     const dictionary = new Map()
 
@@ -161,12 +161,12 @@ export class Query {
     return this.sort
   }
 
-  public addOption(option: OptionSpec): void {
-    this.options.push(option)
+  public addParam(option: ParamSpec): void {
+    this.params.push(option)
   }
 
-  public getOptions(): OptionSpec[] {
-    return this.options
+  public getParams(): ParamSpec[] {
+    return this.params
   }
 
   public setPage(page: PageSpec): void {
@@ -287,7 +287,7 @@ export class Query {
   }
 
   protected addOptionsParameters(searchParams: QueryParam[]): void {
-    const options = Query._groupByParameter(this.options)
+    const options = Query._groupByParameter(this.params)
 
     for (const [parameter, value] of options) {
       searchParams.push(new QueryParam(parameter, value))
