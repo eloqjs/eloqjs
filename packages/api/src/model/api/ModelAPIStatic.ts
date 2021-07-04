@@ -158,11 +158,39 @@ export class ModelAPIStatic<M extends typeof Model = typeof Model> {
   /**
    * Specify an attribute to sort by and the direction to sort in.
    *
-   * @param {string} attribute - The attribute to sort by.
+   * @param {object} query - The query attributes to sort.
+   */
+  public orderBy(
+    query: Record<string, 'asc' | 'desc'>
+  ): Builder<InstanceType<M>>
+
+  /**
+   * Specify an attribute to sort by and the direction to sort in.
+   *
+   * @param {string | string[]} attribute - The attribute to sort by.
    * @param {string} [direction] - The direction to sort in.
    */
   public orderBy(
     attribute: string | string[],
+    direction?: 'asc' | 'desc'
+  ): Builder<InstanceType<M>>
+
+  /**
+   * @internal
+   */
+  public orderBy(
+    attribute: string | string[] | Record<string, 'asc' | 'desc'>,
+    direction?: 'asc' | 'desc'
+  ): Builder<InstanceType<M>>
+
+  /**
+   * Specify an attribute to sort by and the direction to sort in.
+   *
+   * @param {string} attribute - The attribute to sort by.
+   * @param {string} [direction] - The direction to sort in.
+   */
+  public orderBy(
+    attribute: string | string[] | Record<string, 'asc' | 'desc'>,
     direction?: 'asc' | 'desc'
   ): Builder<InstanceType<M>> {
     return this._query().orderBy(attribute, direction)

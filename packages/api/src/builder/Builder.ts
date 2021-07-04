@@ -320,11 +320,34 @@ export class Builder<M extends Model = Model, S extends boolean = false> {
   /**
    * Specify an attribute to sort by and the direction to sort in.
    *
+   * @param {object} query - The query attributes to sort.
+   */
+  public orderBy(query: Record<string, 'asc' | 'desc'>): this
+
+  /**
+   * Specify an attribute to sort by and the direction to sort in.
+   *
+   * @param {string | string[]} attribute - The attribute to sort by.
+   * @param {string} [direction] - The direction to sort in.
+   */
+  public orderBy(attribute: string | string[], direction?: 'asc' | 'desc'): this
+
+  /**
+   * @internal
+   */
+  public orderBy(
+    attribute: string | string[] | Record<string, 'asc' | 'desc'>,
+    direction?: 'asc' | 'desc'
+  ): this
+
+  /**
+   * Specify an attribute to sort by and the direction to sort in.
+   *
    * @param {string | string[]} attribute - The attribute to sort by.
    * @param {string} [direction] - The direction to sort in.
    */
   public orderBy(
-    attribute: string | string[],
+    attribute: string | string[] | Record<string, 'asc' | 'desc'>,
     direction?: 'asc' | 'desc'
   ): this {
     const addSort = (attributes: string | string[], dir?: boolean) => {
@@ -334,19 +357,26 @@ export class Builder<M extends Model = Model, S extends boolean = false> {
         this._query.addSort(new SortSpec(attr, dir))
       }
     }
-
-    let _direction: boolean | undefined = undefined
-
-    switch (direction) {
-      case SortDirection.ASC:
-        _direction = true
-        break
-      case SortDirection.DESC:
-        _direction = false
-        break
+    const resolveDirection = (dir?: 'asc' | 'desc') => {
+      switch (dir) {
+        default:
+          return undefined
+        case SortDirection.ASC:
+          return true
+        case SortDirection.DESC:
+          return false
+      }
     }
 
-    addSort(attribute, _direction)
+    if (isString(attribute) || isArray(attribute)) {
+      addSort(attribute, resolveDirection(direction))
+    }
+
+    if (isPlainObject(attribute)) {
+      for (const [attr, dir] of Object.entries(attribute)) {
+        addSort(attr, resolveDirection(dir))
+      }
+    }
 
     return this
   }

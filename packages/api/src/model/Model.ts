@@ -180,12 +180,43 @@ export class Model extends BaseModel {
   /**
    * Specify an attribute to sort by and the direction to sort in.
    *
-   * @param {string} attribute - The attribute to sort by.
+   * @param {object} query - The query attributes to sort.
+   */
+  public static orderBy<M extends typeof Model>(
+    this: M,
+    query: Record<string, 'asc' | 'desc'>
+  ): Builder<InstanceType<M>>
+
+  /**
+   * Specify an attribute to sort by and the direction to sort in.
+   *
+   * @param {string | string[]} attribute - The attribute to sort by.
    * @param {string} [direction] - The direction to sort in.
    */
   public static orderBy<M extends typeof Model>(
     this: M,
     attribute: string | string[],
+    direction?: 'asc' | 'desc'
+  ): Builder<InstanceType<M>>
+
+  /**
+   * @internal
+   */
+  public static orderBy<M extends typeof Model>(
+    this: M,
+    attribute: string | string[] | Record<string, 'asc' | 'desc'>,
+    direction?: 'asc' | 'desc'
+  ): Builder<InstanceType<M>>
+
+  /**
+   * Specify an attribute to sort by and the direction to sort in.
+   *
+   * @param {string} attribute - The attribute to sort by.
+   * @param {string} [direction] - The direction to sort in.
+   */
+  public static orderBy<M extends typeof Model>(
+    this: M,
+    attribute: string | string[] | Record<string, 'asc' | 'desc'>,
     direction?: 'asc' | 'desc'
   ): Builder<InstanceType<M>> {
     return this._api().orderBy(attribute, direction)
