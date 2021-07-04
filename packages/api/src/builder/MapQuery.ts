@@ -8,7 +8,7 @@ function isUnallowedValue(value: unknown): boolean {
   )
 }
 
-export function mapFilterQuery(
+export function mapQuery(
   obj: Record<string, any>,
   path: string[] = [],
   map: Map<string[], any> = new Map()
@@ -31,7 +31,7 @@ export function mapFilterQuery(
     // Remove unallowed values
     if (isUnallowedValue(value)) continue
 
-    mapFilterQuery(value, [...path, name], map)
+    mapQuery(value, [...path, name], map)
   }
 
   return map

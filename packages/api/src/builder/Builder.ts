@@ -28,7 +28,7 @@ import {
   isString,
   isUndefined
 } from '../support/Utils'
-import { mapFilterQuery } from './MapFilterQuery'
+import { mapQuery } from './MapQuery'
 import { SortDirection } from './SortDirection'
 
 export class Builder<M extends Model = Model, S extends boolean = false> {
@@ -174,7 +174,7 @@ export class Builder<M extends Model = Model, S extends boolean = false> {
     ])
 
     if (isPlainObject(attribute)) {
-      for (const [attr, val] of mapFilterQuery(attribute)) {
+      for (const [attr, val] of mapQuery(attribute)) {
         this.where(attr, val)
       }
     } else if (value) {
@@ -228,7 +228,7 @@ export class Builder<M extends Model = Model, S extends boolean = false> {
     ])
 
     if (isPlainObject(attribute)) {
-      for (const [attr, val] of mapFilterQuery(attribute)) {
+      for (const [attr, val] of mapQuery(attribute)) {
         this.whereIn(attr, val)
       }
     } else if (values) {
@@ -370,7 +370,7 @@ export class Builder<M extends Model = Model, S extends boolean = false> {
 
     // Multiple parameters .params({ foo: true, bar: 'baz' })
     if (isPlainObject(parameter)) {
-      for (const [param, val] of mapFilterQuery(parameter)) {
+      for (const [param, val] of mapQuery(parameter)) {
         addParam(param, val)
       }
     }
