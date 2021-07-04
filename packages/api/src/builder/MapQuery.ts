@@ -1,6 +1,6 @@
 import { isPlainObject } from '../support/Utils'
 
-function isUnallowedValue(value: unknown): boolean {
+export function isUnallowedValue(value: unknown): boolean {
   return (
     value === undefined ||
     value instanceof RegExp ||
