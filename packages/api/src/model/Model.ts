@@ -172,7 +172,7 @@ export class Model extends BaseModel {
    */
   public static select<M extends typeof Model>(
     this: M,
-    field: string | string[]
+    field: string | string[] | Record<string, string | string[]>
   ): Builder<InstanceType<M>> {
     return this._api().select(field)
   }

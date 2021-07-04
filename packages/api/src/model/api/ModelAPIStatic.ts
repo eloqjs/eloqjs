@@ -149,7 +149,9 @@ export class ModelAPIStatic<M extends typeof Model = typeof Model> {
   /**
    * Specify the fields that should be included in the returned object graph.
    */
-  public select(field: string | string[]): Builder<InstanceType<M>> {
+  public select(
+    field: string | string[] | Record<string, string | string[]>
+  ): Builder<InstanceType<M>> {
     return this._query().select(field)
   }
 
