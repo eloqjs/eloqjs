@@ -4,7 +4,7 @@ import * as Attributes from '../attributes'
 import { Builder } from '../builder/Builder'
 import { HttpClientOptions } from '../httpclient/HttpClientOptions'
 import { FilterValue } from '../query/specs/FilterSpec'
-import { OptionValue } from '../query/specs/OptionSpec'
+import { ParamValue } from '../query/specs/ParamSpec'
 import { CollectionPromise } from '../response/CollectionPromise'
 import { DeletePromise } from '../response/DeletePromise'
 import { RecordPromise } from '../response/RecordPromise'
@@ -195,14 +195,14 @@ export class Model extends BaseModel {
    * Specify a custom query parameter to add to the resulting HTTP request URL.
    *
    * @param {string} parameter - The name of the parameter, e.g. 'bar' in "http://foo.com?bar=baz"
-   * @param {OptionValue | OptionValue[]} value - The value of the parameter, e.g. 'baz' in "http://foo.com?bar=baz"
+   * @param {ParamValue | ParamValue[]} value - The value of the parameter, e.g. 'baz' in "http://foo.com?bar=baz"
    */
-  public static option<M extends typeof Model>(
+  public static params<M extends typeof Model>(
     this: M,
-    parameter: string | Record<string, OptionValue | OptionValue[]>,
-    value?: OptionValue | OptionValue[]
+    parameter: string | Record<string, ParamValue | ParamValue[]>,
+    value?: ParamValue | ParamValue[]
   ): Builder<InstanceType<M>> {
-    return this._api().option(parameter, value)
+    return this._api().params(parameter, value)
   }
 
   /**

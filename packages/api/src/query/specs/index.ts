@@ -3,8 +3,8 @@ import { FieldSpec } from './FieldSpec'
 import { FilterSpec } from './FilterSpec'
 import { IncludeSpec } from './IncludeSpec'
 import { LimitSpec } from './LimitSpec'
-import { OptionSpec } from './OptionSpec'
 import { PageSpec } from './PageSpec'
+import { ParamSpec } from './ParamSpec'
 import { SortSpec } from './SortSpec'
 
 export {
@@ -13,7 +13,7 @@ export {
   FilterSpec,
   IncludeSpec,
   LimitSpec,
-  OptionSpec,
   PageSpec,
+  ParamSpec,
   SortSpec
 }

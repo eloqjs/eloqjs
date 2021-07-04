@@ -11,7 +11,7 @@ import {
   SortSpec
 } from '../query/specs'
 import { FilterSpec, FilterValue } from '../query/specs/FilterSpec'
-import { OptionSpec, OptionValue } from '../query/specs/OptionSpec'
+import { ParamSpec, ParamValue } from '../query/specs/ParamSpec'
 import { Request } from '../request/Request'
 import { RequestMethod } from '../request/RequestMethod'
 import { RequestOperation } from '../request/RequestOperation'
@@ -346,29 +346,29 @@ export class Builder<M extends Model = Model, S extends boolean = false> {
    * Specify a custom query parameter to add to the resulting HTTP request URL.
    *
    * @param {string} parameter - The name of the parameter, e.g. 'bar' in "http://foo.com?bar=baz"
-   * @param {OptionValue | OptionValue[]} value - The value of the parameter, e.g. 'baz' in "http://foo.com?bar=baz"
+   * @param {ParamValue | ParamValue[]} value - The value of the parameter, e.g. 'baz' in "http://foo.com?bar=baz"
    */
-  public option(
-    parameter: string | Record<string, OptionValue | OptionValue[]>,
-    value?: OptionValue | OptionValue[]
+  public params(
+    parameter: string | Record<string, ParamValue | ParamValue[]>,
+    value?: ParamValue | ParamValue[]
   ): this {
-    const addOption = (param: string, values: OptionValue | OptionValue[]) => {
+    const addParam = (param: string, values: ParamValue | ParamValue[]) => {
       values = forceArray(values)
 
       for (const val of values) {
-        this._query.addOption(new OptionSpec(param, val))
+        this._query.addParam(new ParamSpec(param, val))
       }
     }
 
     // Single parameter .option('foo', true)
     if (isString(parameter)) {
-      addOption(parameter, value || [])
+      addParam(parameter, value || [])
     }
 
     // Multiple parameters .option({ foo: true, bar: 'baz' })
     if (isObject(parameter)) {
       for (const param in parameter) {
-        addOption(param, parameter[param])
+        addParam(param, parameter[param])
       }
     }
 
