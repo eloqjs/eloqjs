@@ -19,6 +19,13 @@ export class SortSpec {
   }
 
   public getValue(): string {
-    return (!this.getPositiveDirection() ? '-' : '') + this.getAttribute()
+    const attribute = this.getAttribute()
+
+    // Add negative operator prefix if the attribute doesn't have it already
+    if (!this.getPositiveDirection() && !attribute.startsWith('-')) {
+      return `-${attribute}`
+    }
+
+    return attribute
   }
 }
