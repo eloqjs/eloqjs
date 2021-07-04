@@ -28,7 +28,7 @@ import {
   isString,
   isUndefined
 } from '../support/Utils'
-import { mapQuery } from './MapQuery'
+import { isUnallowedValue, mapQuery } from './MapQuery'
 import { SortDirection } from './SortDirection'
 
 export class Builder<M extends Model = Model, S extends boolean = false> {
@@ -365,7 +365,9 @@ export class Builder<M extends Model = Model, S extends boolean = false> {
 
     // Single parameter .params('foo', true)
     if (isString(parameter) || isArray(parameter)) {
-      addParam(parameter, value ?? [])
+      if (!isUnallowedValue(value)) {
+        addParam(parameter, value ?? [])
+      }
     }
 
     // Multiple parameters .params({ foo: true, bar: 'baz' })
