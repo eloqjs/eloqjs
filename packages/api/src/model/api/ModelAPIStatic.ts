@@ -162,7 +162,7 @@ export class ModelAPIStatic<M extends typeof Model = typeof Model> {
    * @param {string} [direction] - The direction to sort in.
    */
   public orderBy(
-    attribute: string,
+    attribute: string | string[],
     direction?: 'asc' | 'desc'
   ): Builder<InstanceType<M>> {
     return this._query().orderBy(attribute, direction)
