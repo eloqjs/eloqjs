@@ -3,6 +3,7 @@ import defu from 'defu'
 import * as Attributes from '../attributes'
 import { Mutator, Mutators } from '../attributes/Contracts'
 import { Collection } from '../collection/Collection'
+import { Field } from '../field/Field'
 import * as Relations from '../relations'
 import { AttrMap } from '../support/AttrMap'
 import { Map } from '../support/Map'
@@ -27,10 +28,10 @@ import { Element } from '../types/Data'
 import * as Contracts from './Contracts'
 import * as Serialize from './Serialize'
 
-export type ModelFields = Record<string, Attributes.Attribute>
+export type ModelFields = Record<string, Field>
 export type ModelSchemas = Record<string, ModelFields>
 export type ModelRegistries = Record<string, ModelRegistry>
-export type ModelRegistry = Record<string, () => Attributes.Attribute>
+export type ModelRegistry = Record<string, () => Field>
 export type ModelReference<T> = Readonly<Omit<T, keyof Model>>
 
 export interface ModelOptions {
@@ -247,17 +248,14 @@ export class Model {
   /**
    * The definition of the fields of the model and its relations.
    */
-  public static fields(): ModelFields {
+  public static fields(): Record<string, any> {
     return {}
   }
 
   /**
    * Set the attribute to the registry.
    */
-  public static setRegistry(
-    key: string,
-    attribute: () => Attributes.Attribute
-  ): typeof Model {
+  public static setRegistry(key: string, attribute: () => Field): typeof Model {
     if (!this._registries[this.entity]) {
       this._registries[this.entity] = {}
     }
@@ -390,8 +388,8 @@ export class Model {
     for (const key in fields) {
       const field = fields[key]
 
-      if (field instanceof Attributes.Relation) {
-        flag = field.related === relationship
+      if (field.type === Model) {
+        flag = field.type === relationship
 
         if (flag) {
           break
@@ -503,9 +501,15 @@ export class Model {
    */
   private static _initializeSchema(): void {
     this._schemas[this.entity] = {}
+    const fields = this.fields()
+    const _fields = {}
+
+    for (const key in this.fields()) {
+      _fields[key] = new Field(key, fields[key])
+    }
 
     const registry = {
-      ...this.fields(),
+      ..._fields,
       ...this._registries[this.entity]
     }
 
@@ -679,7 +683,7 @@ export class Model {
   /**
    * Get a model field for this model.
    */
-  public $getField(attribute: string): Attributes.Attribute {
+  public $getField(attribute: string): Field {
     const fields = this.$fields()
 
     assert(attribute in fields, [
@@ -723,8 +727,8 @@ export class Model {
 
     // If the field is an attribute and the value is undefined, then apply default value of the field.
     // Or if the field is a relation, then apply the relation class.
-    if (isUndefined(value) || field instanceof Attributes.Relation) {
-      value = field.make(value, this, attribute, false) as T
+    if (isUndefined(value) || field.type === Model) {
+      value = field.resolveValue(value)
     }
 
     // Set the attribute value.
@@ -758,11 +762,11 @@ export class Model {
     }
 
     // We don't want to mutate relationships.
-    if (field instanceof Attributes.Relation) {
+    if (field.type === Model) {
       return value
     }
 
-    return field.make(value, this, attribute)
+    return field.resolveValue(value)
   }
 
   /**
@@ -786,11 +790,11 @@ export class Model {
     }
 
     // We don't want to mutate relationships.
-    if (field instanceof Attributes.Relation) {
+    if (field.type === Model) {
       return value
     }
 
-    return field.make(value, this.$, attribute)
+    return field.resolveValue(value)
   }
 
   /**
@@ -807,7 +811,7 @@ export class Model {
       let value = attributes[key]
 
       // Some times we might not want to fill relationships
-      if (field instanceof Attributes.Relation && !fillRelation) {
+      if (field.type === Model && !fillRelation) {
         continue
       }
 
@@ -890,32 +894,26 @@ export class Model {
     for (const key in fields) {
       const field = fields[key]
 
-      switch (true) {
-        default:
-        case field instanceof Attributes.Type: {
-          if (_option.shouldPatch && this._attributes.isClean(key)) {
-            continue
-          }
-
-          const value = this._attributes.get(key)
-
-          // Exclude read-only attributes.
-          if (!this.$self().readOnlyAttributes.includes(key)) {
-            result[key] = Serialize.value(value)
-          }
-
-          break
+      if (field.type === Model) {
+        if (_option.shouldPatch && this._relationships.isClean(key)) {
+          continue
         }
-        case field instanceof Attributes.Relation: {
-          if (_option.shouldPatch && this._relationships.isClean(key)) {
-            continue
-          }
 
-          const value = this._relationships.get(key).data
+        const value = this._relationships.get(key).data
 
-          result[key] = _option.relations
-            ? Serialize.relation(value, _option.isRequest)
-            : Serialize.emptyRelation(value)
+        result[key] = _option.relations
+          ? Serialize.relation(value, _option.isRequest)
+          : Serialize.emptyRelation(value)
+      } else {
+        if (_option.shouldPatch && this._attributes.isClean(key)) {
+          continue
+        }
+
+        const value = this._attributes.get(key)
+
+        // Exclude read-only attributes.
+        if (!this.$self().readOnlyAttributes.includes(key)) {
+          result[key] = Serialize.value(value)
         }
       }
     }
@@ -1069,17 +1067,8 @@ export class Model {
    * attributes, and is not reversible.
    */
   public $clearAttributes(): void {
-    const fields = this.$fields()
-
     for (const key in this.$fields()) {
-      const field = fields[key]
-
-      if (
-        field instanceof Attributes.Type ||
-        field instanceof Attributes.Relation
-      ) {
-        this[key] = undefined
-      }
+      this[key] = undefined
     }
 
     this._attributes.syncReference()
@@ -1272,18 +1261,10 @@ export class Model {
     const field = this.$getField(attribute)
 
     // Set the attribute based on field type.
-    switch (true) {
-      default:
-      case field instanceof Attributes.Type: {
-        this._attributes.set(attribute, value)
-
-        break
-      }
-      case field instanceof Attributes.Relation: {
-        this._relationships.set(attribute, value)
-
-        break
-      }
+    if (field.type === Model) {
+      this._relationships.set(attribute, value)
+    } else {
+      this._attributes.set(attribute, value)
     }
 
     return value
@@ -1299,18 +1280,10 @@ export class Model {
     let value: any
 
     // Get the attribute based on field type.
-    switch (true) {
-      default:
-      case field instanceof Attributes.Type: {
-        value = this._attributes.get(attribute)
-
-        break
-      }
-      case field instanceof Attributes.Relation: {
-        value = this._relationships.get(attribute)
-
-        break
-      }
+    if (field.type === Model) {
+      value = this._relationships.get(attribute)
+    } else {
+      value = this._attributes.get(attribute)
     }
 
     return value
@@ -1344,18 +1317,10 @@ export class Model {
     let value: any
 
     // Get the attribute based on field type.
-    switch (true) {
-      default:
-      case field instanceof Attributes.Type: {
-        value = this._attributes.$get(attribute)
-
-        break
-      }
-      case field instanceof Attributes.Relation: {
-        value = this._relationships.$get(attribute)
-
-        break
-      }
+    if (field.type === Model) {
+      value = this._relationships.$get(attribute)
+    } else {
+      value = this._attributes.$get(attribute)
     }
 
     return value
