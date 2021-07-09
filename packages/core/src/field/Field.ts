@@ -51,6 +51,10 @@ export class Field {
   }
 
   public validate(value: any): true {
+    if (this.required && isNullish(value)) {
+      throw new Error(`Missing required field: "${this.key}".`)
+    }
+
     // TODO: Improve `isUndefined` check to avoid duplicated code
     if (isUndefined(value)) {
       return true
@@ -85,10 +89,6 @@ export class Field {
 
     if (this.cast && !isNullish(value)) {
       value = this.cast(value)
-    }
-
-    if (this.required && isNullish(value)) {
-      throw new Error(`Missing required field: "${this.key}".`)
     }
 
     return this.validate(value) && value
