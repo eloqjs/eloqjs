@@ -1,7 +1,6 @@
 import defu from 'defu'
 
-import * as Attributes from '../attributes'
-import { Mutator, Mutators } from '../attributes/Contracts'
+import { Mutators } from '../attributes/Contracts'
 import { Collection } from '../collection/Collection'
 import { Field } from '../field/Field'
 import * as Relations from '../relations'
@@ -433,67 +432,6 @@ export class Model {
 
       return true
     })
-  }
-
-  /**
-   * Create an attr attribute.
-   */
-  protected static attr(
-    value?: unknown,
-    mutator?: Mutator<any>
-  ): Attributes.Attr {
-    return new Attributes.Attr(this, value, mutator)
-  }
-
-  /**
-   * Create a string attribute.
-   */
-  protected static string(
-    value?: string | null,
-    mutator?: Mutator<string | null>
-  ): Attributes.String {
-    return new Attributes.String(this, value, mutator)
-  }
-
-  /**
-   * Create a number attribute.
-   */
-  protected static number(
-    value?: number | null,
-    mutator?: Mutator<number | null>
-  ): Attributes.Number {
-    return new Attributes.Number(this, value, mutator)
-  }
-
-  /**
-   * Create a boolean attribute.
-   */
-  protected static boolean(
-    value?: boolean | null,
-    mutator?: Mutator<boolean | null>
-  ): Attributes.Boolean {
-    return new Attributes.Boolean(this, value, mutator)
-  }
-
-  /**
-   * Create an uid attribute.
-   */
-  protected static uid(value?: () => string | number): Attributes.Uid {
-    return new Attributes.Uid(this, value)
-  }
-
-  /**
-   * Create a has one relationship.
-   */
-  protected static hasOne(related: typeof Model): Attributes.HasOne {
-    return new Attributes.HasOne(this, related)
-  }
-
-  /**
-   * Create a has many relationship.
-   */
-  protected static hasMany(related: typeof Model): Attributes.HasMany {
-    return new Attributes.HasMany(this, related)
   }
 
   /**
