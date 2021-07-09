@@ -159,6 +159,13 @@ export function isModel(value: unknown): value is Model {
 }
 
 /**
+ * Determines whether the given value is the instance of {@link Model}.
+ */
+export function isModelClass(value: unknown): value is typeof Model {
+  return isFunction(value) && value.prototype instanceof Model
+}
+
+/**
  * Determines whether the given value is the instance of {@link Collection}.
  */
 export function isCollection(value: unknown): value is Collection {
