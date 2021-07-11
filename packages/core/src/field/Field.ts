@@ -63,9 +63,8 @@ export class Field {
     if (!validateType(value, this.type) && !(isNull(value) && this.nullable)) {
       const typeName = getName(this.type)
       const valueName =
-        (value && value.constructor && value.constructor.name) || isNull(value)
-          ? 'Null'
-          : capitalize(typeof value)
+        (value && value.constructor && value.constructor.name) ||
+        (isNull(value) ? 'Null' : capitalize(typeof value))
 
       throw new Error(
         `Invalid field: type check failed for field "${this.key}". Expected "${typeName}", got "${valueName}".`
