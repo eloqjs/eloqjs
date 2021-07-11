@@ -381,22 +381,9 @@ export class Model {
    * Determines whether the model has the given relationship.
    */
   public static hasRelation(relationship: typeof Model): boolean {
-    const fields = this.getFields()
-    let flag = false
-
-    for (const key in fields) {
-      const field = fields[key]
-
-      if (field.type === Model) {
-        flag = field.type === relationship
-
-        if (flag) {
-          break
-        }
-      }
-    }
-
-    return flag
+    return Object.values(this.getFields()).some(
+      (field) => field.relation && field.type === relationship
+    )
   }
 
   /**
@@ -443,7 +430,7 @@ export class Model {
     const _fields = {}
 
     for (const key in this.fields()) {
-      _fields[key] = new Field(key, fields[key])
+      _fields[key] = new Field(key, fields[key], this)
     }
 
     const registry = {
@@ -663,11 +650,8 @@ export class Model {
     const previous: any = this._getAttribute(attribute)
     const field = this.$getField(attribute)
 
-    // If the field is an attribute and the value is undefined, then apply default value of the field.
-    // Or if the field is a relation, then apply the relation class.
-    if (isUndefined(value) || field.type === Model) {
-      value = field.resolveValue(value)
-    }
+    // Resolve the value
+    value = field.make(value, this)
 
     // Set the attribute value.
     this._setAttribute(attribute, value)
@@ -692,19 +676,13 @@ export class Model {
    */
   public $get(attribute: string, fallback?: unknown): any {
     let value = this._getAttribute(attribute)
-    const field = this.$getField(attribute)
 
     // Use the fallback if the value is undefined.
     if (isUndefined(value)) {
       value = fallback
     }
 
-    // We don't want to mutate relationships.
-    if (field.type === Model) {
-      return value
-    }
-
-    return field.resolveValue(value)
+    return value
   }
 
   /**
@@ -720,19 +698,13 @@ export class Model {
    */
   public $saved(attribute: string, fallback?: unknown): any {
     let value = this._getReference(attribute)
-    const field = this.$getField(attribute)
 
     // Use the fallback if the value is undefined.
     if (isUndefined(value)) {
       value = fallback
     }
 
-    // We don't want to mutate relationships.
-    if (field.type === Model) {
-      return value
-    }
-
-    return field.resolveValue(value)
+    return value
   }
 
   /**
@@ -1199,7 +1171,7 @@ export class Model {
     const field = this.$getField(attribute)
 
     // Set the attribute based on field type.
-    if (field.type === Model) {
+    if (field.relation) {
       this._relationships.set(attribute, value)
     } else {
       this._attributes.set(attribute, value)
@@ -1218,7 +1190,7 @@ export class Model {
     let value: any
 
     // Get the attribute based on field type.
-    if (field.type === Model) {
+    if (field.relation) {
       value = this._relationships.get(attribute)
     } else {
       value = this._attributes.get(attribute)
