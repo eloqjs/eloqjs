@@ -30,6 +30,7 @@ export class Field {
   public default?: any
   public validator: (value: any) => boolean = () => true
   public cast: any
+  public mutator: (value: any) => any = (value: any) => value
 
   public constructor(key: string, field: any, model: typeof Model) {
     if (!isString(key)) {
@@ -62,6 +63,7 @@ export class Field {
     this.nullable = resolveNullable(this.relation ? true : field.nullable)
     this.default = resolveDefault(this.key, this.type, field.default)
     this.validator = resolveValidator(this.key, field.validator, this.validator)
+    this.mutator = resolveValidator(this.key, field.mutator, this.mutator)
     this.cast = resolveCast(
       this.key,
       this.type,
@@ -108,6 +110,10 @@ export class Field {
 
     if (this.cast && !isNullish(value) && !this.relation) {
       value = this.cast(value)
+    }
+
+    if (this.mutator) {
+      value = this.mutator(value)
     }
 
     const valid = this.validate(value)
