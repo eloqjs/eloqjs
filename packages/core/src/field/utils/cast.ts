@@ -1,7 +1,15 @@
 import { isArray, isFunction, isUndefined } from '../../support/Utils'
 
 export function resolveCast(key: string, type: any, cast: any): any {
-  if (isArray(type) && !isFunction(cast)) {
+  if (isUndefined(cast)) {
+    return cast
+  }
+
+  if (isArray(type)) {
+    if (isFunction(cast)) {
+      return (value: any) => cast(value)
+    }
+
     throw new Error(
       `Invalid cast for field "${key}": The cast must be a Function when multiple types are defined.`
     )
@@ -9,10 +17,6 @@ export function resolveCast(key: string, type: any, cast: any): any {
 
   if (cast === true) {
     return (value: any) => castValue(type, value)
-  }
-
-  if (isUndefined(cast)) {
-    return cast
   }
 
   throw new Error(
