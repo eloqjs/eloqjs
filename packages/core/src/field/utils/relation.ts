@@ -3,6 +3,7 @@ import { Model } from '../../model/Model'
 import { Relation } from '../../relations'
 import { RelationEnum } from '../../relations/RelationEnum'
 import {
+  capitalize,
   isArray,
   isCollection,
   isModel,
@@ -19,10 +20,11 @@ export function resolveRelationType(
   const relations = Object.values(RelationEnum)
 
   if (isModelClass(type) && !relations.includes(relation)) {
-    const expected = relations.join(' | ')
+    const expected = relations.join(', ')
+    const gotten = capitalize(typeof relation)
 
     throw new Error(
-      `Invalid relation for field ${key}: Expected "${expected}", got "${relation}".`
+      `Invalid relation for field ${key}: Expected ${expected}, got ${gotten}.`
     )
   }
 
