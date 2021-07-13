@@ -55,7 +55,7 @@ export class Field {
       field.relation as RelationEnum
     )
     this.required = resolveRequired(field.required)
-    this.nullable = resolveNullable(field.nullable, field.relation)
+    this.nullable = resolveNullable(this.relation ? true : field.nullable)
     this.default = resolveDefault(this.key, this.type, field.default)
     this.validator = resolveValidator(this.key, field.validator, this.validator)
     this.cast = resolveCast(
