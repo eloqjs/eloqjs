@@ -1,7 +1,3 @@
-export function resolveNullable(nullable: any, relation: any): boolean {
-  if (relation) {
-    return true
-  }
-
+export function resolveNullable(nullable: any): boolean {
   return nullable === true
 }
