@@ -1,7 +1,6 @@
 import { Model } from '../model/Model'
 import { RelationEnum } from '../relations/RelationEnum'
 import {
-  capitalize,
   isNull,
   isNullish,
   isPlainObject,
@@ -13,7 +12,12 @@ import { resolveDefault } from './utils/default'
 import { resolveNullable } from './utils/nullable'
 import { resolveRelation, resolveRelationType } from './utils/relation'
 import { resolveRequired } from './utils/required'
-import { getName, resolveType, validateType } from './utils/type'
+import {
+  getExpectedName,
+  getGottenName,
+  resolveType,
+  validateType
+} from './utils/type'
 import { resolveValidator } from './utils/validator'
 
 export class Field {
@@ -79,14 +83,11 @@ export class Field {
       !validateType(value, this.type, this.relation) &&
       !(isNull(value) && this.nullable)
     ) {
-      const typeName = getName(this.type)
-      const valueName =
-        (value && value.constructor && value.constructor.name) ||
-        (isNull(value) ? 'Null' : capitalize(typeof value))
+      const expectedName = getExpectedName(this.type, this.relation)
+      const gottenName = getGottenName(value)
 
-      // TODO: Improve error for relationship collections
       throw new Error(
-        `Invalid field: type check failed for field "${this.key}". Expected "${typeName}", got "${valueName}".`
+        `Invalid field: type check failed for field "${this.key}". Expected ${expectedName}, got ${gottenName}.`
       )
     }
 

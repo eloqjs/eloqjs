@@ -1,8 +1,10 @@
 import { RelationEnum } from '../../relations/RelationEnum'
 import {
+  capitalize,
   isArray,
   isCollection,
   isModelClass,
+  isNull,
   isNullish,
   isPlainObject
 } from '../../support/Utils'
@@ -45,10 +47,28 @@ export function validateType(
   return value.constructor === type
 }
 
-export function getName(type: any): string {
-  return isArray(type)
-    ? type.map((_type: any) => resolveName(_type)).join(' | ')
-    : resolveName(type)
+export function getExpectedName(type: any, relation?: RelationEnum): string {
+  if (isModelClass(type) && relation === RelationEnum.HAS_MANY) {
+    return `Collection of ${resolveName(type)}`
+  }
+
+  if (isArray(type)) {
+    return type.map((_type: any) => resolveName(_type)).join(', ')
+  }
+
+  return resolveName(type)
+}
+
+export function getGottenName(value: any): string {
+  if (isNull(value)) {
+    return 'Null'
+  }
+
+  if (value && value.constructor) {
+    return value.constructor.name
+  }
+
+  return capitalize(typeof value)
 }
 
 function resolveName(type: any): string {
