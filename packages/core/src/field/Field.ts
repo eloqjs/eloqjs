@@ -54,26 +54,38 @@ export class Field {
       return
     }
 
-    this.type = resolveType(this.key, field.type)
-    this.relation = resolveRelationType(
-      this.key,
-      this.type,
-      field.relation as RelationEnum
-    )
-    this.required = resolveRequired(field.required)
-    this.nullable = resolveNullable(this.relation ? true : field.nullable)
-    this.default = resolveDefault(this.key, this.type, field.default)
-    this.validator = resolveValidator(this.key, field.validator, this.validator)
+    this.type = resolveType({ key: this.key, type: field.type })
+    this.relation = resolveRelationType({
+      key: this.key,
+      type: this.type,
+      relation: field.relation as RelationEnum
+    })
+    this.required = resolveRequired({
+      required: field.required
+    })
+    this.nullable = resolveNullable({
+      nullable: this.relation ? true : field.nullable
+    })
+    this.default = resolveDefault({
+      key: this.key,
+      type: this.type,
+      defaultValue: field.default
+    })
+    this.validator = resolveValidator({
+      key: this.key,
+      validator: field.validator,
+      fallback: this.validator
+    })
     this.mutator = resolveMutator({
       key: this.key,
       mutator: field.mutator || this.model.mutators()[this.key],
       fallback: this.mutator
     })
-    this.cast = resolveCast(
-      this.key,
-      this.type,
-      this.relation ? true : field.cast
-    )
+    this.cast = resolveCast({
+      key: this.key,
+      type: this.type,
+      cast: this.relation ? true : field.cast
+    })
   }
 
   public validate(value: any): true {

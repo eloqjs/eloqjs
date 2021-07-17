@@ -1,6 +1,12 @@
 import { isArray, isFunction, isUndefined } from '../../support/Utils'
 
-export function resolveCast(key: string, type: any, cast: any): any {
+type CastResolver = {
+  key: string
+  type: any
+  cast: any
+}
+
+export function resolveCast({ key, type, cast }: CastResolver): any {
   if (isUndefined(cast)) {
     return cast
   }

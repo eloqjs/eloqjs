@@ -9,7 +9,12 @@ import {
   isPlainObject
 } from '../../support/Utils'
 
-export function resolveType(key: string, type: any): any {
+type TypeResolver = {
+  key: string
+  type: any
+}
+
+export function resolveType({ key, type }: TypeResolver): any {
   if (isNullish(type)) {
     throw new Error(`Invalid type for field ${key}: The type must be defined.`)
   }
