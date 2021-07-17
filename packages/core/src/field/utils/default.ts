@@ -24,15 +24,17 @@ export function resolveDefault({
     _isPrimitive = isPrimitive(type)
   }
 
-  if (isFunction(defaultValue)) {
-    return defaultValue()
-  } else if (!_isPrimitive) {
+  if (!_isPrimitive && !isFunction(defaultValue)) {
     throw new Error(
       `Invalid default value for field "${key}": Fields with type Object/Array must use a factory function to return the default value.`
     )
   }
 
   return defaultValue
+}
+
+export function getDefaultValue<T>(value: T | (() => T)): T {
+  return isFunction(value) ? value() : value
 }
 
 function isPrimitive(type: any): boolean {
