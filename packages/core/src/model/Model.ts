@@ -721,7 +721,7 @@ export class Model {
       let value = attributes[key]
 
       // Some times we might not want to fill relationships
-      if (field.type === Model && !fillRelation) {
+      if (field.relation && !fillRelation) {
         continue
       }
 
@@ -804,7 +804,7 @@ export class Model {
     for (const key in fields) {
       const field = fields[key]
 
-      if (field.type === Model) {
+      if (field.relation) {
         if (_option.shouldPatch && this._relationships.isClean(key)) {
           continue
         }
@@ -1227,7 +1227,7 @@ export class Model {
     let value: any
 
     // Get the attribute based on field type.
-    if (field.type === Model) {
+    if (field.relation) {
       value = this._relationships.$get(attribute)
     } else {
       value = this._attributes.$get(attribute)
