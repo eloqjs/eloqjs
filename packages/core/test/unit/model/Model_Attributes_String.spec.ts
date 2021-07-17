@@ -10,8 +10,15 @@ describe('Unit – Model - Attributes – String', () => {
 
       static fields() {
         return {
-          id: this.attr(null),
-          str: this.string('default')
+          id: {
+            type: Number,
+            nullable: true
+          },
+          str: {
+            type: String,
+            default: 'default',
+            cast: true
+          }
         }
       }
     }
@@ -20,7 +27,6 @@ describe('Unit – Model - Attributes – String', () => {
     expect(new User({ str: 'value' }).str).toBe('value')
     expect(new User({ str: 1 }).str).toBe('1')
     expect(new User({ str: true }).str).toBe('true')
-    expect(new User({ str: null }).str).toBe('null')
   })
 
   it('can mutate the value by specifying mutator at attribute', () => {
@@ -32,8 +38,16 @@ describe('Unit – Model - Attributes – String', () => {
 
       static fields() {
         return {
-          id: this.attr(null),
-          str: this.string('default', (value: any) => `${value} mutated`)
+          id: {
+            type: Number,
+            nullable: true
+          },
+          str: {
+            type: String,
+            default: 'default',
+            cast: true,
+            mutator: (value: any) => `${value} mutated`
+          }
         }
       }
     }
@@ -42,7 +56,6 @@ describe('Unit – Model - Attributes – String', () => {
     expect(new User({ str: 'value' }).str).toBe('value mutated')
     expect(new User({ str: 1 }).str).toBe('1 mutated')
     expect(new User({ str: true }).str).toBe('true mutated')
-    expect(new User({ str: null }).str).toBe('null mutated')
   })
 
   it('can mutate the value by specifying mutator at mutators', () => {
@@ -54,8 +67,15 @@ describe('Unit – Model - Attributes – String', () => {
 
       static fields() {
         return {
-          id: this.attr(null),
-          str: this.string('default')
+          id: {
+            type: Number,
+            nullable: true
+          },
+          str: {
+            type: String,
+            default: 'default',
+            cast: true
+          }
         }
       }
 
@@ -72,6 +92,5 @@ describe('Unit – Model - Attributes – String', () => {
     expect(new User({ str: 'value' }).str).toBe('value mutated')
     expect(new User({ str: 1 }).str).toBe('1 mutated')
     expect(new User({ str: true }).str).toBe('true mutated')
-    expect(new User({ str: null }).str).toBe('null mutated')
   })
 })

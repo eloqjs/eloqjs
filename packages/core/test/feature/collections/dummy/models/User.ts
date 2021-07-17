@@ -8,8 +8,11 @@ export default class User extends BaseModel {
 
   static fields() {
     return {
-      id: this.attr(null),
-      name: this.string('')
+      id: {
+        type: Number,
+        nullable: true
+      },
+      name: String
     }
   }
 }

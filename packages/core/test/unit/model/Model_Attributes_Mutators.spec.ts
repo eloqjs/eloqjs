@@ -9,7 +9,10 @@ describe('Unit – Model - Attributes – Mutators', () => {
 
       static fields() {
         return {
-          name: this.attr('', (value) => value.toUpperCase())
+          name: {
+            type: String,
+            mutator: (value: any) => value.toUpperCase()
+          }
         }
       }
     }
@@ -25,7 +28,7 @@ describe('Unit – Model - Attributes – Mutators', () => {
 
       static fields() {
         return {
-          name: this.attr('')
+          name: String
         }
       }
 
@@ -49,7 +52,10 @@ describe('Unit – Model - Attributes – Mutators', () => {
 
       static fields() {
         return {
-          name: this.attr('', (value) => value.toUpperCase())
+          name: {
+            type: String,
+            mutator: (value: any) => value.toUpperCase()
+          }
         }
       }
 

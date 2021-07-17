@@ -12,9 +12,15 @@ describe('Features – Relations – Has Many', () => {
 
     static fields() {
       return {
-        id: this.attr(null),
-        name: this.string(''),
-        posts: this.hasMany(Post)
+        id: {
+          type: Number,
+          nullable: true
+        },
+        name: String,
+        posts: {
+          type: Post,
+          relation: 'HasMany'
+        }
       }
     }
   }
@@ -30,10 +36,16 @@ describe('Features – Relations – Has Many', () => {
 
     static fields() {
       return {
-        id: this.attr(null),
-        user_id: this.attr(null),
-        slug: this.string(''),
-        title: this.string('')
+        id: {
+          type: Number,
+          nullable: true
+        },
+        user_id: {
+          type: Number,
+          nullable: true
+        },
+        slug: String,
+        title: String
       }
     }
   }
