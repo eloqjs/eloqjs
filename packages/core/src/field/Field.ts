@@ -8,7 +8,7 @@ import {
   isUndefined
 } from '../support/Utils'
 import { resolveCast } from './utils/cast'
-import { resolveDefault } from './utils/default'
+import { getDefaultValue, resolveDefault } from './utils/default'
 import { resolveMutator } from './utils/mutator'
 import { resolveNullable } from './utils/nullable'
 import { resolveRelation, resolveRelationType } from './utils/relation'
@@ -121,7 +121,7 @@ export class Field {
 
   public make(value: unknown, model: Model): any {
     const nullish = this.nullable ? null : undefined
-    const fallback = this.default ?? nullish
+    const fallback = getDefaultValue(this.default) ?? nullish
 
     value = !isUndefined(value) ? value : fallback
 
