@@ -9,6 +9,7 @@ import {
 } from '../support/Utils'
 import { resolveCast } from './utils/cast'
 import { resolveDefault } from './utils/default'
+import { resolveMutator } from './utils/mutator'
 import { resolveNullable } from './utils/nullable'
 import { resolveRelation, resolveRelationType } from './utils/relation'
 import { resolveRequired } from './utils/required'
@@ -63,7 +64,7 @@ export class Field {
     this.nullable = resolveNullable(this.relation ? true : field.nullable)
     this.default = resolveDefault(this.key, this.type, field.default)
     this.validator = resolveValidator(this.key, field.validator, this.validator)
-    this.mutator = resolveValidator(this.key, field.mutator, this.mutator)
+    this.mutator = resolveMutator(this.key, field.mutator, this.mutator)
     this.cast = resolveCast(
       this.key,
       this.type,
