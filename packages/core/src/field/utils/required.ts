@@ -1,6 +1,10 @@
 import { isNullish } from '../../support/Utils'
 
-export function resolveRequired(required: any): boolean {
+type RequiredResolver = {
+  required: any
+}
+
+export function resolveRequired({ required }: RequiredResolver): boolean {
   return required === true
 }
 

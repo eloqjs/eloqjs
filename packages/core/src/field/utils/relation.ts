@@ -11,12 +11,18 @@ import {
 } from '../../support/Utils'
 import { Element, Item } from '../../types/Data'
 
-// TODO: Simplify functions
-export function resolveRelationType(
-  key: string,
-  type: any,
+type RelationTypeResolver = {
+  key: string
+  type: any
   relation: RelationEnum
-): RelationEnum | undefined {
+}
+
+// TODO: Simplify functions
+export function resolveRelationType({
+  key,
+  type,
+  relation
+}: RelationTypeResolver): RelationEnum | undefined {
   const relations = Object.values(RelationEnum)
 
   if (isModelClass(type) && !relations.includes(relation)) {

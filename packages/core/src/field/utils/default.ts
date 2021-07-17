@@ -1,16 +1,16 @@
 import { isArray, isFunction, isUndefined } from '../../support/Utils'
 
-function isPrimitive(type: any): boolean {
-  return (
-    type === String ||
-    type === Boolean ||
-    type === Number ||
-    type === BigInt ||
-    type === Symbol
-  )
+type DefaultResolver = {
+  key: string
+  type: any
+  defaultValue: any
 }
 
-export function resolveDefault(key: string, type: any, defaultValue: any): any {
+export function resolveDefault({
+  key,
+  type,
+  defaultValue
+}: DefaultResolver): any {
   let _isPrimitive: boolean
 
   // TODO: Improve `isUndefined` check to avoid duplicated code
@@ -33,4 +33,14 @@ export function resolveDefault(key: string, type: any, defaultValue: any): any {
   }
 
   return defaultValue
+}
+
+function isPrimitive(type: any): boolean {
+  return (
+    type === String ||
+    type === Boolean ||
+    type === Number ||
+    type === BigInt ||
+    type === Symbol
+  )
 }
