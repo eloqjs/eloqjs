@@ -10,8 +10,15 @@ describe('Unit – Model - Attributes – Number', () => {
 
       static fields() {
         return {
-          id: this.attr(null),
-          num: this.number(0)
+          id: {
+            type: Number,
+            nullable: true
+          },
+          num: {
+            type: Number,
+            default: 0,
+            cast: true
+          }
         }
       }
     }
@@ -21,7 +28,6 @@ describe('Unit – Model - Attributes – Number', () => {
     expect(new User({ num: '2' }).num).toBe(2)
     expect(new User({ num: true }).num).toBe(1)
     expect(new User({ num: false }).num).toBe(0)
-    expect(new User({ num: null }).num).toBe(0)
   })
 
   it('can mutate the value by specifying mutator at attribute', () => {
@@ -33,8 +39,16 @@ describe('Unit – Model - Attributes – Number', () => {
 
       static fields() {
         return {
-          id: this.attr(null),
-          num: this.number(0, (value: any) => value + 1)
+          id: {
+            type: Number,
+            nullable: true
+          },
+          num: {
+            type: Number,
+            default: 0,
+            cast: true,
+            mutator: (value: any) => value + 1
+          }
         }
       }
     }
@@ -44,7 +58,6 @@ describe('Unit – Model - Attributes – Number', () => {
     expect(new User({ num: '2' }).num).toBe(3)
     expect(new User({ num: true }).num).toBe(2)
     expect(new User({ num: false }).num).toBe(1)
-    expect(new User({ num: null }).num).toBe(1)
   })
 
   it('can mutate the value by specifying mutator at mutators', () => {
@@ -56,8 +69,15 @@ describe('Unit – Model - Attributes – Number', () => {
 
       static fields() {
         return {
-          id: this.attr(null),
-          num: this.number(0)
+          id: {
+            type: Number,
+            nullable: true
+          },
+          num: {
+            type: Number,
+            default: 0,
+            cast: true
+          }
         }
       }
 
@@ -75,6 +95,5 @@ describe('Unit – Model - Attributes – Number', () => {
     expect(new User({ num: '2' }).num).toBe(3)
     expect(new User({ num: true }).num).toBe(2)
     expect(new User({ num: false }).num).toBe(1)
-    expect(new User({ num: null }).num).toBe(1)
   })
 })

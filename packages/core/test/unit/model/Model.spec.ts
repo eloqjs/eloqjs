@@ -18,8 +18,14 @@ describe('Unit – Model', () => {
 
       static fields() {
         return {
-          name: this.attr('John Doe'),
-          email: this.attr('john@example.com')
+          name: {
+            type: String,
+            default: 'John Doe'
+          },
+          email: {
+            type: String,
+            default: 'john@example.com'
+          }
         }
       }
     }
@@ -40,7 +46,10 @@ describe('Unit – Model', () => {
 
       static fields() {
         return {
-          id: this.attr(() => counter++)
+          id: {
+            type: Number,
+            default: () => counter++
+          }
         }
       }
     }
@@ -61,8 +70,14 @@ describe('Unit – Model', () => {
 
       static fields() {
         return {
-          name: this.attr('John Doe'),
-          email: this.attr('john@example.com')
+          name: {
+            type: String,
+            default: 'John Doe'
+          },
+          email: {
+            type: String,
+            default: 'john@example.com'
+          }
         }
       }
     }
@@ -78,7 +93,10 @@ describe('Unit – Model', () => {
     class User extends BaseModel {
       static fields() {
         return {
-          id: this.attr(null)
+          id: {
+            type: Number,
+            nullable: true
+          }
         }
       }
     }
@@ -92,8 +110,14 @@ describe('Unit – Model', () => {
 
       static fields() {
         return {
-          id: this.attr(null),
-          name: this.attr('Default Doe')
+          id: {
+            type: Number,
+            nullable: true
+          },
+          name: {
+            type: String,
+            default: 'Default Doe'
+          }
         }
       }
     }
@@ -109,8 +133,14 @@ describe('Unit – Model', () => {
 
       static fields() {
         return {
-          id: this.attr(null),
-          name: this.attr('Default Doe')
+          id: {
+            type: Number,
+            nullable: true
+          },
+          name: {
+            type: String,
+            default: 'Default Doe'
+          }
         }
       }
     }

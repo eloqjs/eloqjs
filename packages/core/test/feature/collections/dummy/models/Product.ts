@@ -10,10 +10,19 @@ export default class Product extends BaseModel {
 
   static fields() {
     return {
-      id: this.attr(null),
-      name: this.string(''),
-      price: this.number(null).nullable(),
-      manufacturer: this.string(null).nullable()
+      id: {
+        type: Number,
+        nullable: true
+      },
+      name: String,
+      price: {
+        type: [Number, String],
+        nullable: true
+      },
+      manufacturer: {
+        type: String,
+        nullable: true
+      }
     }
   }
 }

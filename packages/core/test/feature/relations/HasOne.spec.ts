@@ -12,9 +12,15 @@ describe('Features – Relations – Has One', () => {
 
     static fields() {
       return {
-        id: this.attr(null),
-        name: this.string(''),
-        phone: this.hasOne(Phone)
+        id: {
+          type: Number,
+          nullable: true
+        },
+        name: String,
+        phone: {
+          type: Phone,
+          relation: 'HasOne'
+        }
       }
     }
   }
@@ -28,9 +34,18 @@ describe('Features – Relations – Has One', () => {
 
     static fields() {
       return {
-        id: this.attr(null),
-        user_id: this.attr(null),
-        number: this.number(0)
+        id: {
+          type: Number,
+          nullable: true
+        },
+        user_id: {
+          type: Number,
+          nullable: true
+        },
+        number: {
+          type: Number,
+          default: 0
+        }
       }
     }
   }

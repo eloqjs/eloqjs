@@ -12,8 +12,14 @@ describe('Unit - Model – Relations', () => {
 
       static fields() {
         return {
-          id: this.attr(null),
-          profile: this.hasOne(Profile)
+          id: {
+            type: Number,
+            nullable: true
+          },
+          profile: {
+            type: Profile,
+            relation: 'HasOne'
+          }
         }
       }
     }
@@ -26,8 +32,14 @@ describe('Unit - Model – Relations', () => {
 
       static fields() {
         return {
-          id: this.attr(null),
-          user_id: this.attr(null)
+          id: {
+            type: Number,
+            nullable: true
+          },
+          user_id: {
+            type: Number,
+            nullable: true
+          }
         }
       }
     }
@@ -52,8 +64,14 @@ describe('Unit - Model – Relations', () => {
 
       static fields() {
         return {
-          id: this.attr(null),
-          comments: this.hasMany(Comment)
+          id: {
+            type: Number,
+            nullable: true
+          },
+          comments: {
+            type: Comment,
+            relation: 'HasMany'
+          }
         }
       }
     }
@@ -66,8 +84,14 @@ describe('Unit - Model – Relations', () => {
 
       static fields() {
         return {
-          id: this.attr(null),
-          post_id: this.attr(null)
+          id: {
+            type: Number,
+            nullable: true
+          },
+          post_id: {
+            type: Number,
+            nullable: true
+          }
         }
       }
     }
@@ -98,8 +122,14 @@ describe('Unit - Model – Relations', () => {
 
       static fields() {
         return {
-          id: this.attr(null),
-          comments: this.hasMany(Comment)
+          id: {
+            type: Number,
+            nullable: true
+          },
+          comments: {
+            type: Comment,
+            relation: 'HasMany'
+          }
         }
       }
     }
@@ -115,8 +145,14 @@ describe('Unit - Model – Relations', () => {
 
       static fields() {
         return {
-          id: this.attr(null),
-          post_id: this.attr(null)
+          id: {
+            type: Number,
+            nullable: true
+          },
+          post_id: {
+            type: Number,
+            nullable: true
+          }
         }
       }
     }
