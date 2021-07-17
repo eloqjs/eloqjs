@@ -64,7 +64,11 @@ export class Field {
     this.nullable = resolveNullable(this.relation ? true : field.nullable)
     this.default = resolveDefault(this.key, this.type, field.default)
     this.validator = resolveValidator(this.key, field.validator, this.validator)
-    this.mutator = resolveMutator(this.key, field.mutator, this.mutator)
+    this.mutator = resolveMutator({
+      key: this.key,
+      mutator: field.mutator || this.model.mutators()[this.key],
+      fallback: this.mutator
+    })
     this.cast = resolveCast(
       this.key,
       this.type,

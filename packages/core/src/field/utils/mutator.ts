@@ -1,10 +1,16 @@
 import { isFunction, isUndefined } from '../../support/Utils'
 
-export function resolveMutator(
-  key: string,
-  mutator: any,
+type MutatorResolver = {
+  key: string
+  mutator: any
   fallback: (value: any) => any
-): (value: any) => any {
+}
+
+export function resolveMutator({
+  key,
+  mutator,
+  fallback
+}: MutatorResolver): (value: any) => any {
   if (!isUndefined(mutator) && !isFunction(mutator)) {
     throw new Error(
       `Invalid mutator for field "${key}": The mutator must be a Function.`
