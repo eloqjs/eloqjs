@@ -50,8 +50,9 @@ export class Field {
 
   private _boot(field: any) {
     if (!isPlainObject(field)) {
-      this.type = field
-      return
+      field = {
+        type: field
+      }
     }
 
     this.type = resolveType({ key: this.key, type: field.type })
