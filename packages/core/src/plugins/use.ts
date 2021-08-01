@@ -1,8 +1,11 @@
-
+import { Collection } from '../collection/Collection'
 import { Model } from '../model/Model'
+import { Relation } from '../relations'
 
 export interface PluginComponents {
   Model: typeof Model
+  Collection: typeof Collection
+  Relation: typeof Relation
 }
 
 export interface PluginOptions {
@@ -15,7 +18,9 @@ export interface Plugin {
 
 export function use(plugin: Plugin, options: PluginOptions = {}): void {
   const components: PluginComponents = {
-    Model
+    Model,
+    Collection,
+    Relation
   }
 
   plugin.install(components, options)
