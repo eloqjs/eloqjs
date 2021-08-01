@@ -792,7 +792,7 @@ export class Model {
   /**
    * Serialize given model POJO.
    */
-  public $serialize(options: Serialize.Options = {}): Element {
+  public $serialize(options: Serialize.SerializeOptions = {}): Element {
     const _option = {
       ...Serialize.defaultOptions,
       ...options
@@ -841,7 +841,10 @@ export class Model {
   /**
    * Serialize this model, or the given model, as POJO.
    */
-  public $toJson(model?: Model, options: Serialize.Options = {}): Element {
+  public $toJson(
+    model?: Model,
+    options: Serialize.SerializeOptions = {}
+  ): Element {
     return (model ?? this).$serialize(options)
   }
 

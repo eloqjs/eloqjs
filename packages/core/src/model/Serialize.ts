@@ -3,7 +3,7 @@ import { isArray, isCollection, isNull, isObject } from '../support/Utils'
 import { Element, Item } from '../types/Data'
 import { Model } from './Model'
 
-export interface Options {
+export interface SerializeOptions {
   /**
    * Whether the relationships should be serialized.
    * If set to `false`, only ID's will be included.
@@ -21,7 +21,7 @@ export interface Options {
   shouldPatch?: boolean
 }
 
-export const defaultOptions: Required<Options> = {
+export const defaultOptions: Required<SerializeOptions> = {
   relations: true,
   isRequest: false,
   shouldPatch: false
