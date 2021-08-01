@@ -1,11 +1,8 @@
-import * as Attributes from '../attributes'
+
 import { Model } from '../model/Model'
-import * as Relations from '../relations'
 
 export interface PluginComponents {
   Model: typeof Model
-  Attributes: typeof Attributes
-  Relations: typeof Relations
 }
 
 export interface PluginOptions {
@@ -18,9 +15,7 @@ export interface Plugin {
 
 export function use(plugin: Plugin, options: PluginOptions = {}): void {
   const components: PluginComponents = {
-    Model,
-    Attributes,
-    Relations
+    Model
   }
 
   plugin.install(components, options)
