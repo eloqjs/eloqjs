@@ -35,10 +35,14 @@ export type { Options, Plugin, PluginComponents, use } from './plugins/use'
 /**
  * ELOQJS (Default)
  */
+import { Collection } from './collection/Collection'
 import { Model } from './model/Model'
 import { use } from './plugins/use'
+import { Relation } from './relations'
 
 export default {
   use,
-  Model
+  Model,
+  Collection,
+  Relation
 }
