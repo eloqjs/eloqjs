@@ -8,7 +8,7 @@ export interface PluginComponents {
   Relations: typeof Relations
 }
 
-export interface Options {
+export interface PluginOptions {
   [key: string]: any
 }
 
@@ -16,7 +16,7 @@ export interface Plugin {
   [key: string]: any
 }
 
-export function use(plugin: Plugin, options: Options = {}): void {
+export function use(plugin: Plugin, options: PluginOptions = {}): void {
   const components: PluginComponents = {
     Model,
     Attributes,
