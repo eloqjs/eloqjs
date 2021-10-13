@@ -1,0 +1,807 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<coverage generated="1621977305475" clover="3.2.0">
+  <project timestamp="1621977305475" name="All files">
+    <metrics statements="711" coveredstatements="577" conditionals="378" coveredconditionals="288" methods="245" coveredmethods="190" elements="1334" coveredelements="1055" complexity="0" loc="711" ncloc="711" packages="8" files="22" classes="22"/>
+    <package name="attributes">
+      <metrics statements="12" coveredstatements="12" conditionals="0" coveredconditionals="0" methods="11" coveredmethods="11"/>
+      <file name="Attribute.ts" path="/home/joaopedro/PhpstormProjects/eloqjs/eloqjs/packages/core/src/attributes/Attribute.ts">
+        <metrics statements="2" coveredstatements="2" conditionals="0" coveredconditionals="0" methods="1" coveredmethods="1"/>
+        <line num="4" count="61" type="stmt"/>
+        <line num="19" count="462" type="stmt"/>
+      </file>
+      <file name="index.ts" path="/home/joaopedro/PhpstormProjects/eloqjs/eloqjs/packages/core/src/attributes/index.ts">
+        <metrics statements="10" coveredstatements="10" conditionals="0" coveredconditionals="0" methods="10" coveredmethods="10"/>
+        <line num="1" count="122" type="stmt"/>
+        <line num="3" count="128" type="stmt"/>
+        <line num="4" count="128" type="stmt"/>
+        <line num="5" count="143" type="stmt"/>
+        <line num="6" count="317" type="stmt"/>
+        <line num="7" count="127" type="stmt"/>
+        <line num="8" count="171" type="stmt"/>
+        <line num="9" count="317" type="stmt"/>
+        <line num="10" count="1706" type="stmt"/>
+        <line num="11" count="67" type="stmt"/>
+      </file>
+    </package>
+    <package name="attributes.relations">
+      <metrics statements="26" coveredstatements="26" conditionals="6" coveredconditionals="5" methods="8" coveredmethods="8"/>
+      <file name="HasMany.ts" path="/home/joaopedro/PhpstormProjects/eloqjs/eloqjs/packages/core/src/attributes/relations/HasMany.ts">
+        <metrics statements="15" coveredstatements="15" conditionals="4" coveredconditionals="3" methods="4" coveredmethods="4"/>
+        <line num="1" count="61" type="stmt"/>
+        <line num="3" count="61" type="stmt"/>
+        <line num="4" count="61" type="stmt"/>
+        <line num="6" count="61" type="stmt"/>
+        <line num="8" count="61" type="stmt"/>
+        <line num="10" count="6" type="stmt"/>
+        <line num="18" count="6" type="stmt"/>
+        <line num="20" count="6" type="stmt"/>
+        <line num="22" count="6" type="stmt"/>
+        <line num="27" count="6" type="cond" truecount="2" falsecount="0"/>
+        <line num="31" count="6" type="stmt"/>
+        <line num="35" count="6" type="stmt"/>
+        <line num="37" count="6" type="cond" truecount="1" falsecount="1"/>
+        <line num="39" count="6" type="stmt"/>
+        <line num="42" count="6" type="stmt"/>
+      </file>
+      <file name="HasOne.ts" path="/home/joaopedro/PhpstormProjects/eloqjs/eloqjs/packages/core/src/attributes/relations/HasOne.ts">
+        <metrics statements="7" coveredstatements="7" conditionals="2" coveredconditionals="2" methods="3" coveredmethods="3"/>
+        <line num="2" count="61" type="stmt"/>
+        <line num="4" count="61" type="stmt"/>
+        <line num="6" count="61" type="stmt"/>
+        <line num="8" count="6" type="stmt"/>
+        <line num="15" count="6" type="stmt"/>
+        <line num="17" count="6" type="stmt"/>
+        <line num="21" count="6" type="cond" truecount="2" falsecount="0"/>
+      </file>
+      <file name="Relation.ts" path="/home/joaopedro/PhpstormProjects/eloqjs/eloqjs/packages/core/src/attributes/relations/Relation.ts">
+        <metrics statements="4" coveredstatements="4" conditionals="0" coveredconditionals="0" methods="1" coveredmethods="1"/>
+        <line num="4" count="61" type="stmt"/>
+        <line num="6" count="61" type="stmt"/>
+        <line num="13" count="12" type="stmt"/>
+        <line num="15" count="12" type="stmt"/>
+      </file>
+    </package>
+    <package name="attributes.types">
+      <metrics statements="87" coveredstatements="86" conditionals="64" coveredconditionals="63" methods="16" coveredmethods="16"/>
+      <file name="Attr.ts" path="/home/joaopedro/PhpstormProjects/eloqjs/eloqjs/packages/core/src/attributes/types/Attr.ts">
+        <metrics statements="11" coveredstatements="11" conditionals="7" coveredconditionals="7" methods="2" coveredmethods="2"/>
+        <line num="2" count="61" type="stmt"/>
+        <line num="5" count="61" type="stmt"/>
+        <line num="7" count="61" type="stmt"/>
+        <line num="16" count="195" type="stmt"/>
+        <line num="29" count="282" type="cond" truecount="2" falsecount="0"/>
+        <line num="32" count="282" type="stmt"/>
+        <line num="34" count="282" type="cond" truecount="2" falsecount="0"/>
+        <line num="35" count="2" type="stmt"/>
+        <line num="38" count="282" type="cond" truecount="2" falsecount="0"/>
+        <line num="39" count="189" type="stmt"/>
+        <line num="42" count="93" type="stmt"/>
+      </file>
+      <file name="Boolean.ts" path="/home/joaopedro/PhpstormProjects/eloqjs/eloqjs/packages/core/src/attributes/types/Boolean.ts">
+        <metrics statements="22" coveredstatements="22" conditionals="19" coveredconditionals="19" methods="3" coveredmethods="3"/>
+        <line num="2" count="61" type="stmt"/>
+        <line num="11" count="61" type="stmt"/>
+        <line num="13" count="61" type="stmt"/>
+        <line num="22" count="5" type="stmt"/>
+        <line num="34" count="45" type="stmt"/>
+        <line num="36" count="45" type="cond" truecount="2" falsecount="0"/>
+        <line num="37" count="5" type="stmt"/>
+        <line num="40" count="40" type="stmt"/>
+        <line num="47" count="45" type="cond" truecount="2" falsecount="0"/>
+        <line num="48" count="5" type="stmt"/>
+        <line num="51" count="40" type="cond" truecount="2" falsecount="0"/>
+        <line num="52" count="10" type="stmt"/>
+        <line num="55" count="30" type="cond" truecount="2" falsecount="0"/>
+        <line num="56" count="15" type="cond" truecount="2" falsecount="0"/>
+        <line num="57" count="5" type="stmt"/>
+        <line num="60" count="10" type="stmt"/>
+        <line num="62" count="10" type="cond" truecount="2" falsecount="0"/>
+        <line num="65" count="15" type="cond" truecount="2" falsecount="0"/>
+        <line num="66" count="10" type="stmt"/>
+        <line num="69" count="5" type="cond" truecount="4" falsecount="0"/>
+        <line num="70" count="1" type="stmt"/>
+        <line num="73" count="4" type="stmt"/>
+      </file>
+      <file name="Number.ts" path="/home/joaopedro/PhpstormProjects/eloqjs/eloqjs/packages/core/src/attributes/types/Number.ts">
+        <metrics statements="19" coveredstatements="19" conditionals="17" coveredconditionals="17" methods="3" coveredmethods="3"/>
+        <line num="2" count="61" type="stmt"/>
+        <line num="11" count="61" type="stmt"/>
+        <line num="13" count="61" type="stmt"/>
+        <line num="22" count="49" type="stmt"/>
+        <line num="34" count="188" type="stmt"/>
+        <line num="36" count="188" type="cond" truecount="2" falsecount="0"/>
+        <line num="37" count="8" type="stmt"/>
+        <line num="40" count="180" type="stmt"/>
+        <line num="47" count="188" type="cond" truecount="2" falsecount="0"/>
+        <line num="48" count="8" type="stmt"/>
+        <line num="51" count="180" type="cond" truecount="2" falsecount="0"/>
+        <line num="52" count="144" type="stmt"/>
+        <line num="55" count="36" type="cond" truecount="2" falsecount="0"/>
+        <line num="56" count="17" type="stmt"/>
+        <line num="59" count="19" type="cond" truecount="2" falsecount="0"/>
+        <line num="60" count="10" type="cond" truecount="2" falsecount="0"/>
+        <line num="63" count="9" type="cond" truecount="4" falsecount="0"/>
+        <line num="64" count="5" type="stmt"/>
+        <line num="67" count="4" type="stmt"/>
+      </file>
+      <file name="String.ts" path="/home/joaopedro/PhpstormProjects/eloqjs/eloqjs/packages/core/src/attributes/types/String.ts">
+        <metrics statements="15" coveredstatements="15" conditionals="11" coveredconditionals="11" methods="3" coveredmethods="3"/>
+        <line num="2" count="61" type="stmt"/>
+        <line num="5" count="61" type="stmt"/>
+        <line num="7" count="61" type="stmt"/>
+        <line num="16" count="195" type="stmt"/>
+        <line num="28" count="369" type="stmt"/>
+        <line num="30" count="369" type="cond" truecount="2" falsecount="0"/>
+        <line num="31" count="234" type="stmt"/>
+        <line num="34" count="135" type="stmt"/>
+        <line num="41" count="369" type="cond" truecount="2" falsecount="0"/>
+        <line num="42" count="234" type="stmt"/>
+        <line num="45" count="135" type="cond" truecount="2" falsecount="0"/>
+        <line num="46" count="107" type="stmt"/>
+        <line num="49" count="28" type="cond" truecount="4" falsecount="0"/>
+        <line num="50" count="14" type="stmt"/>
+        <line num="53" count="14" type="stmt"/>
+      </file>
+      <file name="Type.ts" path="/home/joaopedro/PhpstormProjects/eloqjs/eloqjs/packages/core/src/attributes/types/Type.ts">
+        <metrics statements="10" coveredstatements="10" conditionals="4" coveredconditionals="4" methods="3" coveredmethods="3"/>
+        <line num="2" count="61" type="stmt"/>
+        <line num="5" count="61" type="stmt"/>
+        <line num="9" count="450" type="stmt"/>
+        <line num="24" count="450" type="stmt"/>
+        <line num="26" count="450" type="stmt"/>
+        <line num="27" count="450" type="stmt"/>
+        <line num="34" count="89" type="stmt"/>
+        <line num="36" count="89" type="stmt"/>
+        <line num="43" count="448" type="cond" truecount="2" falsecount="0"/>
+        <line num="45" count="448" type="cond" truecount="2" falsecount="0"/>
+      </file>
+      <file name="Uid.ts" path="/home/joaopedro/PhpstormProjects/eloqjs/eloqjs/packages/core/src/attributes/types/Uid.ts">
+        <metrics statements="10" coveredstatements="9" conditionals="6" coveredconditionals="5" methods="2" coveredmethods="2"/>
+        <line num="2" count="61" type="stmt"/>
+        <line num="3" count="61" type="stmt"/>
+        <line num="4" count="61" type="stmt"/>
+        <line num="6" count="61" type="stmt"/>
+        <line num="11" count="6" type="stmt"/>
+        <line num="18" count="8" type="cond" truecount="3" falsecount="1"/>
+        <line num="19" count="0" type="stmt"/>
+        <line num="22" count="8" type="cond" truecount="2" falsecount="0"/>
+        <line num="23" count="2" type="stmt"/>
+        <line num="26" count="6" type="stmt"/>
+      </file>
+    </package>
+    <package name="collection">
+      <metrics statements="288" coveredstatements="275" conditionals="159" coveredconditionals="143" methods="103" coveredmethods="97"/>
+      <file name="Collection.ts" path="/home/joaopedro/PhpstormProjects/eloqjs/eloqjs/packages/core/src/collection/Collection.ts">
+        <metrics statements="236" coveredstatements="229" conditionals="115" coveredconditionals="105" methods="95" coveredmethods="91"/>
+        <line num="2" count="61" type="stmt"/>
+        <line num="3" count="61" type="stmt"/>
+        <line num="20" count="61" type="stmt"/>
+        <line num="21" count="61" type="stmt"/>
+        <line num="27" count="61" type="stmt"/>
+        <line num="30" count="210" type="stmt"/>
+        <line num="39" count="210" type="stmt"/>
+        <line num="45" count="210" type="stmt"/>
+        <line num="47" count="210" type="stmt"/>
+        <line num="49" count="210" type="cond" truecount="1" falsecount="1"/>
+        <line num="50" count="210" type="stmt"/>
+        <line num="58" count="14" type="stmt"/>
+        <line num="84" count="247" type="cond" truecount="1" falsecount="1"/>
+        <line num="85" count="0" type="stmt"/>
+        <line num="88" count="247" type="cond" truecount="1" falsecount="1"/>
+        <line num="89" count="0" type="stmt"/>
+        <line num="92" count="247" type="cond" truecount="2" falsecount="0"/>
+        <line num="94" count="247" type="stmt"/>
+        <line num="96" count="246" type="stmt"/>
+        <line num="100" count="33" type="stmt"/>
+        <line num="102" count="33" type="stmt"/>
+        <line num="104" count="63" type="stmt"/>
+        <line num="106" count="63" type="stmt"/>
+        <line num="153" count="1057" type="cond" truecount="2" falsecount="0"/>
+        <line num="154" count="427" type="stmt"/>
+        <line num="158" count="807" type="cond" truecount="2" falsecount="0"/>
+        <line num="159" count="247" type="stmt"/>
+        <line num="163" count="560" type="stmt"/>
+        <line num="168" count="559" type="cond" truecount="2" falsecount="0"/>
+        <line num="169" count="1" type="stmt"/>
+        <line num="172" count="558" type="stmt"/>
+        <line num="173" count="558" type="stmt"/>
+        <line num="175" count="558" type="stmt"/>
+        <line num="182" count="1" type="stmt"/>
+        <line num="189" count="2" type="stmt"/>
+        <line num="198" count="1" type="stmt"/>
+        <line num="199" count="1" type="stmt"/>
+        <line num="201" count="1" type="stmt"/>
+        <line num="202" count="2" type="stmt"/>
+        <line num="203" count="2" type="stmt"/>
+        <line num="205" count="2" type="stmt"/>
+        <line num="206" count="2" type="stmt"/>
+        <line num="209" count="1" type="stmt"/>
+        <line num="217" count="33" type="stmt"/>
+        <line num="224" count="39" type="stmt"/>
+        <line num="233" count="1" type="stmt"/>
+        <line num="235" count="1" type="stmt"/>
+        <line num="236" count="2" type="stmt"/>
+        <line num="237" count="2" type="stmt"/>
+        <line num="247" count="1" type="stmt"/>
+        <line num="248" count="3" type="stmt"/>
+        <line num="257" count="5" type="cond" truecount="4" falsecount="0"/>
+        <line num="258" count="4" type="stmt"/>
+        <line num="261" count="1" type="stmt"/>
+        <line num="262" count="4" type="cond" truecount="2" falsecount="0"/>
+        <line num="265" count="1" type="stmt"/>
+        <line num="309" count="17" type="cond" truecount="2" falsecount="0"/>
+        <line num="310" count="7" type="cond" truecount="2" falsecount="0"/>
+        <line num="313" count="10" type="cond" truecount="2" falsecount="0"/>
+        <line num="314" count="1" type="cond" truecount="2" falsecount="1"/>
+        <line num="317" count="9" type="cond" truecount="2" falsecount="0"/>
+        <line num="318" count="3" type="stmt"/>
+        <line num="321" count="8" type="cond" truecount="2" falsecount="0"/>
+        <line num="325" count="6" type="stmt"/>
+        <line num="326" count="19" type="stmt"/>
+        <line num="334" count="5" type="cond" truecount="2" falsecount="0"/>
+        <line num="335" count="4" type="stmt"/>
+        <line num="338" count="1" type="stmt"/>
+        <line num="347" count="3" type="stmt"/>
+        <line num="349" count="3" type="stmt"/>
+        <line num="361" count="4" type="stmt"/>
+        <line num="363" count="4" type="stmt"/>
+        <line num="366" count="20" type="cond" truecount="2" falsecount="0"/>
+        <line num="367" count="10" type="cond" truecount="3" falsecount="1"/>
+        <line num="369" count="10" type="cond" truecount="4" falsecount="0"/>
+        <line num="372" count="20" type="cond" truecount="2" falsecount="0"/>
+        <line num="373" count="9" type="stmt"/>
+        <line num="376" count="20" type="stmt"/>
+        <line num="379" count="4" type="stmt"/>
+        <line num="390" count="5" type="stmt"/>
+        <line num="392" count="5" type="stmt"/>
+        <line num="393" count="7" type="cond" truecount="2" falsecount="0"/>
+        <line num="394" count="2" type="stmt"/>
+        <line num="398" count="3" type="stmt"/>
+        <line num="408" count="3" type="stmt"/>
+        <line num="417" count="28" type="stmt"/>
+        <line num="426" count="20" type="stmt"/>
+        <line num="433" count="2" type="cond" truecount="2" falsecount="0"/>
+        <line num="434" count="1" type="stmt"/>
+        <line num="437" count="1" type="stmt"/>
+        <line num="445" count="1" type="stmt"/>
+        <line num="452" count="1" type="stmt"/>
+        <line num="453" count="3" type="stmt"/>
+        <line num="456" count="1" type="stmt"/>
+        <line num="463" count="2" type="cond" truecount="2" falsecount="0"/>
+        <line num="464" count="1" type="stmt"/>
+        <line num="471" count="1" type="stmt"/>
+        <line num="478" count="2" type="stmt"/>
+        <line num="479" count="13" type="stmt"/>
+        <line num="482" count="2" type="stmt"/>
+        <line num="489" count="5" type="stmt"/>
+        <line num="490" count="5" type="stmt"/>
+        <line num="492" count="5" type="cond" truecount="2" falsecount="0"/>
+        <line num="493" count="1" type="stmt"/>
+        <line num="496" count="4" type="stmt"/>
+        <line num="497" count="19" type="stmt"/>
+        <line num="498" count="31" type="stmt"/>
+        <line num="501" count="19" type="cond" truecount="2" falsecount="0"/>
+        <line num="502" count="15" type="stmt"/>
+        <line num="507" count="4" type="stmt"/>
+        <line num="508" count="4" type="stmt"/>
+        <line num="510" count="4" type="cond" truecount="2" falsecount="0"/>
+        <line num="511" count="3" type="stmt"/>
+        <line num="516" count="4" type="stmt"/>
+        <line num="517" count="15" type="stmt"/>
+        <line num="518" count="7" type="stmt"/>
+        <line num="525" count="5" type="stmt"/>
+        <line num="532" count="4" type="stmt"/>
+        <line num="534" count="20" type="stmt"/>
+        <line num="536" count="4" type="stmt"/>
+        <line num="543" count="5" type="cond" truecount="4" falsecount="0"/>
+        <line num="544" count="4" type="stmt"/>
+        <line num="547" count="1" type="stmt"/>
+        <line num="548" count="4" type="cond" truecount="2" falsecount="0"/>
+        <line num="551" count="1" type="stmt"/>
+        <line num="559" count="1" type="stmt"/>
+        <line num="564" count="1" type="stmt"/>
+        <line num="565" count="6" type="cond" truecount="2" falsecount="0"/>
+        <line num="566" count="2" type="stmt"/>
+        <line num="568" count="4" type="stmt"/>
+        <line num="572" count="1" type="stmt"/>
+        <line num="598" count="28" type="stmt"/>
+        <line num="607" count="6" type="cond" truecount="2" falsecount="0"/>
+        <line num="608" count="5" type="cond" truecount="1" falsecount="1"/>
+        <line num="611" count="1" type="stmt"/>
+        <line num="622" count="4" type="stmt"/>
+        <line num="625" count="4" type="cond" truecount="2" falsecount="0"/>
+        <line num="626" count="2" type="stmt"/>
+        <line num="629" count="2" type="stmt"/>
+        <line num="705" count="4" type="cond" truecount="2" falsecount="0"/>
+        <line num="706" count="1" type="cond" truecount="1" falsecount="1"/>
+        <line num="709" count="4" type="stmt"/>
+        <line num="768" count="41" type="cond" truecount="2" falsecount="0"/>
+        <line num="769" count="2" type="stmt"/>
+        <line num="772" count="39" type="cond" truecount="2" falsecount="0"/>
+        <line num="773" count="16" type="stmt"/>
+        <line num="777" count="32" type="cond" truecount="2" falsecount="0"/>
+        <line num="778" count="7" type="stmt"/>
+        <line num="779" count="9" type="stmt"/>
+        <line num="781" count="7" type="cond" truecount="1" falsecount="1"/>
+        <line num="785" count="25" type="stmt"/>
+        <line num="789" count="22" type="stmt"/>
+        <line num="827" count="8" type="cond" truecount="2" falsecount="0"/>
+        <line num="831" count="5" type="stmt"/>
+        <line num="832" count="5" type="stmt"/>
+        <line num="840" count="0" type="stmt"/>
+        <line num="841" count="0" type="stmt"/>
+        <line num="851" count="5" type="cond" truecount="2" falsecount="0"/>
+        <line num="852" count="4" type="cond" truecount="1" falsecount="1"/>
+        <line num="855" count="1" type="stmt"/>
+        <line num="866" count="5" type="stmt"/>
+        <line num="867" count="20" type="stmt"/>
+        <line num="868" count="20" type="stmt"/>
+        <line num="869" count="20" type="stmt"/>
+        <line num="870" count="20" type="stmt"/>
+        <line num="873" count="5" type="stmt"/>
+        <line num="880" count="1" type="stmt"/>
+        <line num="887" count="2" type="stmt"/>
+        <line num="889" count="2" type="stmt"/>
+        <line num="901" count="6" type="stmt"/>
+        <line num="902" count="34" type="stmt"/>
+        <line num="906" count="34" type="stmt"/>
+        <line num="911" count="34" type="stmt"/>
+        <line num="916" count="6" type="stmt"/>
+        <line num="928" count="3" type="stmt"/>
+        <line num="930" count="3" type="stmt"/>
+        <line num="932" count="3" type="stmt"/>
+        <line num="939" count="2" type="stmt"/>
+        <line num="940" count="2" type="stmt"/>
+        <line num="942" count="2" type="stmt"/>
+        <line num="943" count="4" type="stmt"/>
+        <line num="948" count="2" type="stmt"/>
+        <line num="960" count="7" type="stmt"/>
+        <line num="962" count="7" type="stmt"/>
+        <line num="965" count="15" type="cond" truecount="2" falsecount="0"/>
+        <line num="966" count="3" type="stmt"/>
+        <line num="968" count="12" type="stmt"/>
+        <line num="971" count="15" type="cond" truecount="1" falsecount="1"/>
+        <line num="974" count="7" type="stmt"/>
+        <line num="982" count="0" type="stmt"/>
+        <line num="983" count="0" type="stmt"/>
+        <line num="993" count="4" type="cond" truecount="2" falsecount="0"/>
+        <line num="994" count="1" type="stmt"/>
+        <line num="997" count="3" type="stmt"/>
+        <line num="1005" count="0" type="stmt"/>
+        <line num="1033" count="24" type="stmt"/>
+        <line num="1035" count="24" type="stmt"/>
+        <line num="1036" count="24" type="stmt"/>
+        <line num="1038" count="24" type="cond" truecount="4" falsecount="0"/>
+        <line num="1039" count="3" type="stmt"/>
+        <line num="1040" count="12" type="stmt"/>
+        <line num="1042" count="21" type="cond" truecount="2" falsecount="0"/>
+        <line num="1043" count="1" type="stmt"/>
+        <line num="1044" count="4" type="stmt"/>
+        <line num="1047" count="20" type="cond" truecount="2" falsecount="0"/>
+        <line num="1048" count="3" type="stmt"/>
+        <line num="1049" count="3" type="stmt"/>
+        <line num="1052" count="20" type="stmt"/>
+        <line num="1053" count="80" type="stmt"/>
+        <line num="1061" count="24" type="stmt"/>
+        <line num="1068" count="7" type="stmt"/>
+        <line num="1077" count="36" type="stmt"/>
+        <line num="1078" count="36" type="stmt"/>
+        <line num="1087" count="558" type="stmt"/>
+        <line num="1088" count="558" type="stmt"/>
+        <line num="1097" count="29" type="cond" truecount="2" falsecount="0"/>
+        <line num="1098" count="4" type="stmt"/>
+        <line num="1101" count="33" type="stmt"/>
+        <line num="1110" count="36" type="stmt"/>
+        <line num="1117" count="588" type="stmt"/>
+        <line num="1126" count="558" type="stmt"/>
+        <line num="1138" count="31" type="cond" truecount="2" falsecount="0"/>
+        <line num="1139" count="2" type="stmt"/>
+        <line num="1142" count="29" type="stmt"/>
+        <line num="1144" count="29" type="stmt"/>
+        <line num="1146" count="29" type="stmt"/>
+        <line num="1148" count="29" type="stmt"/>
+        <line num="1159" count="22" type="stmt"/>
+        <line num="1166" count="7" type="stmt"/>
+        <line num="1169" count="7" type="stmt"/>
+        <line num="1172" count="7" type="stmt"/>
+        <line num="1173" count="7" type="stmt"/>
+        <line num="1184" count="72" type="stmt"/>
+        <line num="1194" count="247" type="stmt"/>
+        <line num="1201" count="210" type="stmt"/>
+        <line num="1209" count="210" type="stmt"/>
+      </file>
+      <file name="Sort.ts" path="/home/joaopedro/PhpstormProjects/eloqjs/eloqjs/packages/core/src/collection/Sort.ts">
+        <metrics statements="12" coveredstatements="9" conditionals="12" coveredconditionals="9" methods="2" coveredmethods="2"/>
+        <line num="8" count="61" type="stmt"/>
+        <line num="12" count="34" type="cond" truecount="3" falsecount="1"/>
+        <line num="13" count="0" type="stmt"/>
+        <line num="15" count="34" type="cond" truecount="3" falsecount="1"/>
+        <line num="16" count="0" type="stmt"/>
+        <line num="19" count="34" type="stmt"/>
+        <line num="29" count="61" type="stmt"/>
+        <line num="33" count="34" type="cond" truecount="2" falsecount="0"/>
+        <line num="34" count="16" type="stmt"/>
+        <line num="37" count="18" type="cond" truecount="1" falsecount="1"/>
+        <line num="38" count="18" type="stmt"/>
+        <line num="41" count="0" type="stmt"/>
+      </file>
+      <file name="Where.ts" path="/home/joaopedro/PhpstormProjects/eloqjs/eloqjs/packages/core/src/collection/Where.ts">
+        <metrics statements="40" coveredstatements="37" conditionals="32" coveredconditionals="29" methods="6" coveredmethods="4"/>
+        <line num="2" count="61" type="stmt"/>
+        <line num="38" count="21" type="stmt"/>
+        <line num="39" count="21" type="stmt"/>
+        <line num="41" count="21" type="cond" truecount="2" falsecount="0"/>
+        <line num="42" count="18" type="stmt"/>
+        <line num="45" count="9" type="stmt"/>
+        <line num="52" count="24" type="stmt"/>
+        <line num="54" count="3" type="stmt"/>
+        <line num="55" count="3" type="stmt"/>
+        <line num="59" count="3" type="stmt"/>
+        <line num="60" count="3" type="stmt"/>
+        <line num="64" count="3" type="stmt"/>
+        <line num="65" count="3" type="stmt"/>
+        <line num="69" count="3" type="stmt"/>
+        <line num="70" count="3" type="stmt"/>
+        <line num="74" count="3" type="stmt"/>
+        <line num="75" count="3" type="stmt"/>
+        <line num="79" count="3" type="stmt"/>
+        <line num="80" count="3" type="stmt"/>
+        <line num="84" count="3" type="stmt"/>
+        <line num="85" count="3" type="stmt"/>
+        <line num="89" count="3" type="stmt"/>
+        <line num="97" count="61" type="stmt"/>
+        <line num="102" count="80" type="stmt"/>
+        <line num="104" count="4" type="stmt"/>
+        <line num="108" count="16" type="stmt"/>
+        <line num="112" count="8" type="stmt"/>
+        <line num="115" count="4" type="stmt"/>
+        <line num="118" count="4" type="stmt"/>
+        <line num="121" count="4" type="stmt"/>
+        <line num="124" count="4" type="stmt"/>
+        <line num="127" count="4" type="stmt"/>
+        <line num="130" count="32" type="cond" truecount="4" falsecount="0"/>
+        <line num="131" count="8" type="stmt"/>
+        <line num="134" count="24" type="stmt"/>
+        <line num="136" count="24" type="stmt"/>
+        <line num="144" count="61" type="stmt"/>
+        <line num="150" count="0" type="stmt"/>
+        <line num="151" count="0" type="stmt"/>
+        <line num="152" count="0" type="cond" truecount="0" falsecount="2"/>
+      </file>
+    </package>
+    <package name="model">
+      <metrics statements="234" coveredstatements="146" conditionals="129" coveredconditionals="74" methods="83" coveredmethods="46"/>
+      <file name="Model.ts" path="/home/joaopedro/PhpstormProjects/eloqjs/eloqjs/packages/core/src/model/Model.ts">
+        <metrics statements="206" coveredstatements="125" conditionals="114" coveredconditionals="64" methods="75" coveredmethods="40"/>
+        <line num="1" count="61" type="stmt"/>
+        <line num="5" count="61" type="stmt"/>
+        <line num="6" count="61" type="stmt"/>
+        <line num="7" count="61" type="stmt"/>
+        <line num="8" count="61" type="stmt"/>
+        <line num="23" count="61" type="stmt"/>
+        <line num="67" count="61" type="stmt"/>
+        <line num="81" count="61" type="stmt"/>
+        <line num="87" count="61" type="stmt"/>
+        <line num="93" count="61" type="stmt"/>
+        <line num="100" count="61" type="stmt"/>
+        <line num="105" count="61" type="stmt"/>
+        <line num="110" count="61" type="stmt"/>
+        <line num="115" count="61" type="stmt"/>
+        <line num="120" count="481" type="stmt"/>
+        <line num="125" count="481" type="stmt"/>
+        <line num="130" count="481" type="stmt"/>
+        <line num="140" count="481" type="stmt"/>
+        <line num="145" count="481" type="stmt"/>
+        <line num="152" count="481" type="stmt"/>
+        <line num="157" count="481" type="stmt"/>
+        <line num="162" count="481" type="stmt"/>
+        <line num="172" count="481" type="stmt"/>
+        <line num="177" count="481" type="cond" truecount="2" falsecount="0"/>
+        <line num="178" count="2" type="stmt"/>
+        <line num="181" count="481" type="cond" truecount="3" falsecount="1"/>
+        <line num="183" count="481" type="cond" truecount="2" falsecount="0"/>
+        <line num="190" count="48" type="stmt"/>
+        <line num="197" count="0" type="stmt"/>
+        <line num="204" count="0" type="stmt"/>
+        <line num="208" count="28" type="stmt"/>
+        <line num="215" count="481" type="stmt"/>
+        <line num="222" count="1" type="stmt"/>
+        <line num="232" count="0" type="cond" truecount="0" falsecount="2"/>
+        <line num="233" count="0" type="stmt"/>
+        <line num="236" count="0" type="stmt"/>
+        <line num="238" count="0" type="stmt"/>
+        <line num="245" count="215" type="stmt"/>
+        <line num="246" count="215" type="stmt"/>
+        <line num="253" count="0" type="stmt"/>
+        <line num="260" count="407" type="stmt"/>
+        <line num="267" count="599" type="stmt"/>
+        <line num="269" count="599" type="stmt"/>
+        <line num="276" count="0" type="stmt"/>
+        <line num="289" count="49" type="stmt"/>
+        <line num="293" count="49" type="stmt"/>
+        <line num="300" count="49" type="cond" truecount="2" falsecount="2"/>
+        <line num="301" count="0" type="stmt"/>
+        <line num="304" count="49" type="cond" truecount="1" falsecount="1"/>
+        <line num="305" count="49" type="stmt"/>
+        <line num="308" count="0" type="stmt"/>
+        <line num="315" count="0" type="cond" truecount="0" falsecount="2"/>
+        <line num="325" count="0" type="stmt"/>
+        <line num="333" count="2" type="stmt"/>
+        <line num="340" count="0" type="stmt"/>
+        <line num="341" count="0" type="stmt"/>
+        <line num="343" count="0" type="stmt"/>
+        <line num="344" count="0" type="stmt"/>
+        <line num="346" count="0" type="cond" truecount="0" falsecount="2"/>
+        <line num="347" count="0" type="stmt"/>
+        <line num="349" count="0" type="cond" truecount="0" falsecount="2"/>
+        <line num="350" count="0" type="stmt"/>
+        <line num="355" count="0" type="stmt"/>
+        <line num="363" count="0" type="stmt"/>
+        <line num="365" count="0" type="cond" truecount="0" falsecount="2"/>
+        <line num="366" count="0" type="stmt"/>
+        <line num="369" count="0" type="stmt"/>
+        <line num="371" count="0" type="stmt"/>
+        <line num="378" count="0" type="stmt"/>
+        <line num="379" count="0" type="stmt"/>
+        <line num="381" count="0" type="stmt"/>
+        <line num="383" count="0" type="cond" truecount="0" falsecount="2"/>
+        <line num="384" count="0" type="stmt"/>
+        <line num="387" count="0" type="stmt"/>
+        <line num="389" count="0" type="stmt"/>
+        <line num="397" count="0" type="stmt"/>
+        <line num="399" count="0" type="cond" truecount="0" falsecount="4"/>
+        <line num="400" count="0" type="stmt"/>
+        <line num="403" count="0" type="stmt"/>
+        <line num="404" count="0" type="stmt"/>
+        <line num="405" count="0" type="stmt"/>
+        <line num="416" count="195" type="stmt"/>
+        <line num="426" count="195" type="stmt"/>
+        <line num="436" count="49" type="stmt"/>
+        <line num="446" count="5" type="stmt"/>
+        <line num="453" count="6" type="stmt"/>
+        <line num="460" count="6" type="stmt"/>
+        <line num="467" count="6" type="stmt"/>
+        <line num="474" count="186" type="stmt"/>
+        <line num="476" count="186" type="stmt"/>
+        <line num="481" count="186" type="stmt"/>
+        <line num="482" count="462" type="stmt"/>
+        <line num="484" count="462" type="stmt"/>
+        <line num="494" count="1080" type="cond" truecount="2" falsecount="0"/>
+        <line num="495" count="186" type="stmt"/>
+        <line num="497" count="186" type="stmt"/>
+        <line num="505" count="0" type="stmt"/>
+        <line num="506" count="0" type="stmt"/>
+        <line num="508" count="0" type="cond" truecount="0" falsecount="2"/>
+        <line num="510" count="0" type="stmt"/>
+        <line num="520" count="0" type="stmt"/>
+        <line num="522" count="0" type="cond" truecount="0" falsecount="2"/>
+        <line num="529" count="481" type="stmt"/>
+        <line num="542" count="2495" type="stmt"/>
+        <line num="549" count="18" type="stmt"/>
+        <line num="563" count="577" type="cond" truecount="2" falsecount="0"/>
+        <line num="564" count="3" type="stmt"/>
+        <line num="565" count="6" type="stmt"/>
+        <line num="568" count="3" type="stmt"/>
+        <line num="571" count="574" type="cond" truecount="2" falsecount="0"/>
+        <line num="575" count="570" type="stmt"/>
+        <line num="589" count="47" type="cond" truecount="2" falsecount="0"/>
+        <line num="590" count="1" type="stmt"/>
+        <line num="591" count="2" type="stmt"/>
+        <line num="594" count="1" type="stmt"/>
+        <line num="597" count="46" type="cond" truecount="2" falsecount="0"/>
+        <line num="601" count="42" type="stmt"/>
+        <line num="608" count="481" type="stmt"/>
+        <line num="614" count="481" type="stmt"/>
+        <line num="615" count="2405" type="stmt"/>
+        <line num="623" count="0" type="stmt"/>
+        <line num="633" count="0" type="stmt"/>
+        <line num="643" count="962" type="cond" truecount="3" falsecount="1"/>
+        <line num="650" count="599" type="stmt"/>
+        <line num="661" count="481" type="stmt"/>
+        <line num="663" count="481" type="stmt"/>
+        <line num="664" count="481" type="cond" truecount="4" falsecount="0"/>
+        <line num="667" count="481" type="stmt"/>
+        <line num="668" count="1188" type="stmt"/>
+        <line num="669" count="1188" type="stmt"/>
+        <line num="672" count="1188" type="stmt"/>
+        <line num="675" count="1176" type="cond" truecount="1" falsecount="1"/>
+        <line num="676" count="1176" type="stmt"/>
+        <line num="679" count="1176" type="cond" truecount="2" falsecount="0"/>
+        <line num="681" count="1176" type="stmt"/>
+        <line num="684" count="12" type="cond" truecount="1" falsecount="1"/>
+        <line num="685" count="12" type="stmt"/>
+        <line num="688" count="12" type="cond" truecount="2" falsecount="0"/>
+        <line num="698" count="118" type="stmt"/>
+        <line num="703" count="118" type="stmt"/>
+        <line num="704" count="118" type="stmt"/>
+        <line num="706" count="118" type="stmt"/>
+        <line num="707" count="396" type="stmt"/>
+        <line num="709" count="396" type="stmt"/>
+        <line num="712" count="387" type="cond" truecount="2" falsecount="2"/>
+        <line num="713" count="0" type="stmt"/>
+        <line num="716" count="387" type="stmt"/>
+        <line num="719" count="387" type="cond" truecount="1" falsecount="1"/>
+        <line num="720" count="387" type="stmt"/>
+        <line num="723" count="387" type="stmt"/>
+        <line num="726" count="9" type="cond" truecount="2" falsecount="2"/>
+        <line num="727" count="0" type="stmt"/>
+        <line num="730" count="9" type="stmt"/>
+        <line num="732" count="9" type="stmt"/>
+        <line num="739" count="118" type="stmt"/>
+        <line num="746" count="2" type="stmt"/>
+        <line num="756" count="116" type="cond" truecount="3" falsecount="1"/>
+        <line num="763" count="0" type="stmt"/>
+        <line num="764" count="0" type="stmt"/>
+        <line num="772" count="0" type="stmt"/>
+        <line num="773" count="0" type="stmt"/>
+        <line num="781" count="0" type="stmt"/>
+        <line num="791" count="0" type="stmt"/>
+        <line num="798" count="0" type="stmt"/>
+        <line num="805" count="0" type="stmt"/>
+        <line num="809" count="0" type="stmt"/>
+        <line num="819" count="0" type="stmt"/>
+        <line num="820" count="0" type="stmt"/>
+        <line num="822" count="0" type="stmt"/>
+        <line num="829" count="0" type="stmt"/>
+        <line num="830" count="0" type="stmt"/>
+        <line num="832" count="0" type="stmt"/>
+        <line num="840" count="0" type="stmt"/>
+        <line num="841" count="0" type="stmt"/>
+        <line num="849" count="0" type="stmt"/>
+        <line num="851" count="0" type="stmt"/>
+        <line num="852" count="0" type="stmt"/>
+        <line num="854" count="0" type="cond" truecount="0" falsecount="2"/>
+        <line num="858" count="0" type="stmt"/>
+        <line num="862" count="0" type="stmt"/>
+        <line num="863" count="0" type="stmt"/>
+        <line num="870" count="0" type="stmt"/>
+        <line num="871" count="0" type="stmt"/>
+        <line num="872" count="0" type="stmt"/>
+        <line num="885" count="0" type="stmt"/>
+        <line num="886" count="0" type="stmt"/>
+        <line num="893" count="0" type="stmt"/>
+        <line num="900" count="481" type="stmt"/>
+        <line num="901" count="481" type="stmt"/>
+        <line num="902" count="481" type="stmt"/>
+        <line num="910" count="481" type="cond" truecount="3" falsecount="1"/>
+        <line num="913" count="481" type="stmt"/>
+        <line num="916" count="481" type="stmt"/>
+        <line num="931" count="1176" type="stmt"/>
+        <line num="934" count="1176" type="stmt"/>
+        <line num="937" count="448" type="stmt"/>
+        <line num="943" count="1176" type="cond" truecount="2" falsecount="0"/>
+        <line num="944" count="444" type="stmt"/>
+        <line num="948" count="1176" type="stmt"/>
+        <line num="952" count="1176" type="stmt"/>
+        <line num="955" count="0" type="stmt"/>
+        <line num="959" count="0" type="stmt"/>
+        <line num="972" count="12" type="stmt"/>
+        <line num="975" count="19" type="stmt"/>
+        <line num="981" count="12" type="stmt"/>
+        <line num="984" count="12" type="stmt"/>
+      </file>
+      <file name="Serialize.ts" path="/home/joaopedro/PhpstormProjects/eloqjs/eloqjs/packages/core/src/model/Serialize.ts">
+        <metrics statements="28" coveredstatements="21" conditionals="15" coveredconditionals="10" methods="8" coveredmethods="6"/>
+        <line num="2" count="61" type="stmt"/>
+        <line num="24" count="61" type="stmt"/>
+        <line num="33" count="61" type="stmt"/>
+        <line num="34" count="389" type="cond" truecount="2" falsecount="0"/>
+        <line num="35" count="34" type="stmt"/>
+        <line num="38" count="355" type="cond" truecount="2" falsecount="0"/>
+        <line num="39" count="1" type="stmt"/>
+        <line num="42" count="354" type="cond" truecount="1" falsecount="1"/>
+        <line num="43" count="0" type="stmt"/>
+        <line num="46" count="354" type="stmt"/>
+        <line num="52" count="61" type="stmt"/>
+        <line num="53" count="2" type="stmt"/>
+        <line num="59" count="61" type="stmt"/>
+        <line num="60" count="0" type="stmt"/>
+        <line num="62" count="0" type="stmt"/>
+        <line num="63" count="0" type="stmt"/>
+        <line num="66" count="0" type="stmt"/>
+        <line num="72" count="61" type="stmt"/>
+        <line num="76" count="9" type="cond" truecount="2" falsecount="0"/>
+        <line num="77" count="3" type="stmt"/>
+        <line num="81" count="6" type="cond" truecount="1" falsecount="1"/>
+        <line num="82" count="0" type="stmt"/>
+        <line num="87" count="6" type="stmt"/>
+        <line num="90" count="6" type="cond" truecount="2" falsecount="0"/>
+        <line num="91" count="4" type="stmt"/>
+        <line num="94" count="2" type="stmt"/>
+        <line num="100" count="61" type="stmt"/>
+        <line num="101" count="0" type="cond" truecount="0" falsecount="2"/>
+      </file>
+    </package>
+    <package name="plugins">
+      <metrics statements="6" coveredstatements="4" conditionals="1" coveredconditionals="0" methods="1" coveredmethods="0"/>
+      <file name="use.ts" path="/home/joaopedro/PhpstormProjects/eloqjs/eloqjs/packages/core/src/plugins/use.ts">
+        <metrics statements="6" coveredstatements="4" conditionals="1" coveredconditionals="0" methods="1" coveredmethods="0"/>
+        <line num="1" count="61" type="stmt"/>
+        <line num="2" count="61" type="stmt"/>
+        <line num="3" count="61" type="stmt"/>
+        <line num="19" count="61" type="cond" truecount="0" falsecount="1"/>
+        <line num="20" count="0" type="stmt"/>
+        <line num="26" count="0" type="stmt"/>
+      </file>
+    </package>
+    <package name="relations">
+      <metrics statements="7" coveredstatements="7" conditionals="0" coveredconditionals="0" methods="2" coveredmethods="2"/>
+      <file name="Relation.ts" path="/home/joaopedro/PhpstormProjects/eloqjs/eloqjs/packages/core/src/relations/Relation.ts">
+        <metrics statements="6" coveredstatements="6" conditionals="0" coveredconditionals="0" methods="1" coveredmethods="1"/>
+        <line num="5" count="61" type="stmt"/>
+        <line num="31" count="12" type="stmt"/>
+        <line num="32" count="12" type="stmt"/>
+        <line num="33" count="12" type="stmt"/>
+        <line num="34" count="12" type="stmt"/>
+        <line num="35" count="12" type="stmt"/>
+      </file>
+      <file name="index.ts" path="/home/joaopedro/PhpstormProjects/eloqjs/eloqjs/packages/core/src/relations/index.ts">
+        <metrics statements="1" coveredstatements="1" conditionals="0" coveredconditionals="0" methods="1" coveredmethods="1"/>
+        <line num="3" count="73" type="stmt"/>
+      </file>
+    </package>
+    <package name="support">
+      <metrics statements="51" coveredstatements="21" conditionals="19" coveredconditionals="3" methods="21" coveredmethods="10"/>
+      <file name="AttrMap.ts" path="/home/joaopedro/PhpstormProjects/eloqjs/eloqjs/packages/core/src/support/AttrMap.ts">
+        <metrics statements="39" coveredstatements="9" conditionals="17" coveredconditionals="1" methods="14" coveredmethods="3"/>
+        <line num="1" count="61" type="stmt"/>
+        <line num="2" count="61" type="stmt"/>
+        <line num="4" count="61" type="stmt"/>
+        <line num="5" count="962" type="stmt"/>
+        <line num="6" count="962" type="stmt"/>
+        <line num="9" count="1188" type="stmt"/>
+        <line num="10" count="1188" type="stmt"/>
+        <line num="14" count="0" type="stmt"/>
+        <line num="18" count="0" type="stmt"/>
+        <line num="25" count="0" type="cond" truecount="0" falsecount="2"/>
+        <line num="26" count="0" type="stmt"/>
+        <line num="27" count="0" type="stmt"/>
+        <line num="30" count="0" type="stmt"/>
+        <line num="32" count="0" type="stmt"/>
+        <line num="33" count="0" type="stmt"/>
+        <line num="41" count="0" type="stmt"/>
+        <line num="48" count="0" type="cond" truecount="0" falsecount="2"/>
+        <line num="49" count="0" type="stmt"/>
+        <line num="50" count="0" type="stmt"/>
+        <line num="53" count="0" type="stmt"/>
+        <line num="55" count="0" type="stmt"/>
+        <line num="56" count="0" type="stmt"/>
+        <line num="64" count="0" type="cond" truecount="0" falsecount="2"/>
+        <line num="71" count="0" type="stmt"/>
+        <line num="78" count="0" type="cond" truecount="0" falsecount="2"/>
+        <line num="85" count="0" type="stmt"/>
+        <line num="87" count="0" type="stmt"/>
+        <line num="88" count="0" type="cond" truecount="0" falsecount="2"/>
+        <line num="89" count="0" type="stmt"/>
+        <line num="93" count="0" type="stmt"/>
+        <line num="102" count="0" type="stmt"/>
+        <line num="115" count="0" type="cond" truecount="0" falsecount="2"/>
+        <line num="116" count="0" type="stmt"/>
+        <line num="122" count="0" type="stmt"/>
+        <line num="123" count="0" type="cond" truecount="0" falsecount="2"/>
+        <line num="124" count="0" type="stmt"/>
+        <line num="128" count="0" type="stmt"/>
+        <line num="132" count="1188" type="cond" truecount="1" falsecount="1"/>
+        <line num="133" count="1188" type="stmt"/>
+      </file>
+      <file name="Map.ts" path="/home/joaopedro/PhpstormProjects/eloqjs/eloqjs/packages/core/src/support/Map.ts">
+        <metrics statements="6" coveredstatements="6" conditionals="0" coveredconditionals="0" methods="5" coveredmethods="5"/>
+        <line num="1" count="61" type="stmt"/>
+        <line num="2" count="1924" type="stmt"/>
+        <line num="5" count="2320" type="stmt"/>
+        <line num="9" count="4163" type="stmt"/>
+        <line num="13" count="42" type="stmt"/>
+        <line num="17" count="28" type="stmt"/>
+      </file>
+      <file name="Uid.ts" path="/home/joaopedro/PhpstormProjects/eloqjs/eloqjs/packages/core/src/support/Uid.ts">
+        <metrics statements="6" coveredstatements="6" conditionals="2" coveredconditionals="2" methods="2" coveredmethods="2"/>
+        <line num="3" count="61" type="stmt"/>
+        <line num="7" count="61" type="stmt"/>
+        <line num="16" count="61" type="stmt"/>
+        <line num="22" count="697" type="stmt"/>
+        <line num="24" count="697" type="stmt"/>
+        <line num="31" count="3" type="stmt"/>
+      </file>
+    </package>
+  </project>
+</coverage>
