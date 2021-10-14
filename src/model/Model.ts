@@ -805,7 +805,7 @@ export class Model {
       const field = fields[key]
 
       // Exclude read-only attributes.
-      if (!this.$self().readOnlyAttributes.includes(key)) {
+      if (this.$self().readOnlyAttributes.includes(key)) {
         continue
       }
 

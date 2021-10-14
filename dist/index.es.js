@@ -1453,7 +1453,7 @@ class Model {
     const result = {};
     for (const key in fields) {
       const field = fields[key];
-      if (!this.$self().readOnlyAttributes.includes(key)) {
+      if (this.$self().readOnlyAttributes.includes(key)) {
         continue;
       }
       if (field.relation) {
