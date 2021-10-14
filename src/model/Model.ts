@@ -804,6 +804,11 @@ export class Model {
     for (const key in fields) {
       const field = fields[key]
 
+      // Exclude read-only attributes.
+      if (!this.$self().readOnlyAttributes.includes(key)) {
+        continue
+      }
+
       if (field.relation) {
         if (_option.shouldPatch && this._relationships.isClean(key)) {
           continue
@@ -820,11 +825,7 @@ export class Model {
         }
 
         const value = this._attributes.get(key)
-
-        // Exclude read-only attributes.
-        if (!this.$self().readOnlyAttributes.includes(key)) {
-          result[key] = Serialize.value(value)
-        }
+        result[key] = Serialize.value(value)
       }
     }
 

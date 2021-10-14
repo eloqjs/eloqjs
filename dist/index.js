@@ -1457,6 +1457,9 @@ class Model {
     const result = {};
     for (const key in fields) {
       const field = fields[key];
+      if (!this.$self().readOnlyAttributes.includes(key)) {
+        continue;
+      }
       if (field.relation) {
         if (_option.shouldPatch && this._relationships.isClean(key)) {
           continue;
@@ -1468,9 +1471,7 @@ class Model {
           continue;
         }
         const value$1 = this._attributes.get(key);
-        if (!this.$self().readOnlyAttributes.includes(key)) {
-          result[key] = value(value$1);
-        }
+        result[key] = value(value$1);
       }
     }
     return result;
