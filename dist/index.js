@@ -2,6 +2,82 @@
 
 Object.defineProperty(exports, '__esModule', { value: true });
 
+function isObject$1(val) {
+  return val !== null && typeof val === 'object';
+} // Base function to apply defaults
+
+
+function _defu(baseObj, defaults) {
+  var namespace = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : '.';
+  var merger = arguments.length > 3 ? arguments[3] : undefined;
+
+  if (!isObject$1(defaults)) {
+    return _defu(baseObj, {}, namespace, merger);
+  }
+
+  var obj = Object.assign({}, defaults);
+
+  for (var key in baseObj) {
+    if (key === '__proto__' || key === 'constructor') {
+      continue;
+    }
+
+    var val = baseObj[key];
+
+    if (val === null) {
+      continue;
+    }
+
+    if (merger && merger(obj, key, val, namespace)) {
+      continue;
+    }
+
+    if (Array.isArray(val) && Array.isArray(obj[key])) {
+      obj[key] = obj[key].concat(val);
+    } else if (isObject$1(val) && isObject$1(obj[key])) {
+      obj[key] = _defu(val, obj[key], (namespace ? "".concat(namespace, ".") : '') + key.toString(), merger);
+    } else {
+      obj[key] = val;
+    }
+  }
+
+  return obj;
+} // Create defu wrapper with optional merger and multi arg support
+
+
+function extend(merger) {
+  return function () {
+    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+      args[_key] = arguments[_key];
+    }
+
+    return args.reduce(function (p, c) {
+      return _defu(p, c, '', merger);
+    }, {});
+  };
+} // Basic version
+
+
+var defu = extend(); // Custom version with function merge support
+
+defu.fn = extend(function (obj, key, currentValue, _namespace) {
+  if (typeof obj[key] !== 'undefined' && typeof currentValue === 'function') {
+    obj[key] = currentValue(obj[key]);
+    return true;
+  }
+}); // Custom version with function merge support only for defined arrays
+
+defu.arrayFn = extend(function (obj, key, currentValue, _namespace) {
+  if (Array.isArray(obj[key]) && typeof currentValue === 'function') {
+    obj[key] = currentValue(obj[key]);
+    return true;
+  }
+}); // Support user extending
+
+defu.extend = extend;
+
+var defu_1 = defu;
+
 class Uid {
   static make(namespace = "attribute") {
     this._count[namespace]++;
@@ -552,81 +628,385 @@ class Collection {
   }
 }
 
-function isObject$1(val) {
-  return val !== null && typeof val === 'object';
-} // Base function to apply defaults
-
-
-function _defu(baseObj, defaults) {
-  var namespace = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : '.';
-  var merger = arguments.length > 3 ? arguments[3] : undefined;
-
-  if (!isObject$1(defaults)) {
-    return _defu(baseObj, {}, namespace, merger);
+function resolveValue(model, predicate) {
+  if (isFunction(predicate)) {
+    return predicate(model);
   }
-
-  var obj = Object.assign({}, defaults);
-
-  for (var key in baseObj) {
-    if (key === '__proto__' || key === 'constructor') {
-      continue;
-    }
-
-    var val = baseObj[key];
-
-    if (val === null) {
-      continue;
-    }
-
-    if (merger && merger(obj, key, val, namespace)) {
-      continue;
-    }
-
-    if (Array.isArray(val) && Array.isArray(obj[key])) {
-      obj[key] = obj[key].concat(val);
-    } else if (isObject$1(val) && isObject$1(obj[key])) {
-      obj[key] = _defu(val, obj[key], (namespace ? "".concat(namespace, ".") : '') + key.toString(), merger);
-    } else {
-      obj[key] = val;
-    }
+  return model[predicate];
+}
+function forceArray(data) {
+  return isArray(data) ? data : [data];
+}
+function assert(condition, message) {
+  if (!condition) {
+    throw new Error(["[ELOQJS]"].concat(message).join(" "));
   }
-
-  return obj;
-} // Create defu wrapper with optional merger and multi arg support
-
-
-function extend(merger) {
-  return function () {
-    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
-      args[_key] = arguments[_key];
-    }
-
-    return args.reduce(function (p, c) {
-      return _defu(p, c, '', merger);
-    }, {});
-  };
-} // Basic version
-
-
-var defu = extend(); // Custom version with function merge support
-
-defu.fn = extend(function (obj, key, currentValue, _namespace) {
-  if (typeof obj[key] !== 'undefined' && typeof currentValue === 'function') {
-    obj[key] = currentValue(obj[key]);
+}
+function isFunction(value) {
+  return typeof value === "function";
+}
+function isObject(value) {
+  return typeof value === "object" && !isArray(value) && !isNull(value);
+}
+function isPlainObject(value) {
+  if (!isObject(value) || getTag(value) != "[object Object]") {
+    return false;
+  }
+  if (isNull(Object.getPrototypeOf(value))) {
     return true;
   }
-}); // Custom version with function merge support only for defined arrays
+  let proto = value;
+  while (!isNull(Object.getPrototypeOf(proto))) {
+    proto = Object.getPrototypeOf(proto);
+  }
+  return Object.getPrototypeOf(value) === proto;
+}
+function isArray(value) {
+  return Array.isArray(value);
+}
+function isString(value) {
+  return typeof value === "string";
+}
+function isNumber(value) {
+  return typeof value === "number";
+}
+function isNull(value) {
+  return value === null;
+}
+function isUndefined(value) {
+  return value === void 0;
+}
+function isNullish(value) {
+  return isUndefined(value) || isNull(value);
+}
+function isModel(value) {
+  return isObject(value) && value instanceof Model;
+}
+function isModelClass(value) {
+  return isFunction(value) && value.prototype instanceof Model;
+}
+function isCollection(value) {
+  return isObject(value) && value instanceof Collection;
+}
+function isEmptyString(value) {
+  return value === "";
+}
+function isEmpty(collection) {
+  return size(collection) === 0;
+}
+function size(collection) {
+  return isArray(collection) ? collection.length : Object.keys(collection).length;
+}
+function getTag(value) {
+  if (value == null) {
+    return isUndefined(value) ? "[object Undefined]" : "[object Null]";
+  }
+  return Object.prototype.toString.call(value);
+}
+function capitalize(value) {
+  if (typeof value !== "string")
+    return "";
+  return value.charAt(0).toUpperCase() + value.slice(1);
+}
 
-defu.arrayFn = extend(function (obj, key, currentValue, _namespace) {
-  if (Array.isArray(obj[key]) && typeof currentValue === 'function') {
-    obj[key] = currentValue(obj[key]);
+function resolveCast({key, type, cast}) {
+  if (isUndefined(cast)) {
+    return cast;
+  }
+  if (isArray(type)) {
+    if (isFunction(cast)) {
+      return (value) => cast(value);
+    }
+    throw new Error(`Invalid cast for field "${key}": The cast must be a Function when multiple types are defined.`);
+  }
+  if (cast === true) {
+    return (value) => castValue(type, value);
+  }
+  throw new Error(`Invalid cast for field "${key}": The cast must match the field type.`);
+}
+function castValue(cast, value) {
+  if (isClass(cast) || cast === Date) {
+    return new cast(value);
+  }
+  return cast(value);
+}
+function isClass(obj) {
+  const isCtorClass = obj.constructor && obj.constructor.toString().substring(0, 5) === "class";
+  if (obj.prototype === void 0) {
+    return isCtorClass;
+  }
+  const isPrototypeCtorClass = obj.prototype.constructor && obj.prototype.constructor.toString && obj.prototype.constructor.toString().substring(0, 5) === "class";
+  return isCtorClass || isPrototypeCtorClass;
+}
+
+function resolveDefault({
+  key,
+  type,
+  defaultValue
+}) {
+  let _isPrimitive;
+  if (isUndefined(defaultValue)) {
+    return defaultValue;
+  }
+  if (isArray(type)) {
+    _isPrimitive = type.every((_type) => isPrimitive(_type));
+  } else {
+    _isPrimitive = isPrimitive(type);
+  }
+  if (!_isPrimitive && !isFunction(defaultValue)) {
+    throw new Error(`Invalid default value for field "${key}": Fields with type Object/Array must use a factory function to return the default value.`);
+  }
+  return defaultValue;
+}
+function getDefaultValue(value) {
+  return isFunction(value) ? value() : value;
+}
+function isPrimitive(type) {
+  return type === String || type === Boolean || type === Number || type === BigInt || type === Symbol;
+}
+
+function resolveMutator({
+  key,
+  mutator,
+  fallback
+}) {
+  if (!isUndefined(mutator) && !isFunction(mutator)) {
+    throw new Error(`Invalid mutator for field "${key}": The mutator must be a Function.`);
+  }
+  return mutator || fallback;
+}
+
+function resolveNullable({nullable}) {
+  return nullable === true;
+}
+
+class Relation {
+  constructor(model, belongsToModel, data, key, forceSingular) {
+    this.model = model;
+    this.belongsToModel = belongsToModel;
+    this.data = data;
+    this.key = key;
+    this.forceSingular = forceSingular;
+  }
+}
+
+const index$1 = /*#__PURE__*/Object.freeze({
+  __proto__: null,
+  Relation: Relation
+});
+
+var RelationEnum;
+(function(RelationEnum2) {
+  RelationEnum2["HAS_ONE"] = "HasOne";
+  RelationEnum2["HAS_MANY"] = "HasMany";
+})(RelationEnum || (RelationEnum = {}));
+
+function resolveRelationType({
+  key,
+  type,
+  relation
+}) {
+  const relations = Object.values(RelationEnum);
+  if (isModelClass(type) && !relations.includes(relation)) {
+    const expected = relations.join(", ");
+    const gotten = capitalize(typeof relation);
+    throw new Error(`Invalid relation for field ${key}: Expected ${expected}, got ${gotten}.`);
+  }
+  return relation;
+}
+function resolveRelation(parent, related, relation, key, value) {
+  switch (relation) {
+    case RelationEnum.HAS_ONE: {
+      const data = mutateHasOne(value, related);
+      return new Relation(related, parent, data, key, true);
+    }
+    case RelationEnum.HAS_MANY: {
+      const data = mutateHasMany(value, related);
+      return new Relation(related, parent, data, key, false);
+    }
+    default: {
+      const relations = Object.values(RelationEnum);
+      const expected = relations.join(" | ");
+      throw new Error(`Invalid relation for field ${key}: Expected "${expected}", got "${relation}".`);
+    }
+  }
+}
+function mutateHasOne(record, related) {
+  if (isModel(record)) {
+    return record;
+  }
+  return record ? new related(record) : null;
+}
+function mutateHasMany(records, related) {
+  if (isCollection(records)) {
+    return records;
+  }
+  records = isArray(records) ? records : [];
+  const collection = new Collection([], {
+    model: related
+  });
+  for (let record of records) {
+    record = "data" in record ? record.data : record;
+    collection.add(record);
+  }
+  return collection;
+}
+
+function resolveRequired({required}) {
+  return required === true;
+}
+
+function resolveType({key, type}) {
+  if (isNullish(type)) {
+    throw new Error(`Invalid type for field ${key}: The type must be defined.`);
+  }
+  return type;
+}
+function validateType(value, type, relation) {
+  if (isNullish(value)) {
+    return false;
+  }
+  if (relation && isModelClass(type)) {
+    switch (relation) {
+      case RelationEnum.HAS_ONE: {
+        return value instanceof type || isPlainObject(value);
+      }
+      case RelationEnum.HAS_MANY: {
+        return isCollection(value) || isArray(value);
+      }
+      default: {
+        return false;
+      }
+    }
+  }
+  if (isArray(type)) {
+    return type.includes(value.constructor);
+  }
+  return value.constructor === type;
+}
+function getExpectedName(type, relation) {
+  if (isModelClass(type) && relation === RelationEnum.HAS_MANY) {
+    return `Collection of ${resolveName(type)}`;
+  }
+  if (isArray(type)) {
+    return type.map((_type) => resolveName(_type)).join(", ");
+  }
+  return resolveName(type);
+}
+function getGottenName(value) {
+  if (isNull(value)) {
+    return "Null";
+  }
+  if (value && value.constructor) {
+    return value.constructor.name;
+  }
+  return capitalize(typeof value);
+}
+function resolveName(type) {
+  return type.name || type.constructor.name;
+}
+
+function resolveValidator({
+  key,
+  validator,
+  fallback
+}) {
+  if (!isUndefined(validator) && !isFunction(validator)) {
+    throw new Error(`Invalid validator for field "${key}": The validator must be a Function.`);
+  }
+  return validator || fallback;
+}
+
+class Field {
+  constructor(key, field, model) {
+    this.required = false;
+    this.nullable = false;
+    this.validator = () => true;
+    this.mutator = (value) => value;
+    if (!isString(key)) {
+      throw new Error('The field "key" must be an string.');
+    }
+    if (isNullish(field)) {
+      throw new Error("The field is not defined.");
+    }
+    this.model = model;
+    this.key = key;
+    this._boot(field);
+  }
+  _boot(field) {
+    if (!isPlainObject(field)) {
+      field = {
+        type: field
+      };
+    }
+    this.type = resolveType({key: this.key, type: field.type});
+    this.relation = resolveRelationType({
+      key: this.key,
+      type: this.type,
+      relation: field.relation
+    });
+    this.required = resolveRequired({
+      required: field.required
+    });
+    this.nullable = resolveNullable({
+      nullable: this.relation ? true : field.nullable
+    });
+    this.default = resolveDefault({
+      key: this.key,
+      type: this.type,
+      defaultValue: field.default
+    });
+    this.validator = resolveValidator({
+      key: this.key,
+      validator: field.validator,
+      fallback: this.validator
+    });
+    this.mutator = resolveMutator({
+      key: this.key,
+      mutator: field.mutator || this.model.mutators()[this.key],
+      fallback: this.mutator
+    });
+    this.cast = resolveCast({
+      key: this.key,
+      type: this.type,
+      cast: this.relation ? true : field.cast
+    });
+  }
+  validate(value) {
+    if (this.required && isNullish(value)) {
+      throw new Error(`Missing required field: "${this.key}".`);
+    }
+    if (isUndefined(value)) {
+      return true;
+    }
+    if (!validateType(value, this.type, this.relation) && !(isNull(value) && this.nullable)) {
+      const expectedName = getExpectedName(this.type, this.relation);
+      const gottenName = getGottenName(value);
+      throw new Error(`Invalid field: type check failed for field "${this.key}". Expected ${expectedName}, got ${gottenName}.`);
+    }
+    if (!this.validator(value)) {
+      throw new Error(`Invalid field: custom validator check failed for field "${this.key}".`);
+    }
     return true;
   }
-}); // Support user extending
-
-defu.extend = extend;
-
-var defu_1 = defu;
+  make(value, model) {
+    var _a;
+    const nullish = this.nullable ? null : void 0;
+    const fallback = (_a = getDefaultValue(this.default)) != null ? _a : nullish;
+    value = !isUndefined(value) ? value : fallback;
+    if (this.cast && !isNullish(value) && !this.relation) {
+      value = this.cast(value);
+    }
+    if (this.mutator) {
+      value = this.mutator(value);
+    }
+    const valid = this.validate(value);
+    if (this.relation) {
+      value = resolveRelation(model, this.type, this.relation, this.key, value);
+    }
+    return valid && value;
+  }
+}
 
 class Map {
   constructor() {
@@ -1318,386 +1698,6 @@ Model._booted = {};
 Model._globalHooks = {};
 Model._lastGlobalHookId = 0;
 
-function resolveValue(model, predicate) {
-  if (isFunction(predicate)) {
-    return predicate(model);
-  }
-  return model[predicate];
-}
-function forceArray(data) {
-  return isArray(data) ? data : [data];
-}
-function assert(condition, message) {
-  if (!condition) {
-    throw new Error(["[ELOQJS]"].concat(message).join(" "));
-  }
-}
-function isFunction(value) {
-  return typeof value === "function";
-}
-function isObject(value) {
-  return typeof value === "object" && !isArray(value) && !isNull(value);
-}
-function isPlainObject(value) {
-  if (!isObject(value) || getTag(value) != "[object Object]") {
-    return false;
-  }
-  if (isNull(Object.getPrototypeOf(value))) {
-    return true;
-  }
-  let proto = value;
-  while (!isNull(Object.getPrototypeOf(proto))) {
-    proto = Object.getPrototypeOf(proto);
-  }
-  return Object.getPrototypeOf(value) === proto;
-}
-function isArray(value) {
-  return Array.isArray(value);
-}
-function isString(value) {
-  return typeof value === "string";
-}
-function isNumber(value) {
-  return typeof value === "number";
-}
-function isNull(value) {
-  return value === null;
-}
-function isUndefined(value) {
-  return value === void 0;
-}
-function isNullish(value) {
-  return isUndefined(value) || isNull(value);
-}
-function isModel(value) {
-  return isObject(value) && value instanceof Model;
-}
-function isModelClass(value) {
-  return isFunction(value) && value.prototype instanceof Model;
-}
-function isCollection(value) {
-  return isObject(value) && value instanceof Collection;
-}
-function isEmptyString(value) {
-  return value === "";
-}
-function isEmpty(collection) {
-  return size(collection) === 0;
-}
-function size(collection) {
-  return isArray(collection) ? collection.length : Object.keys(collection).length;
-}
-function getTag(value) {
-  if (value == null) {
-    return isUndefined(value) ? "[object Undefined]" : "[object Null]";
-  }
-  return Object.prototype.toString.call(value);
-}
-function capitalize(value) {
-  if (typeof value !== "string")
-    return "";
-  return value.charAt(0).toUpperCase() + value.slice(1);
-}
-
-function resolveCast({key, type, cast}) {
-  if (isUndefined(cast)) {
-    return cast;
-  }
-  if (isArray(type)) {
-    if (isFunction(cast)) {
-      return (value) => cast(value);
-    }
-    throw new Error(`Invalid cast for field "${key}": The cast must be a Function when multiple types are defined.`);
-  }
-  if (cast === true) {
-    return (value) => castValue(type, value);
-  }
-  throw new Error(`Invalid cast for field "${key}": The cast must match the field type.`);
-}
-function castValue(cast, value) {
-  if (isClass(cast)) {
-    return new cast(value);
-  }
-  return cast(value);
-}
-function isClass(obj) {
-  const isCtorClass = obj.constructor && obj.constructor.toString().substring(0, 5) === "class";
-  if (obj.prototype === void 0) {
-    return isCtorClass;
-  }
-  const isPrototypeCtorClass = obj.prototype.constructor && obj.prototype.constructor.toString && obj.prototype.constructor.toString().substring(0, 5) === "class";
-  return isCtorClass || isPrototypeCtorClass;
-}
-
-function resolveDefault({
-  key,
-  type,
-  defaultValue
-}) {
-  let _isPrimitive;
-  if (isUndefined(defaultValue)) {
-    return defaultValue;
-  }
-  if (isArray(type)) {
-    _isPrimitive = type.every((_type) => isPrimitive(_type));
-  } else {
-    _isPrimitive = isPrimitive(type);
-  }
-  if (!_isPrimitive && !isFunction(defaultValue)) {
-    throw new Error(`Invalid default value for field "${key}": Fields with type Object/Array must use a factory function to return the default value.`);
-  }
-  return defaultValue;
-}
-function getDefaultValue(value) {
-  return isFunction(value) ? value() : value;
-}
-function isPrimitive(type) {
-  return type === String || type === Boolean || type === Number || type === BigInt || type === Symbol;
-}
-
-function resolveMutator({
-  key,
-  mutator,
-  fallback
-}) {
-  if (!isUndefined(mutator) && !isFunction(mutator)) {
-    throw new Error(`Invalid mutator for field "${key}": The mutator must be a Function.`);
-  }
-  return mutator || fallback;
-}
-
-function resolveNullable({nullable}) {
-  return nullable === true;
-}
-
-class Relation {
-  constructor(model, belongsToModel, data, key, forceSingular) {
-    this.model = model;
-    this.belongsToModel = belongsToModel;
-    this.data = data;
-    this.key = key;
-    this.forceSingular = forceSingular;
-  }
-}
-
-const index$1 = /*#__PURE__*/Object.freeze({
-  __proto__: null,
-  Relation: Relation
-});
-
-var RelationEnum;
-(function(RelationEnum2) {
-  RelationEnum2["HAS_ONE"] = "HasOne";
-  RelationEnum2["HAS_MANY"] = "HasMany";
-})(RelationEnum || (RelationEnum = {}));
-
-function resolveRelationType({
-  key,
-  type,
-  relation
-}) {
-  const relations = Object.values(RelationEnum);
-  if (isModelClass(type) && !relations.includes(relation)) {
-    const expected = relations.join(", ");
-    const gotten = capitalize(typeof relation);
-    throw new Error(`Invalid relation for field ${key}: Expected ${expected}, got ${gotten}.`);
-  }
-  return relation;
-}
-function resolveRelation(parent, related, relation, key, value) {
-  switch (relation) {
-    case RelationEnum.HAS_ONE: {
-      const data = mutateHasOne(value, related);
-      return new Relation(related, parent, data, key, true);
-    }
-    case RelationEnum.HAS_MANY: {
-      const data = mutateHasMany(value, related);
-      return new Relation(related, parent, data, key, false);
-    }
-    default: {
-      const relations = Object.values(RelationEnum);
-      const expected = relations.join(" | ");
-      throw new Error(`Invalid relation for field ${key}: Expected "${expected}", got "${relation}".`);
-    }
-  }
-}
-function mutateHasOne(record, related) {
-  if (isModel(record)) {
-    return record;
-  }
-  return record ? new related(record) : null;
-}
-function mutateHasMany(records, related) {
-  if (isCollection(records)) {
-    return records;
-  }
-  records = isArray(records) ? records : [];
-  const collection = new Collection([], {
-    model: related
-  });
-  for (let record of records) {
-    record = "data" in record ? record.data : record;
-    collection.add(record);
-  }
-  return collection;
-}
-
-function resolveRequired({required}) {
-  return required === true;
-}
-
-function resolveType({key, type}) {
-  if (isNullish(type)) {
-    throw new Error(`Invalid type for field ${key}: The type must be defined.`);
-  }
-  return type;
-}
-function validateType(value, type, relation) {
-  if (isNullish(value)) {
-    return false;
-  }
-  if (relation && isModelClass(type)) {
-    switch (relation) {
-      case RelationEnum.HAS_ONE: {
-        return value instanceof type || isPlainObject(value);
-      }
-      case RelationEnum.HAS_MANY: {
-        return isCollection(value) || isArray(value);
-      }
-      default: {
-        return false;
-      }
-    }
-  }
-  if (isArray(type)) {
-    return type.includes(value.constructor);
-  }
-  return value.constructor === type;
-}
-function getExpectedName(type, relation) {
-  if (isModelClass(type) && relation === RelationEnum.HAS_MANY) {
-    return `Collection of ${resolveName(type)}`;
-  }
-  if (isArray(type)) {
-    return type.map((_type) => resolveName(_type)).join(", ");
-  }
-  return resolveName(type);
-}
-function getGottenName(value) {
-  if (isNull(value)) {
-    return "Null";
-  }
-  if (value && value.constructor) {
-    return value.constructor.name;
-  }
-  return capitalize(typeof value);
-}
-function resolveName(type) {
-  return type.name || type.constructor.name;
-}
-
-function resolveValidator({
-  key,
-  validator,
-  fallback
-}) {
-  if (!isUndefined(validator) && !isFunction(validator)) {
-    throw new Error(`Invalid validator for field "${key}": The validator must be a Function.`);
-  }
-  return validator || fallback;
-}
-
-class Field {
-  constructor(key, field, model) {
-    this.required = false;
-    this.nullable = false;
-    this.validator = () => true;
-    this.mutator = (value) => value;
-    if (!isString(key)) {
-      throw new Error('The field "key" must be an string.');
-    }
-    if (isNullish(field)) {
-      throw new Error("The field is not defined.");
-    }
-    this.model = model;
-    this.key = key;
-    this._boot(field);
-  }
-  _boot(field) {
-    if (!isPlainObject(field)) {
-      field = {
-        type: field
-      };
-    }
-    this.type = resolveType({key: this.key, type: field.type});
-    this.relation = resolveRelationType({
-      key: this.key,
-      type: this.type,
-      relation: field.relation
-    });
-    this.required = resolveRequired({
-      required: field.required
-    });
-    this.nullable = resolveNullable({
-      nullable: this.relation ? true : field.nullable
-    });
-    this.default = resolveDefault({
-      key: this.key,
-      type: this.type,
-      defaultValue: field.default
-    });
-    this.validator = resolveValidator({
-      key: this.key,
-      validator: field.validator,
-      fallback: this.validator
-    });
-    this.mutator = resolveMutator({
-      key: this.key,
-      mutator: field.mutator || this.model.mutators()[this.key],
-      fallback: this.mutator
-    });
-    this.cast = resolveCast({
-      key: this.key,
-      type: this.type,
-      cast: this.relation ? true : field.cast
-    });
-  }
-  validate(value) {
-    if (this.required && isNullish(value)) {
-      throw new Error(`Missing required field: "${this.key}".`);
-    }
-    if (isUndefined(value)) {
-      return true;
-    }
-    if (!validateType(value, this.type, this.relation) && !(isNull(value) && this.nullable)) {
-      const expectedName = getExpectedName(this.type, this.relation);
-      const gottenName = getGottenName(value);
-      throw new Error(`Invalid field: type check failed for field "${this.key}". Expected ${expectedName}, got ${gottenName}.`);
-    }
-    if (!this.validator(value)) {
-      throw new Error(`Invalid field: custom validator check failed for field "${this.key}".`);
-    }
-    return true;
-  }
-  make(value, model) {
-    var _a;
-    const nullish = this.nullable ? null : void 0;
-    const fallback = (_a = getDefaultValue(this.default)) != null ? _a : nullish;
-    value = !isUndefined(value) ? value : fallback;
-    if (this.cast && !isNullish(value) && !this.relation) {
-      value = this.cast(value);
-    }
-    if (this.mutator) {
-      value = this.mutator(value);
-    }
-    const valid = this.validate(value);
-    if (this.relation) {
-      value = resolveRelation(model, this.type, this.relation, this.key, value);
-    }
-    return valid && value;
-  }
-}
-
 function use(plugin, options = {}) {
   const components = {
     Model,
@@ -1715,7 +1715,6 @@ const index = {
 };
 
 exports.Collection = Collection;
-exports.Field = Field;
 exports.Model = Model;
 exports.Relations = index$1;
 exports.default = index;

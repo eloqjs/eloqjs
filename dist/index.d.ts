@@ -462,6 +462,28 @@ declare class Collection<M extends Model = Model> {
     private _generateUid;
 }
 
+declare enum RelationEnum {
+    HAS_ONE = "HasOne",
+    HAS_MANY = "HasMany"
+}
+
+declare class Field {
+    model: typeof Model;
+    key: string;
+    type: any;
+    relation?: RelationEnum;
+    required: boolean;
+    nullable: boolean;
+    default?: any;
+    validator: (value: any) => boolean;
+    cast: any;
+    mutator: (value: any) => any;
+    constructor(key: string, field: any, model: typeof Model);
+    private _boot;
+    validate(value: any): true;
+    make(value: unknown, model: Model): any;
+}
+
 declare type MutationHook<M extends Model = Model> = (context: {
     model: M;
     entity: string;
@@ -966,28 +988,6 @@ declare class Model {
     private _getDefaultEventContext;
 }
 
-declare enum RelationEnum {
-    HAS_ONE = "HasOne",
-    HAS_MANY = "HasMany"
-}
-
-declare class Field {
-    model: typeof Model;
-    key: string;
-    type: any;
-    relation?: RelationEnum;
-    required: boolean;
-    nullable: boolean;
-    default?: any;
-    validator: (value: any) => boolean;
-    cast: any;
-    mutator: (value: any) => any;
-    constructor(key: string, field: any, model: typeof Model);
-    private _boot;
-    validate(value: any): true;
-    make(value: unknown, model: Model): any;
-}
-
 declare class Relation<M extends Model = Model, D extends Item<M> | Collection<M> = Item<M> | Collection<M>, S extends boolean = boolean> {
     data: D;
     model: typeof Model;
@@ -1042,4 +1042,4 @@ declare const _default: {
 };
 
 export default _default;
-export { Collection, CollectionOptions, Element, Field, Instance, Item, Model, ModelFields, ModelOptions, ModelReference, ModelRegistries, ModelRegistry, ModelSchemas, Plugin, PluginComponents, PluginOptions, index as Relations, use };
+export { Collection, CollectionOptions, Element, Instance, Item, Model, ModelFields, ModelOptions, ModelReference, ModelRegistries, ModelRegistry, ModelSchemas, Plugin, PluginComponents, PluginOptions, index as Relations, use };
