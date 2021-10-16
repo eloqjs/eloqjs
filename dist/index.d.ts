@@ -378,6 +378,30 @@ declare class Collection<M extends Model = Model> {
      */
     toJSON(): Model[];
     /**
+     * Update a {@link Model} of this {@link Collection}.
+     *
+     * This method returns a single model if only one was given, but will return
+     * an array of all updated models if an array was given.
+     *
+     * @param records A model instance or plain object, or an array of either, to be updated in this collection.
+     * A model instance will be created and returned if passed a plain object.
+     *
+     * @returns The updated model or array of updated models.
+     */
+    update(records: (M | Element)[]): M[];
+    /**
+     * Update a {@link Model} of this {@link Collection}.
+     *
+     * This method returns a single model if only one was given, but will return
+     * an array of all updated models if an array was given.
+     *
+     * @param record A model instance or plain object, or an array of either, to be updated in this collection.
+     * A model instance will be created and returned if passed a plain object.
+     *
+     * @returns The updated model or array of updated models.
+     */
+    update(record: M | Element): M;
+    /**
      * Filters the collection by a given key / value pair.
      */
     where<V = unknown>(key: keyof ModelReference<M> | string, value?: V): this;

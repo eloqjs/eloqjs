@@ -538,6 +538,24 @@ class Collection {
   toJSON() {
     return this.models;
   }
+  update(record) {
+    if (isArray(record)) {
+      return record.map((m) => this.update(m)).filter((m) => !!m);
+    }
+    const id = this.constructor.model.getIdFromRecord(record);
+    if (isNull(id)) {
+      return this.add(record);
+    }
+    const model = this.find(id);
+    if (isNull(model)) {
+      return this.add(record);
+    }
+    assert(isModel(model), [
+      "Expected a model, plain object, or array of either."
+    ]);
+    model.$update(record);
+    return model;
+  }
   where(key, operator, value) {
     const collection = this.clone();
     let comparisonOperator = operator;
