@@ -7,6 +7,7 @@ import {
   isEmpty,
   isFunction,
   isModel,
+  isNull,
   isNullish,
   isNumber,
   isObject,
@@ -1003,6 +1004,78 @@ export class Collection<M extends Model = Model> {
    */
   public toJSON(): Model[] {
     return this.models
+  }
+
+  /**
+   * Update a {@link Model} of this {@link Collection}.
+   *
+   * This method returns a single model if only one was given, but will return
+   * an array of all updated models if an array was given.
+   *
+   * @param records A model instance or plain object, or an array of either, to be updated in this collection.
+   * A model instance will be created and returned if passed a plain object.
+   *
+   * @returns The updated model or array of updated models.
+   */
+  public update(records: (M | Element)[]): M[]
+
+  /**
+   * Update a {@link Model} of this {@link Collection}.
+   *
+   * This method returns a single model if only one was given, but will return
+   * an array of all updated models if an array was given.
+   *
+   * @param record A model instance or plain object, or an array of either, to be updated in this collection.
+   * A model instance will be created and returned if passed a plain object.
+   *
+   * @returns The updated model or array of updated models.
+   */
+  public update(record: M | Element): M
+
+  /**
+   * Update a {@link Model} of this {@link Collection}.
+   *
+   * This method returns a single model if only one was given, but will return
+   * an array of all updated models if an array was given.
+   *
+   * @param record A model instance or plain object, or an array of either, to be updated in this collection.
+   * A model instance will be created and returned if passed a plain object.
+   *
+   * @returns The updated model or array of updated models.
+   */
+  public update(record: M | Element | (M | Element)[]): M | M[] | void {
+    // If given an array, assume an array of models and add them all.
+    if (isArray(record)) {
+      return record.map((m) => this.update(m)).filter((m): m is M => !!m)
+    }
+
+    // Get the ID from model or record
+    const id = (this.constructor as typeof Collection).model.getIdFromRecord(
+      record
+    )
+
+    // If we don't have an ID, we can't compare the model, so just add the model to the collection
+    if (isNull(id)) {
+      return this.add(record)
+    }
+
+    // Retrieve a model from this collection based on the given ID
+    const model = this.find(id)
+
+    // If we couldn't retrieve a model from this collection, then add the model to this collection
+    if (isNull(model)) {
+      return this.add(record)
+    }
+
+    // At this point, `model` should be an instance of Model.
+    assert(isModel(model), [
+      'Expected a model, plain object, or array of either.'
+    ])
+
+    // Update the model found in the collection by the given attributes.
+    model.$update(record)
+
+    return model
   }
 
   /**
