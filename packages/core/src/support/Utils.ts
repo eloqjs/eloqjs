@@ -189,6 +189,31 @@ export function isEmpty(
 }
 
 /**
+ * Determines whether the given values are equal or not.
+ */
+export function isEqual(a: unknown, b: unknown): boolean {
+  if (typeof a !== typeof b) {
+    return false
+  }
+
+  if (
+    (isArray(a) || isPlainObject(a)) &&
+    (isArray(b) || isPlainObject(b)) &&
+    size(a) !== size(b)
+  ) {
+    return false
+  }
+
+  if (isArray(a) && isArray(b)) {
+    return a.every(
+      (val, index) => JSON.stringify(val) === JSON.stringify(b[index])
+    )
+  }
+
+  return JSON.stringify(a) === JSON.stringify(b)
+}
+
+/**
  * Gets the size of collection by returning its length for array-like values
  * or the number of own enumerable string keyed properties for objects.
  */
