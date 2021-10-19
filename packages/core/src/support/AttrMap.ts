@@ -89,7 +89,7 @@ export class AttrMap<T> extends Map<T> {
     const dirty: Record<string, T> = {}
 
     for (const key in this.data) {
-      if (this.$get(key) !== this.get(key)) {
+      if (!isEqual(this.$get(key), this.get(key))) {
         dirty[key] = this.get(key)
       }
     }
