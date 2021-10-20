@@ -629,7 +629,13 @@ export class Model {
   public $set<T = any>(attribute: string | Element, value?: T): T | undefined {
     // Allow batch set of multiple attributes at once, ie. $set({...});
     if (isPlainObject(attribute)) {
-      for (const key in attribute) {
+      const fields = this.$fields()
+
+      for (const key in fields) {
+        if (!(key in attribute)) {
+          continue
+        }
+
         this.$set(key, attribute[key])
       }
 
