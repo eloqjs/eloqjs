@@ -32,7 +32,7 @@ export class ModelAPIInstance<M extends Model = Model> {
    * so you can start querying.
    */
   public query(): Builder<M> {
-    return new Builder(this.model.$self())
+    return new Builder(this.model.$constructor())
   }
 
   /**
@@ -168,14 +168,16 @@ export class ModelAPIInstance<M extends Model = Model> {
   }
 
   private _api(): ModelAPIStatic {
-    return new ModelAPIStatic(this.model.$self()).config(this._getConfig())
+    return new ModelAPIStatic(this.model.$constructor()).config(
+      this._getConfig()
+    )
   }
 
   private _hasRelation<R extends Model>(relationship: R): void {
-    const modelName = this.model.$self().name
-    const relationName = relationship.$self().name
+    const modelName = this.model.$constructor().name
+    const relationName = relationship.$constructor().name
 
-    assert(this.model.$self().hasRelation(relationship.$self()), [
+    assert(this.model.$constructor().hasRelation(relationship.$constructor()), [
       `The ${modelName} model does not have a relationship with the ${relationName} model.`
     ])
   }

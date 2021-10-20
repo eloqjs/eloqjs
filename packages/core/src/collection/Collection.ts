@@ -777,7 +777,7 @@ export class Collection<M extends Model = Model> {
     // Objects should be used to find the model first, then removed.
     if (isPlainObject(model)) {
       const m = this.models.find(
-        (m) => m.$id === m.$self().getIdFromRecord(model)
+        (m) => m.$id === m.$constructor().getIdFromRecord(model)
       )
       return m ? this.remove(m) : undefined
     }

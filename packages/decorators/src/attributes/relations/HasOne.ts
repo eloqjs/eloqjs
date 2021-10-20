@@ -7,7 +7,7 @@ import { PropertyDecorator } from '../../Contracts'
  */
 export function HasOne(related: () => typeof Model): PropertyDecorator {
   return (target, propertyKey) => {
-    const self = target.$self()
+    const self = target.$constructor()
 
     self.setRegistry(propertyKey, () => new Attributes.HasOne(self, related()))
   }
