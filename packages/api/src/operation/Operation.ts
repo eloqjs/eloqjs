@@ -16,7 +16,7 @@ export class Operation<M extends Model = Model> {
 
   public constructor(model: M, config: Partial<HttpClientOptions> = {}) {
     this.model = model
-    this.modelType = model.$self()
+    this.modelType = model.$constructor()
     this.requestHandler = new Request(this.modelType, config)
   }
 

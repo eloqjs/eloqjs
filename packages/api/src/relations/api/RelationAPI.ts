@@ -46,7 +46,7 @@ export class RelationAPI<
 
     this.query = new Builder<M, boolean>(
       this.model,
-      this.belongsToModel.$self(),
+      this.belongsToModel.$constructor(),
       this.belongsToModel.$id ?? undefined,
       forceSingular
     )

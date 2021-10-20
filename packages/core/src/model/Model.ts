@@ -204,35 +204,35 @@ export class Model {
    * Get the model's ID.
    */
   public get $id(): string | number | null {
-    return this.$self().getIdFromRecord(this)
+    return this.$constructor().getIdFromRecord(this)
   }
 
   /**
    * Get the primary key for the model.
    */
   public get $primaryKey(): string {
-    return this.$self().primaryKey
+    return this.$constructor().primaryKey
   }
 
   /**
    * Determines whether the model has an ID.
    */
   public get $hasId(): boolean {
-    return this.$self().isValidId(this.$id)
+    return this.$constructor().isValidId(this.$id)
   }
 
   /**
    * Get the resource route of the model.
    */
   public get $resource(): string {
-    return this.$self().getResource()
+    return this.$constructor().getResource()
   }
 
   /**
    * Get the {@link entity} for this model.
    */
   public get $entity(): string {
-    return this.$self().entity
+    return this.$constructor().entity
   }
 
   public get $collections(): Collection<this>[] {
@@ -500,7 +500,7 @@ export class Model {
   /**
    * Get the constructor of this model.
    */
-  public $self(): typeof Model {
+  public $constructor(): typeof Model {
     return this.constructor as typeof Model
   }
 
@@ -561,8 +561,8 @@ export class Model {
    */
   public $setOptions(options: ModelOptions): void {
     const _options = {
-      ...this.$self()._getDefaultOptions(),
-      ...this.$self().options(),
+      ...this.$constructor()._getDefaultOptions(),
+      ...this.$constructor().options(),
       ...options
     }
 
@@ -604,7 +604,7 @@ export class Model {
    * Get the model fields for this model.
    */
   public $fields(): ModelFields {
-    return this.$self().getFields()
+    return this.$constructor().getFields()
   }
 
   /**
@@ -826,7 +826,7 @@ export class Model {
 
               for (const record of attributes[key]) {
                 // Get the ID from model or record
-                const id = this.$self().getIdFromRecord(record)
+                const id = this.$constructor().getIdFromRecord(record)
 
                 // If we don't have an ID, we can't compare the model
                 if (isNull(id)) {
@@ -859,12 +859,12 @@ export class Model {
       // There is some data, but it's not an object, so we can assume that the
       // response only returned an ID for this model.
     } else {
-      const id = this.$self().parseId(attributes)
+      const id = this.$constructor().parseId(attributes)
 
       // It's possible that the response didn't actually return a valid
       // ID, so before we try to use it we should make sure that
       // we're not accidentally assigning the wrong data as ID.
-      if (this.$self().isValidId(id)) {
+      if (this.$constructor().isValidId(id)) {
         // If an ID already exists on this model and the returned
         // ID is not the same, this almost definitely indicates
         // an unexpected state. The default is to protect against this
@@ -902,7 +902,7 @@ export class Model {
       const field = fields[key]
 
       // Exclude read-only attributes.
-      if (this.$self().readOnlyAttributes.includes(key)) {
+      if (this.$constructor().readOnlyAttributes.includes(key)) {
         continue
       }
 
@@ -1176,7 +1176,7 @@ export class Model {
     const hooks: Contracts.MutationHook[] = []
 
     // Build global hooks
-    hooks.push(...this.$self()._buildGlobalHooks(event))
+    hooks.push(...this.$constructor()._buildGlobalHooks(event))
 
     // Build local hooks
     hooks.push(...this._buildLocalHooks(event))
@@ -1242,7 +1242,7 @@ export class Model {
    * Bootstrap this model.
    */
   private _boot(options: ModelOptions): void {
-    this.$self()._boot()
+    this.$constructor()._boot()
     this._generateUid()
     this.$setOptions(options)
   }

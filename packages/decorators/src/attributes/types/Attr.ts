@@ -7,7 +7,7 @@ import { PropertyDecorator } from '../../Contracts'
  */
 export function Attr(value?: unknown): PropertyDecorator {
   return (target, propertyKey) => {
-    const self = target.$self()
+    const self = target.$constructor()
 
     self.setRegistry(propertyKey, () => new Attributes.Attr(self, value))
   }

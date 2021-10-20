@@ -10,7 +10,7 @@ export function Str(
   options: TypeOptions = {}
 ): PropertyDecorator {
   return (target, propertyKey) => {
-    const self = target.$self()
+    const self = target.$constructor()
 
     self.setRegistry(propertyKey, () => {
       const attr = new Attributes.String(self, value)
