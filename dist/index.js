@@ -1422,7 +1422,11 @@ class Model {
   }
   $set(attribute, value) {
     if (isPlainObject(attribute)) {
-      for (const key in attribute) {
+      const fields = this.$fields();
+      for (const key in fields) {
+        if (!(key in attribute)) {
+          continue;
+        }
         this.$set(key, attribute[key]);
       }
       return;
@@ -1497,8 +1501,12 @@ class Model {
       this.$fill(attributes, options);
       this.$syncChanges();
       this.$syncReference();
-      for (const key in attributes) {
-        const field = this.$getField(key);
+      const fields = this.$fields();
+      for (const key in fields) {
+        if (!(key in attributes)) {
+          continue;
+        }
+        const field = fields[key];
         if (field.relation) {
           const relation = this._relationships.get(key);
           switch (field.relation) {
