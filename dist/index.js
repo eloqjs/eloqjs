@@ -469,6 +469,24 @@ class Collection {
       model.$reset(attributes);
     }
   }
+  set(record, options = {}) {
+    if (isArray(record)) {
+      return record.map((m) => this.set(m, options)).filter((m) => !!m);
+    }
+    const id = Model.getIdFromRecord(record);
+    if (isNull(id)) {
+      return this.add(record);
+    }
+    const model = this.find(id);
+    if (isNull(model)) {
+      return this.add(record);
+    }
+    assert(isModel(model), [
+      "Expected a model, plain object, or array of either."
+    ]);
+    model.$set(record, options);
+    return model;
+  }
   shift() {
     if (this.isNotEmpty()) {
       return this._removeModelAtIndex(0) || null;
@@ -546,7 +564,7 @@ class Collection {
     if (isArray(record)) {
       return record.map((m) => this.update(m)).filter((m) => !!m);
     }
-    const id = this.constructor.model.getIdFromRecord(record);
+    const id = Model.getIdFromRecord(record);
     if (isNull(id)) {
       return this.add(record);
     }
@@ -711,6 +729,18 @@ function isEmptyString(value) {
 }
 function isEmpty(collection) {
   return size(collection) === 0;
+}
+function isEqual(a, b) {
+  if (typeof a !== typeof b) {
+    return false;
+  }
+  if ((isArray(a) || isPlainObject(a)) && (isArray(b) || isPlainObject(b)) && size(a) !== size(b)) {
+    return false;
+  }
+  if (isArray(a) && isArray(b)) {
+    return a.every((val, index) => JSON.stringify(val) === JSON.stringify(b[index]));
+  }
+  return JSON.stringify(a) === JSON.stringify(b);
 }
 function size(collection) {
   return isArray(collection) ? collection.length : Object.keys(collection).length;
@@ -1065,7 +1095,7 @@ class AttrMap extends Map {
       this.reference = {...this.data};
       return;
     }
-    attributes = forceArray(attributes);
+    attributes = forceArray(attributes).filter((attribute) => Object.keys(this.data).includes(attribute));
     for (const attribute of attributes) {
       this.reference[attribute] = this.data[attribute];
     }
@@ -1078,7 +1108,7 @@ class AttrMap extends Map {
       this.data = {...this.reference};
       return;
     }
-    attributes = forceArray(attributes);
+    attributes = forceArray(attributes).filter((attribute) => Object.keys(this.data).includes(attribute));
     for (const attribute of attributes) {
       this.data[attribute] = this.reference[attribute];
     }
@@ -1095,7 +1125,7 @@ class AttrMap extends Map {
   getDirty() {
     const dirty = {};
     for (const key in this.data) {
-      if (this.$get(key) !== this.get(key)) {
+      if (!isEqual(this.$get(key), this.get(key))) {
         dirty[key] = this.get(key);
       }
     }
@@ -1105,6 +1135,7 @@ class AttrMap extends Map {
     return this.changes;
   }
   hasChanges(changes, attributes = []) {
+    attributes = attributes.filter((attribute) => Object.keys(this.data).includes(attribute));
     if (isEmpty(attributes)) {
       return Object.keys(changes).length > 0;
     }
@@ -1403,8 +1434,25 @@ class Model {
     }
     const previous = this._getAttribute(attribute);
     const field = this.$getField(attribute);
-    value = field.make(value, this);
-    this._setAttribute(attribute, value);
+    if (field.relation && previous instanceof Relation) {
+      switch (field.relation) {
+        case RelationEnum.HAS_ONE: {
+          const model = previous.data;
+          if (!isNull(model)) {
+            model.$set(value);
+          }
+          break;
+        }
+        case RelationEnum.HAS_MANY: {
+          const collection = previous.data;
+          collection.set(value);
+          break;
+        }
+      }
+    } else {
+      value = field.make(value, this);
+      this._setAttribute(attribute, value);
+    }
     const changed = defined && previous !== value;
     if (changed) {
       this.$emit("change", {attribute, previous, value});
@@ -1449,6 +1497,41 @@ class Model {
       this.$fill(attributes, options);
       this.$syncChanges();
       this.$syncReference();
+      for (const key in attributes) {
+        const field = this.$getField(key);
+        if (field.relation) {
+          const relation = this._relationships.get(key);
+          switch (field.relation) {
+            case RelationEnum.HAS_ONE: {
+              const model = relation.data;
+              if (!isNull(model)) {
+                model.$syncChanges();
+                model.$syncReference();
+              }
+              break;
+            }
+            case RelationEnum.HAS_MANY: {
+              const collection = relation.data;
+              for (const record of attributes[key]) {
+                const id = this.$self().getIdFromRecord(record);
+                if (isNull(id)) {
+                  break;
+                }
+                const model = collection.find(id);
+                if (isNull(model)) {
+                  break;
+                }
+                if (!isModel(model)) {
+                  break;
+                }
+                model.$syncChanges();
+                model.$syncReference();
+              }
+              break;
+            }
+          }
+        }
+      }
     } else {
       const id = this.$self().parseId(attributes);
       if (this.$self().isValidId(id)) {

@@ -1,5 +1,5 @@
 import { Map } from './Map'
-import { forceArray, isEmpty } from './Utils'
+import { forceArray, isEmpty, isEqual } from './Utils'
 
 export class AttrMap<T> extends Map<T> {
   protected reference: Record<string, T> = {}
@@ -27,7 +27,9 @@ export class AttrMap<T> extends Map<T> {
       return
     }
 
-    attributes = forceArray(attributes)
+    attributes = forceArray(attributes).filter((attribute) =>
+      Object.keys(this.data).includes(attribute)
+    )
 
     for (const attribute of attributes) {
       this.reference[attribute] = this.data[attribute]
@@ -50,7 +52,9 @@ export class AttrMap<T> extends Map<T> {
       return
     }
 
-    attributes = forceArray(attributes)
+    attributes = forceArray(attributes).filter((attribute) =>
+      Object.keys(this.data).includes(attribute)
+    )
 
     for (const attribute of attributes) {
       this.data[attribute] = this.reference[attribute]
@@ -85,7 +89,7 @@ export class AttrMap<T> extends Map<T> {
     const dirty: Record<string, T> = {}
 
     for (const key in this.data) {
-      if (this.$get(key) !== this.get(key)) {
+      if (!isEqual(this.$get(key), this.get(key))) {
         dirty[key] = this.get(key)
       }
     }
@@ -109,6 +113,10 @@ export class AttrMap<T> extends Map<T> {
     changes: Record<string, T>,
     attributes: string[] = []
   ): boolean {
+    attributes = attributes.filter((attribute) =>
+      Object.keys(this.data).includes(attribute)
+    )
+
     // If no specific attributes were provided, we will just see if the dirty array
     // already contains any attributes. If it does we will just return that this
     // count is greater than zero. Else, we need to check specific attributes.

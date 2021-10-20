@@ -1,4 +1,4 @@
-import { Model, ModelReference } from '../model/Model'
+import { Model, ModelOptions, ModelReference } from '../model/Model'
 import { Uid as UidGenerator } from '../support/Uid'
 import {
   assert,
@@ -844,6 +844,88 @@ export class Collection<M extends Model = Model> {
   }
 
   /**
+   * Fill a {@link Model} of this {@link Collection} by the model's ID.
+   *
+   * If an ID is not provided, a new model will be added to this collection.
+   *
+   * This method returns a single model if only one was given, but will return
+   * an array of all updated models if an array was given.
+   *
+   * @param records A model instance or plain object, or an array of either, to be filled in this collection.
+   * A model instance will be created and returned if passed a plain object.
+   * @param options
+   *
+   * @returns The filled model or array of filled models.
+   */
+  public set(records: (M | Element)[], options?: ModelOptions): M[]
+
+  /**
+   * Fill a {@link Model} of this {@link Collection} by the model's ID.
+   *
+   * If an ID is not provided, a new model will be added to this collection.
+   *
+   * This method returns a single model if only one was given, but will return
+   * an array of all filled models if an array was given.
+   *
+   * @param record A model instance or plain object, or an array of either, to be filled in this collection.
+   * A model instance will be created and returned if passed a plain object.
+   * @param options
+   *
+   * @returns The filled model or array of filled models.
+   */
+  public set(record: M | Element, options?: ModelOptions): M
+
+  /**
+   * Fill a {@link Model} of this {@link Collection} by the model's ID.
+   *
+   * If an ID is not provided, a new model will be added to this collection.
+   *
+   * This method returns a single model if only one was given, but will return
+   * an array of all filled models if an array was given.
+   *
+   * @param record A model instance or plain object, or an array of either, to be filled in this collection.
+   * A model instance will be created and returned if passed a plain object.
+   * @param options
+   *
+   * @returns The filled model or array of filled models.
+   */
+  public set(
+    record: M | Element | (M | Element)[],
+    options: ModelOptions = {}
+  ): M | M[] | void {
+    // If given an array, assume an array of models and add them all.
+    if (isArray(record)) {
+      return record.map((m) => this.set(m, options)).filter((m): m is M => !!m)
+    }
+
+    // Get the ID from model or record
+    const id = Model.getIdFromRecord(record)
+
+    // If we don't have an ID, we can't compare the model, so just add the model to the collection
+    if (isNull(id)) {
+      return this.add(record)
+    }
+
+    // Retrieve a model from this collection based on the given ID
+    const model = this.find(id)
+
+    // If we couldn't retrieve a model from this collection, then add the model to this collection
+    if (isNull(model)) {
+      return this.add(record)
+    }
+
+    // At this point, `model` should be an instance of Model.
+    assert(isModel(model), [
+      'Expected a model, plain object, or array of either.'
+    ])
+
+    // Fill the model found in the collection by the given attributes.
+    model.$set(record, options)
+
+    return model
+  }
+
+  /**
    * Removes and returns the first model of this collection, if there was one.
    *
    * @returns Removed model or undefined if there were none.
@@ -1007,7 +1089,9 @@ export class Collection<M extends Model = Model> {
   }
 
   /**
-   * Update a {@link Model} of this {@link Collection}.
+   * Update a {@link Model} of this {@link Collection} by the model's ID.
+   *
+   * If an ID is not provided, a new model will be added to this collection.
    *
    * This method returns a single model if only one was given, but will return
    * an array of all updated models if an array was given.
@@ -1020,7 +1104,9 @@ export class Collection<M extends Model = Model> {
   public update(records: (M | Element)[]): M[]
 
   /**
-   * Update a {@link Model} of this {@link Collection}.
+   * Update a {@link Model} of this {@link Collection} by the model's ID.
+   *
+   * If an ID is not provided, a new model will be added to this collection.
    *
    * This method returns a single model if only one was given, but will return
    * an array of all updated models if an array was given.
@@ -1033,7 +1119,9 @@ export class Collection<M extends Model = Model> {
   public update(record: M | Element): M
 
   /**
-   * Update a {@link Model} of this {@link Collection}.
+   * Update a {@link Model} of this {@link Collection} by the model's ID.
+   *
+   * If an ID is not provided, a new model will be added to this collection.
    *
    * This method returns a single model if only one was given, but will return
    * an array of all updated models if an array was given.
@@ -1050,9 +1138,7 @@ export class Collection<M extends Model = Model> {
     }
 
     // Get the ID from model or record
-    const id = (this.constructor as typeof Collection).model.getIdFromRecord(
-      record
-    )
+    const id = Model.getIdFromRecord(record)
 
     // If we don't have an ID, we can't compare the model, so just add the model to the collection
     if (isNull(id)) {

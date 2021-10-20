@@ -4,6 +4,7 @@ import { Mutators } from '../attributes/Contracts'
 import { Collection } from '../collection/Collection'
 import { Field } from '../field/Field'
 import * as Relations from '../relations'
+import { RelationEnum } from '../relations/RelationEnum'
 import { AttrMap } from '../support/AttrMap'
 import { Map } from '../support/Map'
 import { Uid as UidGenerator } from '../support/Uid'
@@ -15,6 +16,7 @@ import {
   isEmptyString,
   isFunction,
   isModel,
+  isNull,
   isNullish,
   isNumber,
   isObject,
@@ -23,7 +25,7 @@ import {
   isUndefined,
   ValueOf
 } from '../support/Utils'
-import { Element } from '../types/Data'
+import { Element, Item } from '../types/Data'
 import * as Contracts from './Contracts'
 import * as Serialize from './Serialize'
 
@@ -624,10 +626,7 @@ export class Model {
    *
    * @returns The value that was set.
    */
-  public $set<T = any>(
-    attribute: string | Record<string, any>,
-    value?: T
-  ): T | undefined {
+  public $set<T = any>(attribute: string | Element, value?: T): T | undefined {
     // Allow batch set of multiple attributes at once, ie. $set({...});
     if (isPlainObject(attribute)) {
       for (const key in attribute) {
@@ -650,11 +649,36 @@ export class Model {
     const previous: any = this._getAttribute(attribute)
     const field = this.$getField(attribute)
 
-    // Resolve the value
-    value = field.make(value, this)
+    // If we have a relationship that was previous defined, we need to access it and set the given attribute,
+    // so we don't generate a new model instance.
+    if (field.relation && previous instanceof Relations.Relation) {
+      switch (field.relation) {
+        // It's the "Has One" relation, so we access the model and set the attribute.
+        case RelationEnum.HAS_ONE: {
+          const model = previous.data as Item
 
-    // Set the attribute value.
-    this._setAttribute(attribute, value)
+          if (!isNull(model)) {
+            model.$set(value as Element)
+          }
+          break
+        }
+        // It's the "Has Many" relation, so we access the collection and loop through its models,
+        // then set attributes of each one of them.
+        case RelationEnum.HAS_MANY: {
+          const collection = previous.data as Collection
+          collection.set(value as Element | Element[])
+          break
+        }
+      }
+
+      // Otherwise, we just resolve the value
+    } else {
+      // Resolve the value
+      value = field.make(value, this)
+
+      // Set the attribute value.
+      this._setAttribute(attribute, value)
+    }
 
     // TODO: Deep equality comparison
     // Only consider a change if the attribute was already defined.
@@ -758,6 +782,67 @@ export class Model {
       // We need to sync changes before references
       this.$syncChanges()
       this.$syncReference()
+
+      // We also need to sync all relationships that have been modified.
+      // To do so, we loop through the attributes.
+      for (const key in attributes) {
+        // Get the field by attribute's key
+        const field = this.$getField(key)
+
+        // Then, we check if the field is a relationship.
+        if (field.relation) {
+          // If so, we get the relationship.
+          const relation = this._relationships.get(key)
+
+          // Now we switch between the different types of relations.
+          switch (field.relation) {
+            // It's the "Has One" relation, so we access the model and sync it.
+            case RelationEnum.HAS_ONE: {
+              const model = relation.data as Item
+
+              if (!isNull(model)) {
+                // We need to sync changes before references
+                model.$syncChanges()
+                model.$syncReference()
+              }
+              break
+            }
+            // It's the "Has Many" relation, so we access the collection and loop through its models,
+            // then sync each one of them.
+            case RelationEnum.HAS_MANY: {
+              const collection = relation.data as Collection
+
+              for (const record of attributes[key]) {
+                // Get the ID from model or record
+                const id = this.$self().getIdFromRecord(record)
+
+                // If we don't have an ID, we can't compare the model
+                if (isNull(id)) {
+                  break
+                }
+
+                // Retrieve a model from the collection based on the given ID
+                const model = collection.find(id)
+
+                // If we couldn't retrieve a model from the collection
+                if (isNull(model)) {
+                  break
+                }
+
+                // At this point, `model` should be an instance of Model.
+                if (!isModel(model)) {
+                  break
+                }
+
+                // We need to sync changes before references
+                model.$syncChanges()
+                model.$syncReference()
+              }
+              break
+            }
+          }
+        }
+      }
 
       // There is some data, but it's not an object, so we can assume that the
       // response only returned an ID for this model.
@@ -915,6 +1000,35 @@ export class Model {
     // Sync attributes
     this._attributes.syncReference(attributes)
     this._relationships.syncReference(attributes)
+
+    /*const fields = this.$fields()
+
+    for (const key in fields) {
+      const field = fields[key]
+
+      if (field.relation) {
+        const relation = this._relationships.get(key)
+
+        switch (field.relation) {
+          case RelationEnum.HAS_ONE: {
+            const model = relation.data as Item
+
+            if (!isNull(model)) {
+              model.$syncReference()
+            }
+            break
+          }
+          case RelationEnum.HAS_MANY: {
+            const collection = relation.data as Collection
+            collection.syncReference()
+            break
+          }
+          default: {
+            //
+          }
+        }
+      }
+    }*/
 
     // A copy of the saved state after the attributes were synced.
     const after = this._getReferences()

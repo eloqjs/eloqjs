@@ -325,6 +325,36 @@ declare class Collection<M extends Model = Model> {
      */
     reset(attributes?: string | string[]): void;
     /**
+     * Fill a {@link Model} of this {@link Collection} by the model's ID.
+     *
+     * If an ID is not provided, a new model will be added to this collection.
+     *
+     * This method returns a single model if only one was given, but will return
+     * an array of all updated models if an array was given.
+     *
+     * @param records A model instance or plain object, or an array of either, to be filled in this collection.
+     * A model instance will be created and returned if passed a plain object.
+     * @param options
+     *
+     * @returns The filled model or array of filled models.
+     */
+    set(records: (M | Element)[], options?: ModelOptions): M[];
+    /**
+     * Fill a {@link Model} of this {@link Collection} by the model's ID.
+     *
+     * If an ID is not provided, a new model will be added to this collection.
+     *
+     * This method returns a single model if only one was given, but will return
+     * an array of all filled models if an array was given.
+     *
+     * @param record A model instance or plain object, or an array of either, to be filled in this collection.
+     * A model instance will be created and returned if passed a plain object.
+     * @param options
+     *
+     * @returns The filled model or array of filled models.
+     */
+    set(record: M | Element, options?: ModelOptions): M;
+    /**
      * Removes and returns the first model of this collection, if there was one.
      *
      * @returns Removed model or undefined if there were none.
@@ -378,7 +408,9 @@ declare class Collection<M extends Model = Model> {
      */
     toJSON(): Model[];
     /**
-     * Update a {@link Model} of this {@link Collection}.
+     * Update a {@link Model} of this {@link Collection} by the model's ID.
+     *
+     * If an ID is not provided, a new model will be added to this collection.
      *
      * This method returns a single model if only one was given, but will return
      * an array of all updated models if an array was given.
@@ -390,7 +422,9 @@ declare class Collection<M extends Model = Model> {
      */
     update(records: (M | Element)[]): M[];
     /**
-     * Update a {@link Model} of this {@link Collection}.
+     * Update a {@link Model} of this {@link Collection} by the model's ID.
+     *
+     * If an ID is not provided, a new model will be added to this collection.
      *
      * This method returns a single model if only one was given, but will return
      * an array of all updated models if an array was given.
@@ -825,7 +859,7 @@ declare class Model {
      *
      * @returns The value that was set.
      */
-    $set<T = any>(attribute: string | Record<string, any>, value?: T): T | undefined;
+    $set<T = any>(attribute: string | Element, value?: T): T | undefined;
     /**
      * Return an attribute's value or a fallback value
      * if this model doesn't have the attribute.
