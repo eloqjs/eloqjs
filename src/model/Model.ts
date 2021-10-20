@@ -629,7 +629,13 @@ export class Model {
   public $set<T = any>(attribute: string | Element, value?: T): T | undefined {
     // Allow batch set of multiple attributes at once, ie. $set({...});
     if (isPlainObject(attribute)) {
-      for (const key in attribute) {
+      const fields = this.$fields()
+
+      for (const key in fields) {
+        if (!(key in attribute)) {
+          continue
+        }
+
         this.$set(key, attribute[key])
       }
 
@@ -785,9 +791,15 @@ export class Model {
 
       // We also need to sync all relationships that have been modified.
       // To do so, we loop through the attributes.
-      for (const key in attributes) {
+      const fields = this.$fields()
+
+      for (const key in fields) {
+        if (!(key in attributes)) {
+          continue
+        }
+
         // Get the field by attribute's key
-        const field = this.$getField(key)
+        const field = fields[key]
 
         // Then, we check if the field is a relationship.
         if (field.relation) {
