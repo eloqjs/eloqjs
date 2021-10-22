@@ -66,7 +66,10 @@ export function resolveRelation(
   }
 }
 
-function mutateHasOne(record: Model | Element, related: typeof Model): Item {
+export function mutateHasOne(
+  record: Model | Element,
+  related: typeof Model
+): Item {
   if (isModel(record)) {
     return record
   }
@@ -74,7 +77,7 @@ function mutateHasOne(record: Model | Element, related: typeof Model): Item {
   return record ? new related(record) : null
 }
 
-function mutateHasMany(
+export function mutateHasMany(
   records: Collection | Element[],
   related: typeof Model
 ): Collection {
