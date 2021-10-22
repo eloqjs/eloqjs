@@ -242,6 +242,76 @@ describe('Unit - Model – Relations', () => {
     expect(user.profile.data!.$.name).toBe('Joe')
   })
 
+  it('can set has one relation in empty state', () => {
+    class User extends BaseModel {
+      static entity = 'users'
+
+      id!: number
+      name!: string
+      profile!: Relations.HasOne<Profile>
+
+      static fields() {
+        return {
+          id: {
+            type: Number,
+            nullable: true
+          },
+          name: String,
+          profile: {
+            type: Profile,
+            relation: 'HasOne'
+          }
+        }
+      }
+    }
+
+    class Profile extends BaseModel {
+      static entity = 'profiles'
+
+      id!: number
+      user_id!: number
+      name!: string
+
+      static fields() {
+        return {
+          id: {
+            type: Number,
+            nullable: true
+          },
+          name: String,
+          user_id: {
+            type: Number,
+            nullable: true
+          }
+        }
+      }
+    }
+
+    const user = new User({
+      id: 1,
+      name: 'Joe Doe'
+    })
+
+    expect(user.id).toBe(1)
+    expect(user.name).toBe('Joe Doe')
+
+    expect(user.profile.data!).toBeNull()
+
+    user.$set({
+      name: 'John Doe',
+      profile: { id: 3, user_id: 1, name: 'John' }
+    })
+
+    expect(user.id).toBe(1)
+    expect(user.name).toBe('John Doe')
+    expect(user.$.name).toBe('Joe Doe')
+
+    expect(user.profile.data!).toBeInstanceOf(Profile)
+    expect(user.profile.data!.id).toBe(3)
+    expect(user.profile.data!.name).toBe('John')
+    expect(user.profile.data!.$.name).toBe('John')
+  })
+
   it('can set has many relation', () => {
     class Post extends BaseModel {
       static entity = 'posts'
