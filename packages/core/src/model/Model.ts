@@ -3,6 +3,7 @@ import defu from 'defu'
 import { Mutators } from '../attributes/Contracts'
 import { Collection } from '../collection/Collection'
 import { Field } from '../field/Field'
+import { mutateHasOne } from '../field/utils/relation'
 import * as Relations from '../relations'
 import { RelationEnum } from '../relations/RelationEnum'
 import { AttrMap } from '../support/AttrMap'
@@ -663,9 +664,12 @@ export class Model {
         case RelationEnum.HAS_ONE: {
           const model = previous.data as Item
 
-          if (!isNull(model)) {
+          if (isNull(model)) {
+            previous.data = mutateHasOne(value as Element, previous.model)
+          } else {
             model.$set(value as Element)
           }
+
           break
         }
         // It's the "Has Many" relation, so we access the collection and loop through its models,
