@@ -509,7 +509,7 @@ declare class Collection<M extends Model = Model> {
     /**
      * Get the constructor of this collection.
      */
-    private _self;
+    private _constructor;
     /**
      * Bootstrap this collection.
      */
@@ -810,7 +810,7 @@ declare class Model {
     /**
      * Get the constructor of this model.
      */
-    $self(): typeof Model;
+    $constructor(): typeof Model;
     /**
      * Registers a collection on this model. When this model is created it will
      * automatically be added to the collection. Similarly, when this model is

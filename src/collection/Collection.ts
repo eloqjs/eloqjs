@@ -157,7 +157,9 @@ export class Collection<M extends Model = Model> {
 
     // Objects should be converted to model instances first, then added.
     if (isPlainObject(model)) {
-      return this.add(this._self()._createModel<M>(model, this._options.model))
+      return this.add(
+        this._constructor()._createModel<M>(model, this._options.model)
+      )
     }
 
     // At this point, `model` should be an instance of Model.
@@ -777,7 +779,7 @@ export class Collection<M extends Model = Model> {
     // Objects should be used to find the model first, then removed.
     if (isPlainObject(model)) {
       const m = this.models.find(
-        (m) => m.$id === m.$self().getIdFromRecord(model)
+        (m) => m.$id === m.$constructor().getIdFromRecord(model)
       )
       return m ? this.remove(m) : undefined
     }
@@ -1349,7 +1351,7 @@ export class Collection<M extends Model = Model> {
   /**
    * Get the constructor of this collection.
    */
-  private _self(): typeof Collection {
+  private _constructor(): typeof Collection {
     return this.constructor as typeof Collection
   }
 

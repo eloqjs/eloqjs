@@ -223,7 +223,7 @@ class Collection {
       return model.map((m) => this.add(m)).filter((m) => !!m);
     }
     if (isPlainObject(model)) {
-      return this.add(this._self()._createModel(model, this._options.model));
+      return this.add(this._constructor()._createModel(model, this._options.model));
     }
     assert(isModel(model), [
       "Expected a model, plain object, or array of either."
@@ -445,7 +445,7 @@ class Collection {
       return model.map((m) => this.remove(m)).filter((m) => !!m);
     }
     if (isPlainObject(model)) {
-      const m = this.models.find((m2) => m2.$id === m2.$self().getIdFromRecord(model));
+      const m = this.models.find((m2) => m2.$id === m2.$constructor().getIdFromRecord(model));
       return m ? this.remove(m) : void 0;
     }
     assert(isModel(model), [
@@ -644,7 +644,7 @@ class Collection {
       ...options
     });
   }
-  _self() {
+  _constructor() {
     return this.constructor;
   }
   _boot() {
@@ -1218,19 +1218,19 @@ class Model {
     fill && this.$fill(attributes);
   }
   get $id() {
-    return this.$self().getIdFromRecord(this);
+    return this.$constructor().getIdFromRecord(this);
   }
   get $primaryKey() {
-    return this.$self().primaryKey;
+    return this.$constructor().primaryKey;
   }
   get $hasId() {
-    return this.$self().isValidId(this.$id);
+    return this.$constructor().isValidId(this.$id);
   }
   get $resource() {
-    return this.$self().getResource();
+    return this.$constructor().getResource();
   }
   get $entity() {
-    return this.$self().entity;
+    return this.$constructor().entity;
   }
   get $collections() {
     return Object.values(this._collections.toArray());
@@ -1359,7 +1359,7 @@ class Model {
       saveUnchanged: true
     };
   }
-  $self() {
+  $constructor() {
     return this.constructor;
   }
   $registerCollection(collection) {
@@ -1388,8 +1388,8 @@ class Model {
   }
   $setOptions(options) {
     const _options = {
-      ...this.$self()._getDefaultOptions(),
-      ...this.$self().options(),
+      ...this.$constructor()._getDefaultOptions(),
+      ...this.$constructor().options(),
       ...options
     };
     for (const key in _options) {
@@ -1407,7 +1407,7 @@ class Model {
     return (_a = this._options.get(key)) != null ? _a : fallback;
   }
   $fields() {
-    return this.$self().getFields();
+    return this.$constructor().getFields();
   }
   $getField(attribute) {
     const fields = this.$fields();
@@ -1438,7 +1438,9 @@ class Model {
       switch (field.relation) {
         case RelationEnum.HAS_ONE: {
           const model = previous.data;
-          if (!isNull(model)) {
+          if (isNull(model)) {
+            previous.data = mutateHasOne(value, previous.model);
+          } else {
             model.$set(value);
           }
           break;
@@ -1517,7 +1519,7 @@ class Model {
             case RelationEnum.HAS_MANY: {
               const collection = relation.data;
               for (const record of attributes[key]) {
-                const id = this.$self().getIdFromRecord(record);
+                const id = this.$constructor().getIdFromRecord(record);
                 if (isNull(id)) {
                   break;
                 }
@@ -1537,8 +1539,8 @@ class Model {
         }
       }
     } else {
-      const id = this.$self().parseId(attributes);
-      if (this.$self().isValidId(id)) {
+      const id = this.$constructor().parseId(attributes);
+      if (this.$constructor().isValidId(id)) {
         if (this.$hasId && id !== this.$id) {
           if (!this.$shouldAllowIdentifierOverwrite()) {
             assert(true, ["Not allowed to overwrite model ID."]);
@@ -1562,7 +1564,7 @@ class Model {
     const result = {};
     for (const key in fields) {
       const field = fields[key];
-      if (this.$self().readOnlyAttributes.includes(key)) {
+      if (this.$constructor().readOnlyAttributes.includes(key)) {
         continue;
       }
       if (field.relation) {
@@ -1679,7 +1681,7 @@ class Model {
   }
   $emit(event, context = {}) {
     const hooks = [];
-    hooks.push(...this.$self()._buildGlobalHooks(event));
+    hooks.push(...this.$constructor()._buildGlobalHooks(event));
     hooks.push(...this._buildLocalHooks(event));
     if (hooks.length === 0) {
       return;
@@ -1715,7 +1717,7 @@ class Model {
     return this.$toJson();
   }
   _boot(options) {
-    this.$self()._boot();
+    this.$constructor()._boot();
     this._generateUid();
     this.$setOptions(options);
   }
