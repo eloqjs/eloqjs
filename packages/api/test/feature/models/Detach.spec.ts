@@ -21,12 +21,12 @@ describe('Feature – Models – Detach', () => {
         return [200]
       })
 
-    await new User(Data.User).posts.detach(Data.Post.slug)
+    await new User(Data.User).posts.api().detach(Data.Post.slug)
   })
 
   it('should throw an error when parent model do not have an ID', async () => {
     const error = () => {
-      new User({ name: 'John Doe' }).posts.detach('my-awesome-post')
+      new User({ name: 'John Doe' }).posts.api().detach('my-awesome-post')
     }
 
     expect(error).toThrow(
