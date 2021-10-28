@@ -1,12 +1,12 @@
-import { Model } from '../model/Model'
-import { RelationEnum } from '../relations/RelationEnum'
+import { RelationEnum } from '../../relations/RelationEnum'
 import {
   isNull,
   isNullish,
   isPlainObject,
   isString,
   isUndefined
-} from '../support/Utils'
+} from '../../support/Utils'
+import { Model } from '../Model'
 import { resolveCast } from './utils/cast'
 import { getDefaultValue, resolveDefault } from './utils/default'
 import { resolveMutator } from './utils/mutator'

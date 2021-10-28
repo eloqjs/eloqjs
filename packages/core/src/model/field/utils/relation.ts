@@ -1,15 +1,15 @@
-import { Collection } from '../../collection/Collection'
-import { Model } from '../../model/Model'
-import { Relation } from '../../relations'
-import { RelationEnum } from '../../relations/RelationEnum'
+import { Collection } from '../../../collection/Collection'
+import { Relation } from '../../../relations'
+import { RelationEnum } from '../../../relations/RelationEnum'
 import {
   capitalize,
   isArray,
   isCollection,
   isModel,
   isModelClass
-} from '../../support/Utils'
-import { Element, Item } from '../../types/Data'
+} from '../../../support/Utils'
+import { Element, Item } from '../../../types/Data'
+import { Model } from '../../Model'
 
 type RelationTypeResolver = {
   key: string

@@ -1,4 +1,4 @@
-import { isFunction, isUndefined } from '../../support/Utils'
+import { isFunction, isUndefined } from '../../../support/Utils'
 
 type ValidatorResolver = {
   key: string
