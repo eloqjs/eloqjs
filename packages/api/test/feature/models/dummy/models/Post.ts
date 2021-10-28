@@ -1,4 +1,5 @@
-import { Relations } from '../../../../../src'
+import { Relations } from '@eloqjs/core'
+
 import BaseModel from '../../../../dummy/models/BaseModel'
 import User from './User'
 
@@ -14,10 +15,19 @@ export default class Post extends BaseModel {
 
   static fields() {
     return {
-      id: this.attr(null),
-      slug: this.string(''),
-      title: this.string(''),
-      user: this.hasOne(User)
+      id: {
+        type: Number,
+        nullable: true
+      },
+      slug: {
+        type: String,
+        default: ''
+      },
+      title: String,
+      user: {
+        type: User,
+        relation: 'HasOne'
+      }
     }
   }
 }
