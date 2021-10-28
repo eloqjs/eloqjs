@@ -1,5 +1,4 @@
-import { assertModel } from '@eloqjs/test-utils'
-
+import { assertModel } from '../../Helpers'
 import { axiosMock } from '../../setup'
 import * as Data from './dummy/data'
 import Post from './dummy/models/Post'

@@ -1,5 +1,4 @@
-import { assertCollection, assertInstanceOf } from '@eloqjs/test-utils'
-
+import { assertCollection, assertInstanceOf } from '../../Helpers'
 import { axiosMock } from '../../setup'
 import * as Data from './dummy/data'
 import User from './dummy/models/User'
