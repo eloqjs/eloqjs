@@ -98,5 +98,5 @@ export function relation(
  * Serialize given relation into empty json.
  */
 export function emptyRelation(relation: Item | Collection): [] | null {
-  return isArray(relation) ? [] : null
+  return isCollection(relation) ? [] : null
 }
