@@ -1,6 +1,5 @@
 import defu from 'defu'
 
-import { Mutators } from '../attributes/Contracts'
 import { Collection } from '../collection/Collection'
 import * as Relations from '../relations'
 import { RelationEnum } from '../relations/RelationEnum'
@@ -25,6 +24,7 @@ import {
   ValueOf
 } from '../support/Utils'
 import { Element, Item } from '../types/Data'
+import { Mutators } from './Contracts'
 import * as Contracts from './Contracts'
 import { Field } from './field/Field'
 import { mutateHasOne } from './field/utils/relation'
