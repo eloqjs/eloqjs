@@ -1,30 +1,19 @@
+export { Plugin, PluginComponents, PluginOptions } from '@eloqjs/core'
+
 import {
-  Attributes,
+  Collection,
   Model,
-  PluginComponents as PluginComponentsCore,
+  Plugin,
+  PluginComponents,
+  PluginOptions,
   Relations
 } from '@eloqjs/core'
 
-import { Model as ModelAPI } from '../model/Model'
-
-export interface PluginComponents extends PluginComponentsCore {
-  ModelAPI: typeof ModelAPI
-}
-
-export interface Options {
-  [key: string]: any
-}
-
-export interface Plugin {
-  [key: string]: any
-}
-
-export function use(plugin: Plugin, options: Options = {}): void {
+export function use(plugin: Plugin, options: PluginOptions = {}): void {
   const components: PluginComponents = {
     Model,
-    ModelAPI,
-    Attributes,
-    Relations
+    Relation: Relations.Relation,
+    Collection
   }
 
   plugin.install(components, options)

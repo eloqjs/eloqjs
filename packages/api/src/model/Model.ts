@@ -1,6 +1,5 @@
 import { Collection, Element, Item, Model as BaseModel } from '@eloqjs/core'
 
-import * as Attributes from '../attributes'
 import { Builder } from '../builder/Builder'
 import { HttpClientOptions } from '../httpclient/HttpClientOptions'
 import { FilterValue } from '../query/specs/FilterSpec'
@@ -308,20 +307,6 @@ export class Model extends BaseModel {
    */
   public static delete(id: string | number): DeletePromise {
     return this._api().delete(id)
-  }
-
-  /**
-   * Create a has one relationship.
-   */
-  protected static hasOne(related: typeof Model): Attributes.HasOne {
-    return new Attributes.HasOne(this, related)
-  }
-
-  /**
-   * Create a has many relationship.
-   */
-  protected static hasMany(related: typeof Model): Attributes.HasMany {
-    return new Attributes.HasMany(this, related)
   }
 
   /**
