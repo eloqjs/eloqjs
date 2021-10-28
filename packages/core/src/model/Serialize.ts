@@ -1,5 +1,5 @@
 import { Collection } from '../collection/Collection'
-import { isArray, isCollection, isNull, isObject } from '../support/Utils'
+import { isArray, isCollection, isNull, isPlainObject } from '../support/Utils'
 import { Element, Item } from '../types/Data'
 import { Model } from './Model'
 
@@ -39,7 +39,7 @@ export function value(v: unknown): unknown {
     return array(v)
   }
 
-  if (isObject(v)) {
+  if (isPlainObject(v)) {
     return object(v)
   }
 
