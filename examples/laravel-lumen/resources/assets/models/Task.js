@@ -1,4 +1,4 @@
-import { Model } from '@eloqjs/api'
+import { Model } from '@eloqjs/core'
 
 export default class Task extends Model {
   static get entity() {
@@ -17,9 +17,12 @@ export default class Task extends Model {
 
   static fields() {
     return {
-      id: this.attr(null),
-      name: this.string(''),
-      done: this.boolean(false)
+      id: Number,
+      name: String,
+      done: {
+        type: Boolean,
+        default: false
+      }
     }
   }
 }

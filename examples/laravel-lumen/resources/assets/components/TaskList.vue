@@ -63,7 +63,7 @@ export default {
   },
 
   async created () {
-    await Task.all(this.tasks).then(() => {
+    await Task.api().all(this.tasks).then(() => {
       this.$message.success('Fetched!')
     })
   },
@@ -82,7 +82,7 @@ export default {
 
   methods: {
     async onCreate () {
-      await this.task.$save().then((response) => {
+      await this.task.$api().save().then((response) => {
         this.task = new Task({}, this.tasks)
         this.$message.success('Task created successfully')
         return response.data

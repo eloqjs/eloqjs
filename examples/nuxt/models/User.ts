@@ -3,23 +3,29 @@ import Model from './Model'
 import Post from './Post'
 
 export default class User extends Model {
-  id!: number | null
+  id!: number
   firstName!: string
   lastName!: string
   email!: string
-  avatar!: string
+  avatar!: string | null
   posts!: Relations.HasMany<Post>
 
   static entity = 'users'
 
   static fields() {
     return {
-      id: this.attr(null),
-      firstName: this.string(''),
-      lastName: this.string(''),
-      email: this.string(''),
-      avatar: this.string(''),
-      posts: this.hasMany(Post)
+      id: Number,
+      firstName: String,
+      lastName: String,
+      email: String,
+      avatar: {
+        type: String,
+        nullable: true
+      },
+      posts: {
+        type: Post,
+        relation: 'HasMany'
+      }
     }
   }
 

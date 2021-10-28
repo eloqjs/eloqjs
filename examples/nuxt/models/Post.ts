@@ -3,12 +3,12 @@ import Model from './Model'
 import User from './User'
 
 export default class Post extends Model {
-  id!: number | null
+  id!: number
   title!: string
-  excerpt!: string
-  text!: string
-  image!: string
-  publishedAt!: string
+  excerpt!: string | null
+  text!: string | null
+  image!: string | null
+  publishedAt!: string | null
   slug!: string
   user!: Relations.HasOne<User>
 
@@ -18,22 +18,38 @@ export default class Post extends Model {
 
   static fields() {
     return {
-      id: this.attr(null),
-      title: this.string(''),
-      excerpt: this.string(''),
-      text: this.string(''),
-      image: this.string(''),
-      publishedAt: this.string(''),
-      slug: this.string(''),
-      user: this.hasOne(User)
-    }
-  }
-
-  static mutators() {
-    return {
-      publishedAt(value: string) {
-        return value ? new Date(value).toDateString() : value
+      id: Number,
+      title: String,
+      excerpt: {
+        type: String,
+        nullable: true
+      },
+      text: {
+        type: String,
+        nullable: true
+      },
+      image: {
+        type: String,
+        nullable: true
+      },
+      publishedAt: {
+        type: Date,
+        cast: true,
+        nullable: true
+      },
+      slug: String,
+      user: {
+        type: User,
+        relation: 'HasOne'
       }
     }
   }
+
+  // static mutators() {
+  //   return {
+  //     publishedAt(value: string) {
+  //       return value ? new Date(value).toDateString() : value
+  //     }
+  //   }
+  // }
 }
