@@ -650,6 +650,13 @@ export class Model {
     if (!defined) {
       this._registerAttribute(attribute)
       this._registerReference(attribute)
+    } else {
+      const beforeSet = this.$emit('beforeSet')
+
+      // Don't set if the hook return false.
+      if (beforeSet === false) {
+        return
+      }
     }
 
     // Current value of the attribute, or `undefined` if not set
