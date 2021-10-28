@@ -1,4 +1,4 @@
-import { RelationEnum } from '../../relations/RelationEnum'
+import { RelationEnum } from '../../../relations/RelationEnum'
 import {
   capitalize,
   isArray,
@@ -7,7 +7,7 @@ import {
   isNull,
   isNullish,
   isPlainObject
-} from '../../support/Utils'
+} from '../../../support/Utils'
 
 type TypeResolver = {
   key: string

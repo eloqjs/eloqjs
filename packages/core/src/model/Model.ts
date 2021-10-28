@@ -2,8 +2,6 @@ import defu from 'defu'
 
 import { Mutators } from '../attributes/Contracts'
 import { Collection } from '../collection/Collection'
-import { Field } from '../field/Field'
-import { mutateHasOne } from '../field/utils/relation'
 import * as Relations from '../relations'
 import { RelationEnum } from '../relations/RelationEnum'
 import { AttrMap } from '../support/AttrMap'
@@ -28,6 +26,8 @@ import {
 } from '../support/Utils'
 import { Element, Item } from '../types/Data'
 import * as Contracts from './Contracts'
+import { Field } from './field/Field'
+import { mutateHasOne } from './field/utils/relation'
 import * as Serialize from './Serialize'
 
 export type ModelFields = Record<string, Field>
