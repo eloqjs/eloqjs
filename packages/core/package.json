@@ -28,20 +28,20 @@
   ],
   "scripts": {
     "build": "yarn run clean && yarn run compile",
-    "watch": "yarn run compile --watch",
     "clean": "rimraf -rf ./dist",
     "compile": "siroc build",
+    "coverage": "jest --collect-coverage",
     "lint": "eslint --ext .ts,.js,.json .",
     "lint:fix": "yarn lint --fix",
     "test": "jest",
     "test:watch": "jest --watch",
-    "coverage": "jest --collect-coverage"
+    "watch": "yarn run compile --watch"
   },
   "dependencies": {
     "type-fest": "^2.5.2"
   },
   "publishConfig": {
-    "access": "restricted",
+    "access": "public",
     "registry": "https://npm.pkg.github.com/"
   }
 }
