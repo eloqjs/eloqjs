@@ -1,6 +1,6 @@
 {
   "name": "@eloqjs/api",
-  "version": "0.0.0-development",
+  "version": "0.0.0",
   "keywords": [
     "eloqjs",
     "eloquent",
@@ -38,7 +38,7 @@
     "defu": "^5.0.0"
   },
   "devDependencies": {
-    "@eloqjs/core": "0.0.0-development",
+    "@eloqjs/core": "0.0.0",
     "axios": "^0.24.0",
     "axios-mock-adapter": "^1.20.0"
   },
