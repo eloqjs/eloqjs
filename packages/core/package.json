@@ -6,7 +6,11 @@
     "eloquent",
     "orm"
   ],
-  "repository": "github:eloqjs/eloqjs",
+  "repository": {
+    "type": "git",
+    "url": "ssh://git@github.com/eloqjs/eloqjs.git",
+    "directory": "packages/core"
+  },
   "license": "MIT",
   "author": "João Pedro Antunes Silva",
   "exports": {
@@ -37,6 +41,7 @@
     "type-fest": "^2.5.2"
   },
   "publishConfig": {
-    "access": "public"
+    "access": "restricted",
+    "registry": "https://npm.pkg.github.com/"
   }
 }

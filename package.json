@@ -1,6 +1,9 @@
 {
   "name": "eloqjs",
   "private": true,
+  "publishConfig": {
+    "registry":"https://npm.pkg.github.com"
+  },
   "repository": "github:eloqjs/eloqjs",
   "workspaces": [
     "packages/*",
