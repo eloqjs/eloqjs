@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.0.1-alpha.3](https://github.com/eloqjs/eloqjs/compare/@eloqjs/api@0.0.1-alpha.3...@eloqjs/api@0.0.1-alpha.3) (2021-10-29)
+
+**Note:** Version bump only for package @eloqjs/api
+
+
+
+
+
 ## [0.0.1-alpha.3](https://github.com/eloqjs/eloqjs/compare/@eloqjs/api@0.0.1-alpha.2...@eloqjs/api@0.0.1-alpha.3) (2021-10-29)
 
 **Note:** Version bump only for package @eloqjs/api
