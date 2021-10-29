@@ -6,8 +6,7 @@
   },
   "repository": "github:eloqjs/eloqjs",
   "workspaces": [
-    "packages/*",
-    "examples/*"
+    "packages/*"
   ],
   "scripts": {
     "clean": "lerna run clean",

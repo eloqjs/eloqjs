@@ -6,8 +6,8 @@
     "lumen:watch": "yarn run lumen:dev --watch"
   },
   "dependencies": {
-    "@eloqjs/api": "0.0.0-development",
-    "@eloqjs/core": "0.0.0-development",
+    "@eloqjs/api": "file:../../packages/api",
+    "@eloqjs/core": "file:../../packages/core",
     "axios": "^0.24.0",
     "cross-env": "^5.2.0",
     "debounce": "^1.2.1",
