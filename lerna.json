@@ -2,14 +2,19 @@
   "packages": [
     "packages/*"
   ],
-  "version": "0.0.0",
+  "version": "0.0.1-alpha.4",
   "useWorkspaces": true,
   "npmClient": "yarn",
   "command": {
     "publish": {
       "conventionalCommits": true,
       "message": "chore(release): publish",
-      "allowBranch": ["master", "alpha", "beta", "next"]
+      "allowBranch": [
+        "master",
+        "alpha",
+        "beta",
+        "next"
+      ]
     }
   }
 }
