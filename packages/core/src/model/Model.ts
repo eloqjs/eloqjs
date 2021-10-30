@@ -684,7 +684,13 @@ export class Model {
         // then set attributes of each one of them.
         case RelationEnum.HAS_MANY: {
           const collection = previous.data as Collection
-          collection.set(value as Element | Element[])
+          let _value: unknown = value
+
+          if (_value instanceof Relations.Relation) {
+            _value = (_value.data as Collection).map((model) => model.$toJson())
+          }
+
+          collection.set(_value as Element | Element[])
           break
         }
       }
