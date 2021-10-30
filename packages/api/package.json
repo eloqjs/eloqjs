@@ -39,15 +39,12 @@
     "watch": "yarn run compile --watch"
   },
   "dependencies": {
+    "@eloqjs/core": "0.0.1-alpha.3",
     "defu": "^5.0.0"
   },
   "devDependencies": {
-    "@eloqjs/core": "^0.0.1-alpha.3",
     "axios": "^0.24.0",
     "axios-mock-adapter": "^1.20.0"
-  },
-  "peerDependencies": {
-    "@eloqjs/core": "^0.0.1-alpha.3"
   },
   "publishConfig": {
     "access": "public"
