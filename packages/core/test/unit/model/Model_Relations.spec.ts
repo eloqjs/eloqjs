@@ -397,6 +397,85 @@ describe('Unit - Model – Relations', () => {
     expect(post.comments.data.models[1].$.message).toBe('bar')
   })
 
+  it('can set an empty has many relation', () => {
+    class Post extends BaseModel {
+      static entity = 'posts'
+
+      id!: number
+      title!: string
+      comments!: Relations.HasMany<Comment>
+
+      static fields() {
+        return {
+          id: {
+            type: Number,
+            nullable: true
+          },
+          title: String,
+          comments: {
+            type: Comment,
+            relation: 'HasMany'
+          }
+        }
+      }
+    }
+
+    class Comment extends BaseModel {
+      static entity = 'comments'
+
+      id!: number
+      message!: string
+      post_id!: number
+
+      static fields() {
+        return {
+          id: {
+            type: Number,
+            nullable: true
+          },
+          message: String,
+          post_id: {
+            type: Number,
+            nullable: true
+          }
+        }
+      }
+    }
+
+    const post = new Post({
+      id: 1,
+      title: 'My post',
+      comments: [
+        { id: 1, message: 'foo', post_id: 1 },
+        { id: 2, message: 'bar', post_id: 1 }
+      ]
+    })
+
+    expect(post.id).toBe(1)
+    expect(post.title).toBe('My post')
+
+    assertInstanceOf(post.comments.data, Comment)
+    expect(post.comments.data).toBeInstanceOf(Collection)
+    expect(post.comments.data.models).toHaveLength(2)
+    expect(post.comments.data.models[0].id).toBe(1)
+    expect(post.comments.data.models[0].message).toBe('foo')
+    expect(post.comments.data.models[1].id).toBe(2)
+    expect(post.comments.data.models[1].message).toBe('bar')
+
+    post.$fill({
+      title: 'My awesome post'
+    })
+
+    expect(post.id).toBe(1)
+    expect(post.title).toBe('My awesome post')
+    expect(post.comments.data.models[0].id).toBe(1)
+    expect(post.comments.data.models[0].message).toBe('foo')
+    expect(post.comments.data.models[0].$.message).toBe('foo')
+    expect(post.comments.data.models[1].id).toBe(2)
+    expect(post.comments.data.models[1].message).toBe('bar')
+    expect(post.comments.data.models[1].$.message).toBe('bar')
+  })
+
   it('can update has one relation', () => {
     class User extends BaseModel {
       static entity = 'users'
