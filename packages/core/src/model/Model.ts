@@ -172,7 +172,8 @@ export class Model {
   /**
    * The unmutated relationships of the record.
    */
-  private readonly _relationships: AttrMap<Relations.Relation> = new AttrMap<Relations.Relation>()
+  private readonly _relationships: AttrMap<Relations.Relation> =
+    new AttrMap<Relations.Relation>()
 
   /**
    * The options of the record.
@@ -576,7 +577,7 @@ export class Model {
    * Get the model options.
    */
   public $getOptions(): ModelOptions {
-    return (this._options.toArray() as unknown) as ModelOptions
+    return this._options.toArray() as unknown as ModelOptions
   }
 
   /**
@@ -651,7 +652,7 @@ export class Model {
       this._registerAttribute(attribute)
       this._registerReference(attribute)
     } else {
-      const beforeSet = this.$emit('beforeSet')
+      const beforeSet = this.$emit('beforeSet', { attribute, value })
 
       // Don't set if the hook return false.
       if (beforeSet === false) {
