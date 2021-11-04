@@ -778,6 +778,11 @@ export class Model {
         value = this._getAttribute(key)
       }
 
+      // We must get the data from relationships
+      if (field.relation && value instanceof Relations.Relation) {
+        value = value.data
+      }
+
       this.$set(key, value)
     }
   }
