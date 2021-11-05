@@ -3,6 +3,19 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.0.1-alpha.5](https://github.com/eloqjs/eloqjs/compare/v0.0.1-alpha.4...v0.0.1-alpha.5) (2021-11-05)
+
+
+### Bug Fixes
+
+* **core-collection:** accept adding models from another collection ([f2aabe2](https://github.com/eloqjs/eloqjs/commit/f2aabe26a229ad27ad6078c427102c5d3b2a9019))
+* **core-model:** correctly cast dates ([435be63](https://github.com/eloqjs/eloqjs/commit/435be635fa45b002e390ca67b31c05812ff67f61))
+* **core-model:** correctly get relationship data in `$fill` ([0fc1469](https://github.com/eloqjs/eloqjs/commit/0fc1469d3c89f3793695fbd15afaafd691395763))
+
+
+
+
+
 ## 0.0.1-alpha.4 (2021-10-30)
 
 

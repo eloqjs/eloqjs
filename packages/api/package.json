@@ -1,6 +1,6 @@
 {
   "name": "@eloqjs/api",
-  "version": "0.0.1-alpha.4",
+  "version": "0.0.1-alpha.5",
   "keywords": [
     "eloqjs",
     "eloquent",
@@ -39,7 +39,7 @@
     "watch": "yarn run compile --watch"
   },
   "dependencies": {
-    "@eloqjs/core": "0.0.1-alpha.4",
+    "@eloqjs/core": "0.0.1-alpha.5",
     "defu": "^5.0.0"
   },
   "devDependencies": {
