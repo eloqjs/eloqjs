@@ -4,6 +4,7 @@ import {
   assert,
   forceArray,
   isArray,
+  isCollection,
   isEmpty,
   isFunction,
   isModel,
@@ -123,7 +124,7 @@ export class Collection<M extends Model = Model> {
    *
    * @returns The added model or array of added models.
    */
-  public add(models: (M | Element)[]): M[]
+  public add(models: (M | Element)[] | Collection): M[]
 
   /**
    * Add a {@link Model} to this {@link Collection}.
@@ -149,9 +150,11 @@ export class Collection<M extends Model = Model> {
    *
    * @returns The added model or array of added models.
    */
-  public add(model: M | Element | (M | Element)[]): M | M[] | void {
+  public add(
+    model: M | Element | (M | Element)[] | Collection
+  ): M | M[] | void {
     // If given an array, assume an array of models and add them all.
-    if (isArray(model)) {
+    if (isCollection(model) || isArray(model)) {
       return model.map((m) => this.add(m)).filter((m): m is M => !!m)
     }
 
@@ -706,7 +709,7 @@ export class Collection<M extends Model = Model> {
   ): U | undefined {
     // Use the first model as the initial value if an initial was not given.
     if (arguments.length === 1) {
-      initial = ((this.first() || undefined) as unknown) as U | undefined
+      initial = (this.first() || undefined) as unknown as U | undefined
     }
 
     return this.models.reduce(iteratee, initial)
@@ -1050,7 +1053,7 @@ export class Collection<M extends Model = Model> {
       if (isFunction(key)) {
         value = key(model)
       } else {
-        value = (model[key as string] as unknown) as string | number
+        value = model[key as string] as unknown as string | number
       }
 
       total += isString(value) ? parseFloat(value) : value

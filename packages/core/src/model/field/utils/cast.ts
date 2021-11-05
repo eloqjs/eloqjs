@@ -32,6 +32,10 @@ export function resolveCast({ key, type, cast }: CastResolver): any {
 
 function castValue(cast: any, value: any) {
   if (isClass(cast) || cast === Date) {
+    if (value instanceof Date) {
+      return value
+    }
+
     return new cast(value)
   }
 
