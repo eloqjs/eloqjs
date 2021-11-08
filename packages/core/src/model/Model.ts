@@ -918,8 +918,8 @@ export class Model {
     for (const key in fields) {
       const field = fields[key]
 
-      // Exclude read-only attributes.
-      if (field.readOnly) {
+      // Exclude read-only attributes for requests.
+      if (field.readOnly && _option.isRequest) {
         continue
       }
 
