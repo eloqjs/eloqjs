@@ -954,13 +954,10 @@ export class Model {
   }
 
   /**
-   * Serialize this model, or the given model, as POJO.
+   * Serialize this model as POJO.
    */
-  public $toJson(
-    model?: Model,
-    options: Serialize.SerializeOptions = {}
-  ): Element {
-    return (model ?? this).$serialize(options)
+  public $toJson(options: Serialize.SerializeOptions = {}): Element {
+    return this.$serialize(options)
   }
 
   /**
