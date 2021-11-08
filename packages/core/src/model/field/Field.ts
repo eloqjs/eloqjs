@@ -11,6 +11,7 @@ import { resolveCast } from './utils/cast'
 import { getDefaultValue, resolveDefault } from './utils/default'
 import { resolveMutator } from './utils/mutator'
 import { resolveNullable } from './utils/nullable'
+import { resolveReadOnly } from './utils/readonly'
 import { resolveRelation, resolveRelationType } from './utils/relation'
 import { resolveRequired } from './utils/required'
 import {
@@ -32,6 +33,7 @@ export class Field {
   public validator: (value: any) => boolean = () => true
   public cast: any
   public mutator: (value: any) => any = (value: any) => value
+  public readOnly: boolean = false
 
   public constructor(key: string, field: any, model: typeof Model) {
     if (!isString(key)) {
@@ -86,6 +88,9 @@ export class Field {
       key: this.key,
       type: this.type,
       cast: this.relation ? true : field.cast
+    })
+    this.readOnly = resolveReadOnly({
+      readOnly: field.readOnly
     })
   }
 

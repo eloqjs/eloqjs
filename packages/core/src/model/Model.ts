@@ -89,12 +89,6 @@ export class Model {
   public static primaryKey: string = 'id'
 
   /**
-   * Attributes that should be read-only.
-   * These attributes will be excluded from the payload when saving.
-   */
-  protected static readOnlyAttributes: string[] = []
-
-  /**
    * The schema for the model. It contains the result of the `fields`
    * method or the attributes defined by decorators.
    */
@@ -925,7 +919,7 @@ export class Model {
       const field = fields[key]
 
       // Exclude read-only attributes.
-      if (this.$constructor().readOnlyAttributes.includes(key)) {
+      if (field.readOnly) {
         continue
       }
 
