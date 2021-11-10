@@ -850,8 +850,14 @@ export class Model {
             // then sync each one of them.
             case RelationEnum.HAS_MANY: {
               const collection = relation.data as Collection
+              let attribute = attributes[key]
 
-              for (const record of attributes[key]) {
+              // If the given value was a relation, then get its collection
+              if (attribute instanceof Relations.Relation) {
+                attribute = attribute.data
+              }
+
+              for (const record of attribute) {
                 // Get the ID from model or record
                 const id = this.$constructor().getIdFromRecord(record)
 
