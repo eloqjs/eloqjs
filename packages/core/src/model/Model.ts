@@ -89,12 +89,6 @@ export class Model {
   public static primaryKey: string = 'id'
 
   /**
-   * Attributes that should be read-only.
-   * These attributes will be excluded from the payload when saving.
-   */
-  protected static readOnlyAttributes: string[] = []
-
-  /**
    * The schema for the model. It contains the result of the `fields`
    * method or the attributes defined by decorators.
    */
@@ -629,6 +623,11 @@ export class Model {
    * @returns The value that was set.
    */
   public $set<T = any>(attribute: string | Element, value?: T): T | undefined {
+    // If the given attributes is a model, then serialize it.
+    if (isModel(attribute)) {
+      attribute = attribute.$toJson()
+    }
+
     // Allow batch set of multiple attributes at once, ie. $set({...});
     if (isPlainObject(attribute)) {
       const fields = this.$fields()
@@ -794,6 +793,11 @@ export class Model {
     attributes: Element | string | number | null | undefined = undefined,
     options: ModelOptions = {}
   ): void {
+    // If the given attributes is a model, then serialize it.
+    if (isModel(attributes)) {
+      attributes = attributes.$toJson()
+    }
+
     // No content means we don't want to update the model at all.
     // The attributes that we passed in the request should now be considered
     // the source of truth, so we should update the reference attributes here.
@@ -846,8 +850,14 @@ export class Model {
             // then sync each one of them.
             case RelationEnum.HAS_MANY: {
               const collection = relation.data as Collection
+              let attribute = attributes[key]
 
-              for (const record of attributes[key]) {
+              // If the given value was a relation, then get its collection
+              if (attribute instanceof Relations.Relation) {
+                attribute = attribute.data
+              }
+
+              for (const record of attribute) {
                 // Get the ID from model or record
                 const id = this.$constructor().getIdFromRecord(record)
 
@@ -924,8 +934,8 @@ export class Model {
     for (const key in fields) {
       const field = fields[key]
 
-      // Exclude read-only attributes.
-      if (this.$constructor().readOnlyAttributes.includes(key)) {
+      // Exclude read-only attributes for requests.
+      if (field.readOnly && _option.isRequest) {
         continue
       }
 
@@ -960,13 +970,10 @@ export class Model {
   }
 
   /**
-   * Serialize this model, or the given model, as POJO.
+   * Serialize this model as POJO.
    */
-  public $toJson(
-    model?: Model,
-    options: Serialize.SerializeOptions = {}
-  ): Element {
-    return (model ?? this).$serialize(options)
+  public $toJson(options: Serialize.SerializeOptions = {}): Element {
+    return this.$serialize(options)
   }
 
   /**
