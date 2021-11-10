@@ -623,6 +623,11 @@ export class Model {
    * @returns The value that was set.
    */
   public $set<T = any>(attribute: string | Element, value?: T): T | undefined {
+    // If the given attributes is a model, then serialize it.
+    if (isModel(attribute)) {
+      attribute = attribute.$toJson()
+    }
+
     // Allow batch set of multiple attributes at once, ie. $set({...});
     if (isPlainObject(attribute)) {
       const fields = this.$fields()
@@ -788,6 +793,11 @@ export class Model {
     attributes: Element | string | number | null | undefined = undefined,
     options: ModelOptions = {}
   ): void {
+    // If the given attributes is a model, then serialize it.
+    if (isModel(attributes)) {
+      attributes = attributes.$toJson()
+    }
+
     // No content means we don't want to update the model at all.
     // The attributes that we passed in the request should now be considered
     // the source of truth, so we should update the reference attributes here.
