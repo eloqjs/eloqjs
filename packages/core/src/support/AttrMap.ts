@@ -1,5 +1,6 @@
+import { Relation } from '../relations'
 import { Map } from './Map'
-import { forceArray, isEmpty, isEqual } from './Utils'
+import { forceArray, isCollection, isEmpty, isEqual, isModel } from './Utils'
 
 export class AttrMap<T> extends Map<T> {
   protected reference: Record<string, T> = {}
@@ -89,7 +90,14 @@ export class AttrMap<T> extends Map<T> {
     const dirty: Record<string, T> = {}
 
     for (const key in this.data) {
-      if (!isEqual(this.$get(key), this.get(key))) {
+      const reference = this.$get(key)
+      const value = this.get(key)
+      const isDirty =
+        value instanceof Relation
+          ? this._isRelationDirty(value)
+          : !isEqual(value, reference)
+
+      if (isDirty) {
         dirty[key] = this.get(key)
       }
     }
@@ -140,5 +148,17 @@ export class AttrMap<T> extends Map<T> {
     if (!(key in this.reference)) {
       this.reference[key] = value
     }
+  }
+
+  private _isRelationDirty(relation: Relation) {
+    if (isCollection(relation.data)) {
+      return relation.data.models.some((model) => model.$getDirty())
+    }
+
+    if (isModel(relation.data)) {
+      return relation.data.$isDirty()
+    }
+
+    return false
   }
 }
