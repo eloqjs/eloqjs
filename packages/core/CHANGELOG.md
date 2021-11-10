@@ -3,6 +3,26 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.0.1-alpha.6](https://github.com/eloqjs/eloqjs/compare/v0.0.1-alpha.5...v0.0.1-alpha.6) (2021-11-10)
+
+
+### Bug Fixes
+
+* **core-model:** correctly update "has many" relation ([bc76eef](https://github.com/eloqjs/eloqjs/commit/bc76eefae586c176e4698a696f0aa17ba451d71d))
+* **core-model:** only exclude read-only attributes for requests ([07d4e55](https://github.com/eloqjs/eloqjs/commit/07d4e55f5428269f2e2240cbd8224e415a28745c))
+* **core-support:** isDirty should also check relationships ([ae1efbe](https://github.com/eloqjs/eloqjs/commit/ae1efbe965388d3a6939ed8a3a5e69f6761728e0))
+
+
+### Features
+
+* **core-model:** improve readOnly configuration ([f125cb1](https://github.com/eloqjs/eloqjs/commit/f125cb1ed6ae0530f385669c8a336033ddde32b6))
+* **core-model:** simplify `$toJson` ([f5f1537](https://github.com/eloqjs/eloqjs/commit/f5f153792f0023d0390f4d2c60cb7aa538283379))
+* **core-model:** support setting attributes by passing a model ([7d7aa1f](https://github.com/eloqjs/eloqjs/commit/7d7aa1f6b99d8e6aa71f985972af680108eebdc8))
+
+
+
+
+
 ## [0.0.1-alpha.5](https://github.com/eloqjs/eloqjs/compare/v0.0.1-alpha.4...v0.0.1-alpha.5) (2021-11-05)
 
 
