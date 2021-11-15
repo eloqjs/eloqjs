@@ -1189,7 +1189,7 @@ export class Collection<M extends Model = Model> {
   /**
    * Filters the collection by a given key / value pair.
    */
-  public where<V extends unknown>(
+  public where<V>(
     key: keyof ModelReference<M> | string,
     operator?: V | Operator,
     value?: V
@@ -1333,7 +1333,7 @@ export class Collection<M extends Model = Model> {
     this.models = []
 
     // Notify each model that it has been removed from this collection.
-    models.every((model) => {
+    models.forEach((model) => {
       this.onRemove(model)
     })
   }
