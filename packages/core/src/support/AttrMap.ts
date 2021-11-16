@@ -1,6 +1,16 @@
 import { Relation } from '../relations'
 import { Map } from './Map'
-import { forceArray, isCollection, isEmpty, isEqual, isModel } from './Utils'
+import {
+  clone,
+  forceArray,
+  isArray,
+  isCollection,
+  isEmpty,
+  isEqual,
+  isModel,
+  isPlainObject,
+  isString
+} from './Utils'
 
 export class AttrMap<T> extends Map<T> {
   protected reference: Record<string, T> = {}
@@ -146,7 +156,20 @@ export class AttrMap<T> extends Map<T> {
 
   private _setReference(key: string, value: T): void {
     if (!(key in this.reference)) {
-      this.reference[key] = value
+      if (isArray(value) || isPlainObject(value)) {
+        this.reference[key] = clone(value, (_key, value) => {
+          const dateRegex = /^\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\d.\d\d\dZ$/
+
+          // Revive date objects
+          if (isString(value) && dateRegex.test(value)) {
+            return new Date(value)
+          }
+
+          return value
+        })
+      } else {
+        this.reference[key] = value
+      }
     }
   }
 
