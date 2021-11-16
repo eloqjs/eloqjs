@@ -3,6 +3,24 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.0.1-alpha.7](https://github.com/eloqjs/eloqjs/compare/v0.0.1-alpha.6...v0.0.1-alpha.7) (2021-11-16)
+
+
+### Bug Fixes
+
+* **core-collection:** cast operator as unknown ([5410b92](https://github.com/eloqjs/eloqjs/commit/5410b926368e7424e26345bbce76ed8144dd4d44))
+* **core-collection:** correctly clear models ([c7db717](https://github.com/eloqjs/eloqjs/commit/c7db717b6470fe5a899b0e257809ca54c023cbd4))
+* **core-support:** create a clone of the value when setting reference ([c56c848](https://github.com/eloqjs/eloqjs/commit/c56c848f55e98f4e7428c8835ae34e807f9cd7aa))
+
+
+### Features
+
+* **core-support:** add `clone` util ([2857481](https://github.com/eloqjs/eloqjs/commit/2857481af31a49e1b4fb03c74b3cadf5a0bb630b))
+
+
+
+
+
 ## [0.0.1-alpha.6](https://github.com/eloqjs/eloqjs/compare/v0.0.1-alpha.5...v0.0.1-alpha.6) (2021-11-10)
 
 
