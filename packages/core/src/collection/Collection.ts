@@ -1199,11 +1199,11 @@ export class Collection<M extends Model = Model> {
     let comparisonOperator = operator
     let comparisonValue = value
 
-    if (operator === undefined || operator === true) {
+    if (operator === undefined || (operator as unknown) === true) {
       collection.models = collection.models.filter(
         (model) => model[key as string]
       )
-    } else if (operator === false) {
+    } else if ((operator as unknown) === false) {
       collection.models = collection.models.filter(
         (model) => !model[key as string]
       )
