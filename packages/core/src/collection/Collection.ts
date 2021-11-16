@@ -1189,7 +1189,7 @@ export class Collection<M extends Model = Model> {
   /**
    * Filters the collection by a given key / value pair.
    */
-  public where<V extends unknown>(
+  public where<V>(
     key: keyof ModelReference<M> | string,
     operator?: V | Operator,
     value?: V
@@ -1199,11 +1199,11 @@ export class Collection<M extends Model = Model> {
     let comparisonOperator = operator
     let comparisonValue = value
 
-    if (operator === undefined || operator === true) {
+    if (operator === undefined || (operator as unknown) === true) {
       collection.models = collection.models.filter(
         (model) => model[key as string]
       )
-    } else if (operator === false) {
+    } else if ((operator as unknown) === false) {
       collection.models = collection.models.filter(
         (model) => !model[key as string]
       )
@@ -1333,7 +1333,7 @@ export class Collection<M extends Model = Model> {
     this.models = []
 
     // Notify each model that it has been removed from this collection.
-    models.every((model) => {
+    models.forEach((model) => {
       this.onRemove(model)
     })
   }
