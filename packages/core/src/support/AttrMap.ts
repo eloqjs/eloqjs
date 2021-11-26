@@ -175,7 +175,7 @@ export class AttrMap<T> extends Map<T> {
 
   private _isRelationDirty(relation: Relation) {
     if (isCollection(relation.data)) {
-      return relation.data.models.some((model) => model.$getDirty())
+      return relation.data.models.some((model) => model.$isDirty())
     }
 
     if (isModel(relation.data)) {
