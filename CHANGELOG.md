@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.0.1-alpha.8](https://github.com/eloqjs/eloqjs/compare/v0.0.1-alpha.7...v0.0.1-alpha.8) (2021-11-26)
+
+
+### Bug Fixes
+
+* **core-support:** fix `isRelationDirty` method ([b9b9a2a](https://github.com/eloqjs/eloqjs/commit/b9b9a2a3c6f97ef385ea27ee1338517fc2298761))
+
+
+
+
+
 ## [0.0.1-alpha.7](https://github.com/eloqjs/eloqjs/compare/v0.0.1-alpha.6...v0.0.1-alpha.7) (2021-11-16)
 
 
