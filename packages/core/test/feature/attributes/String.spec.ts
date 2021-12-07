@@ -5,8 +5,7 @@ describe('Feature – Attributes – String', () => {
     { id: 1 },
     { id: 2, str: 'value' },
     { id: 3, str: 1 },
-    { id: 4, str: true },
-    { id: 5, str: null }
+    { id: 4, str: true }
   ]
 
   it('should cast the value to `String`', async () => {
@@ -18,8 +17,15 @@ describe('Feature – Attributes – String', () => {
 
       static fields() {
         return {
-          id: this.attr(null),
-          str: this.string('default')
+          id: {
+            type: Number,
+            nullable: true
+          },
+          str: {
+            type: String,
+            cast: true,
+            default: 'default'
+          }
         }
       }
     }
@@ -34,7 +40,6 @@ describe('Feature – Attributes – String', () => {
     expect(users[1].str).toBe('value')
     expect(users[2].str).toBe('1')
     expect(users[3].str).toBe('true')
-    expect(users[4].str).toBe('null')
   })
 
   it('should accept `null` when there is `nullable` chain', async () => {
@@ -46,15 +51,23 @@ describe('Feature – Attributes – String', () => {
 
       static fields() {
         return {
-          id: this.attr(null),
-          str: this.string('default').nullable()
+          id: {
+            type: Number,
+            nullable: true
+          },
+          str: {
+            type: String,
+            cast: true,
+            nullable: true,
+            default: 'default'
+          }
         }
       }
     }
 
     const users = []
 
-    for (const record of data) {
+    for (const record of [...data, { id: 5, str: null }]) {
       users.push(new User(record))
     }
 

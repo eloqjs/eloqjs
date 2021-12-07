@@ -11,7 +11,7 @@ import {
   SortSpec
 } from '../query/specs'
 import { FilterSpec, FilterValue } from '../query/specs/FilterSpec'
-import { OptionSpec, OptionValue } from '../query/specs/OptionSpec'
+import { ParamSpec, ParamValue } from '../query/specs/ParamSpec'
 import { Request } from '../request/Request'
 import { RequestMethod } from '../request/RequestMethod'
 import { RequestOperation } from '../request/RequestOperation'
@@ -24,9 +24,11 @@ import {
   forceArray,
   isArray,
   isObject,
+  isPlainObject,
   isString,
   isUndefined
 } from '../support/Utils'
+import { isUnallowedValue, mapQuery } from './MapQuery'
 import { SortDirection } from './SortDirection'
 
 export class Builder<M extends Model = Model, S extends boolean = false> {
@@ -133,11 +135,37 @@ export class Builder<M extends Model = Model, S extends boolean = false> {
   /**
    * Add a basic "where" clause to the query.
    *
+   * @param {object} query - The query to filter.
+   */
+  public where(query: Record<string, any>): this
+
+  /**
+   * Add a basic "where" clause to the query.
+   *
    * @param {string | string[]} attribute - The attribute being tested.
    * @param {string} value - The value the attribute should be equal.
    */
-  public where(attribute: string | string[], value: FilterValue): this {
-    assert(!isUndefined(attribute) && !isUndefined(value), [
+  public where(attribute: string | string[], value: FilterValue): this
+
+  /**
+   * @internal
+   */
+  public where(
+    attribute: string | string[] | Record<string, any>,
+    value?: FilterValue
+  ): this
+
+  /**
+   * Add a basic "where" clause to the query.
+   *
+   * @param {string | string[]} attribute - The attribute being tested.
+   * @param {string} value - The value the attribute should be equal.
+   */
+  public where(
+    attribute: string | string[] | Record<string, any>,
+    value?: FilterValue
+  ): this {
+    assert(!isUndefined(attribute), [
       'The `attribute` and `value` of `where` are required.'
     ])
 
@@ -145,7 +173,15 @@ export class Builder<M extends Model = Model, S extends boolean = false> {
       'The `value` of `where` must be primitive.'
     ])
 
-    this._query.addFilter(new FilterSpec(attribute, value))
+    if (isPlainObject(attribute)) {
+      for (const [attr, val] of mapQuery(attribute)) {
+        this.where(attr, val)
+      }
+    } else if (value) {
+      this._query.addFilter(new FilterSpec(attribute, value))
+    } else {
+      assert(!isUndefined(value), ['The `value` of `where` is required.'])
+    }
 
     return this
   }
@@ -153,20 +189,54 @@ export class Builder<M extends Model = Model, S extends boolean = false> {
   /**
    * Add a "where in" clause to the query.
    *
+   * @param {object} query - The query to filter.
+   */
+  public whereIn(query: Record<string, any>): this
+
+  /**
+   * Add a "where in" clause to the query.
+   *
    * @param {string | string[]} attribute - The attribute being tested.
    * @param {string} values - The values the attribute should be equal.
    */
-  public whereIn(attribute: string | string[], values: FilterValue[]): this {
-    assert(!isUndefined(attribute) && !isUndefined(values), [
+  public whereIn(attribute: string | string[], values: FilterValue[]): this
+
+  /**
+   * @internal
+   */
+  public whereIn(
+    attribute: string | string[] | Record<string, any>,
+    values?: FilterValue[]
+  ): this
+
+  /**
+   * Add a "where in" clause to the query.
+   *
+   * @param {string | string[]} attribute - The attribute being tested.
+   * @param {string} values - The values the attribute should be equal.
+   */
+  public whereIn(
+    attribute: string | string[] | Record<string, any>,
+    values?: FilterValue[]
+  ): this {
+    assert(!isUndefined(attribute), [
       'The `attribute` and `values` of `whereIn` are required.'
     ])
 
-    assert(isArray(values), [
+    assert(isUndefined(values) || isArray(values), [
       'The `value` of `whereIn` must be an array of primitives.'
     ])
 
-    for (const value of values) {
-      this._query.addFilter(new FilterSpec(attribute, value))
+    if (isPlainObject(attribute)) {
+      for (const [attr, val] of mapQuery(attribute)) {
+        this.whereIn(attr, val)
+      }
+    } else if (values) {
+      for (const value of values) {
+        this._query.addFilter(new FilterSpec(attribute, value))
+      }
+    } else {
+      assert(!isUndefined(values), ['The `values` of `whereIn` is required.'])
     }
 
     return this
@@ -174,6 +244,7 @@ export class Builder<M extends Model = Model, S extends boolean = false> {
 
   /**
    * Specify a relation that should be eager loaded in the returned object graph.
+   *
    * @param {string | string[]} relationship - The relationship that should be eager loaded.
    */
   public with(relationship: string | string[]): this {
@@ -184,6 +255,15 @@ export class Builder<M extends Model = Model, S extends boolean = false> {
     }
 
     return this
+  }
+
+  /**
+   * Alias for the "with" method.
+   *
+   * @param {string | string[]} relationship - The relationship that should be eager loaded.
+   */
+  public include(relationship: string | string[]): this {
+    return this.with(relationship)
   }
 
   /**
@@ -240,24 +320,57 @@ export class Builder<M extends Model = Model, S extends boolean = false> {
   /**
    * Specify an attribute to sort by and the direction to sort in.
    *
-   * @param {string} attribute - The attribute to sort by.
+   * @param {object} query - The query attributes to sort.
+   */
+  public orderBy(query: Record<string, 'asc' | 'desc'>): this
+
+  /**
+   * Specify an attribute to sort by and the direction to sort in.
+   *
+   * @param {string | string[]} attribute - The attribute to sort by.
    * @param {string} [direction] - The direction to sort in.
    */
-  public orderBy(attribute: string, direction?: 'asc' | 'desc'): this {
-    let _direction: typeof direction | SortDirection = direction
+  public orderBy(attribute: string | string[], direction?: 'asc' | 'desc'): this
 
-    switch (_direction) {
-      default:
-      case 'asc':
-        _direction = SortDirection.ASC
-        break
-      case 'desc':
-        _direction = SortDirection.DESC
+  /**
+   * @internal
+   */
+  public orderBy(
+    attribute: string | string[] | Record<string, 'asc' | 'desc'>,
+    direction?: 'asc' | 'desc'
+  ): this
+
+  public orderBy(
+    attribute: string | string[] | Record<string, 'asc' | 'desc'>,
+    direction?: 'asc' | 'desc'
+  ): this {
+    const addSort = (attributes: string | string[], dir?: boolean) => {
+      attributes = forceArray(attributes)
+
+      for (const attr of attributes) {
+        this._query.addSort(new SortSpec(attr, dir))
+      }
+    }
+    const resolveDirection = (dir?: 'asc' | 'desc') => {
+      switch (dir) {
+        default:
+          return undefined
+        case SortDirection.ASC:
+          return true
+        case SortDirection.DESC:
+          return false
+      }
     }
 
-    this._query.addSort(
-      new SortSpec(attribute, _direction === SortDirection.ASC)
-    )
+    if (isString(attribute) || isArray(attribute)) {
+      addSort(attribute, resolveDirection(direction))
+    }
+
+    if (isPlainObject(attribute)) {
+      for (const [attr, dir] of Object.entries(attribute)) {
+        addSort(attr, resolveDirection(dir))
+      }
+    }
 
     return this
   }
@@ -265,30 +378,55 @@ export class Builder<M extends Model = Model, S extends boolean = false> {
   /**
    * Specify a custom query parameter to add to the resulting HTTP request URL.
    *
-   * @param {string} parameter - The name of the parameter, e.g. 'bar' in "http://foo.com?bar=baz"
-   * @param {OptionValue | OptionValue[]} value - The value of the parameter, e.g. 'baz' in "http://foo.com?bar=baz"
+   * @param {object} query - The custom query parameters, e.g. '{ bar: 'baz }' in "http://foo.com?bar=baz"
    */
-  public option(
-    parameter: string | Record<string, OptionValue | OptionValue[]>,
-    value?: OptionValue | OptionValue[]
+  public params(query: Record<string, any>): this
+
+  /**
+   * Specify a custom query parameter to add to the resulting HTTP request URL.
+   *
+   * @param {string} parameter - The name of the parameter, e.g. 'bar' in "http://foo.com?bar=baz"
+   * @param {ParamValue | ParamValue[]} value - The value of the parameter, e.g. 'baz' in "http://foo.com?bar=baz"
+   */
+  public params(
+    parameter: string | string[],
+    value: ParamValue | ParamValue[]
+  ): this
+
+  /**
+   * @internal
+   */
+  public params(
+    parameter: string | string[] | Record<string, any>,
+    value?: ParamValue | ParamValue[]
+  ): this
+
+  public params(
+    parameter: string | string[] | Record<string, any>,
+    value?: ParamValue | ParamValue[]
   ): this {
-    const addOption = (param: string, values: OptionValue | OptionValue[]) => {
+    const addParam = (
+      param: string | string[],
+      values: ParamValue | ParamValue[]
+    ) => {
       values = forceArray(values)
 
       for (const val of values) {
-        this._query.addOption(new OptionSpec(param, val))
+        this._query.addParam(new ParamSpec(param, val))
       }
     }
 
-    // Single parameter .option('foo', true)
-    if (isString(parameter)) {
-      addOption(parameter, value || [])
+    // Single parameter .params('foo', true)
+    if (isString(parameter) || isArray(parameter)) {
+      if (!isUnallowedValue(value)) {
+        addParam(parameter, value ?? [])
+      }
     }
 
-    // Multiple parameters .option({ foo: true, bar: 'baz' })
-    if (isObject(parameter)) {
-      for (const param in parameter) {
-        addOption(param, parameter[param])
+    // Multiple parameters .params({ foo: true, bar: 'baz' })
+    if (isPlainObject(parameter)) {
+      for (const [param, val] of mapQuery(parameter)) {
+        addParam(param, val)
       }
     }
 

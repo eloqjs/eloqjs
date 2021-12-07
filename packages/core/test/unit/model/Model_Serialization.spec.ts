@@ -7,8 +7,11 @@ describe('Unit – Model - Serialization', () => {
 
       static fields() {
         return {
-          id: this.attr(null),
-          name: this.attr('')
+          id: {
+            type: Number,
+            nullable: true
+          },
+          name: String
         }
       }
     }
@@ -27,9 +30,18 @@ describe('Unit – Model - Serialization', () => {
 
       static fields() {
         return {
-          id: this.attr(null),
-          phone: this.hasOne(Phone),
-          posts: this.hasMany(Post)
+          id: {
+            type: Number,
+            nullable: true
+          },
+          phone: {
+            type: Phone,
+            relation: 'HasOne'
+          },
+          posts: {
+            type: Post,
+            relation: 'HasMany'
+          }
         }
       }
     }
@@ -39,8 +51,14 @@ describe('Unit – Model - Serialization', () => {
 
       static fields() {
         return {
-          id: this.attr(null),
-          user_id: this.attr(null)
+          id: {
+            type: Number,
+            nullable: true
+          },
+          user_id: {
+            type: Number,
+            nullable: true
+          }
         }
       }
     }
@@ -50,8 +68,14 @@ describe('Unit – Model - Serialization', () => {
 
       static fields() {
         return {
-          id: this.attr(null),
-          user_id: this.attr(null)
+          id: {
+            type: Number,
+            nullable: true
+          },
+          user_id: {
+            type: Number,
+            nullable: true
+          }
         }
       }
     }
@@ -89,8 +113,14 @@ describe('Unit – Model - Serialization', () => {
 
       static fields() {
         return {
-          id: this.attr(null),
-          phone: this.hasOne(Phone)
+          id: {
+            type: Number,
+            nullable: true
+          },
+          phone: {
+            type: Phone,
+            relation: 'HasOne'
+          }
         }
       }
     }
@@ -100,8 +130,14 @@ describe('Unit – Model - Serialization', () => {
 
       static fields() {
         return {
-          id: this.attr(null),
-          user_id: this.attr(null)
+          id: {
+            type: Number,
+            nullable: true
+          },
+          user_id: {
+            type: Number,
+            nullable: true
+          }
         }
       }
     }
@@ -122,8 +158,11 @@ describe('Unit – Model - Serialization', () => {
 
       static fields() {
         return {
-          id: this.attr(null),
-          array: this.attr([])
+          id: {
+            type: Number,
+            nullable: true
+          },
+          array: Array
         }
       }
     }

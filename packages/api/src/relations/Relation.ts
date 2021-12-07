@@ -1,7 +1,7 @@
 import { Collection, Element, Item, Model, Relations } from '@eloqjs/core'
 
 import { FilterValue } from '../query/specs/FilterSpec'
-import { OptionValue } from '../query/specs/OptionSpec'
+import { ParamValue } from '../query/specs/ParamSpec'
 import { CollectionPromise } from '../response/CollectionPromise'
 import { DeletePromise } from '../response/DeletePromise'
 import { RecordPromise } from '../response/RecordPromise'
@@ -110,7 +110,7 @@ export class Relation<
    */
   public option(
     parameter: string,
-    value: OptionValue | OptionValue[]
+    value: ParamValue | ParamValue[]
   ): RelationAPI<M, D, S> {
     return this.api().option(parameter, value)
   }

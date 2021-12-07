@@ -1,12 +1,14 @@
-import { Model, ModelReference } from '../model/Model'
+import { Model, ModelOptions, ModelReference } from '../model/Model'
 import { Uid as UidGenerator } from '../support/Uid'
 import {
   assert,
   forceArray,
   isArray,
+  isCollection,
   isEmpty,
   isFunction,
   isModel,
+  isNull,
   isNullish,
   isNumber,
   isObject,
@@ -122,7 +124,7 @@ export class Collection<M extends Model = Model> {
    *
    * @returns The added model or array of added models.
    */
-  public add(models: (M | Element)[]): M[]
+  public add(models: (M | Element)[] | Collection): M[]
 
   /**
    * Add a {@link Model} to this {@link Collection}.
@@ -148,15 +150,19 @@ export class Collection<M extends Model = Model> {
    *
    * @returns The added model or array of added models.
    */
-  public add(model: M | Element | (M | Element)[]): M | M[] | void {
+  public add(
+    model: M | Element | (M | Element)[] | Collection
+  ): M | M[] | void {
     // If given an array, assume an array of models and add them all.
-    if (isArray(model)) {
+    if (isCollection(model) || isArray(model)) {
       return model.map((m) => this.add(m)).filter((m): m is M => !!m)
     }
 
     // Objects should be converted to model instances first, then added.
     if (isPlainObject(model)) {
-      return this.add(this._self()._createModel<M>(model, this._options.model))
+      return this.add(
+        this._constructor()._createModel<M>(model, this._options.model)
+      )
     }
 
     // At this point, `model` should be an instance of Model.
@@ -703,7 +709,7 @@ export class Collection<M extends Model = Model> {
   ): U | undefined {
     // Use the first model as the initial value if an initial was not given.
     if (arguments.length === 1) {
-      initial = ((this.first() || undefined) as unknown) as U | undefined
+      initial = (this.first() || undefined) as unknown as U | undefined
     }
 
     return this.models.reduce(iteratee, initial)
@@ -715,7 +721,7 @@ export class Collection<M extends Model = Model> {
    * @param models Model to remove, which can be a model instance, an object to filter by, a function to filter by,
    * or an array of model instances and objects to remove multiple.
    *
-   * @return The deleted model or an array of models if a filter or array type was given.
+   * @returns The deleted model or an array of models if a filter or array type was given.
    *
    * @throws {Error} If the model is an invalid type.
    */
@@ -727,7 +733,7 @@ export class Collection<M extends Model = Model> {
    * @param predicate Model to remove, which can be a model instance, an object to filter by, a function to filter by,
    * or an array of model instances and objects to remove multiple.
    *
-   * @return The deleted model or an array of models if a filter or array type was given.
+   * @returns The deleted model or an array of models if a filter or array type was given.
    *
    * @throws {Error} If the model is an invalid type.
    */
@@ -741,7 +747,7 @@ export class Collection<M extends Model = Model> {
    * @param model Model to remove, which can be a model instance, an object to filter by, a function to filter by,
    * or an array of model instances and objects to remove multiple.
    *
-   * @return The deleted model or an array of models if a filter or array type was given.
+   * @returns The deleted model or an array of models if a filter or array type was given.
    *
    * @throws {Error} If the model is an invalid type.
    */
@@ -753,7 +759,7 @@ export class Collection<M extends Model = Model> {
    * @param model Model to remove, which can be a model instance, an object, a function to filter by,
    * or an array of model instances and objects to remove multiple.
    *
-   * @return The deleted model or an array of models if a filter or array type was given.
+   * @returns The deleted model or an array of models if a filter or array type was given.
    *
    * @throws {Error} If the model is an invalid type.
    */
@@ -776,7 +782,7 @@ export class Collection<M extends Model = Model> {
     // Objects should be used to find the model first, then removed.
     if (isPlainObject(model)) {
       const m = this.models.find(
-        (m) => m.$id === m.$self().getIdFromRecord(model)
+        (m) => m.$id === m.$constructor().getIdFromRecord(model)
       )
       return m ? this.remove(m) : undefined
     }
@@ -840,6 +846,88 @@ export class Collection<M extends Model = Model> {
     for (const model of this.models) {
       model.$reset(attributes)
     }
+  }
+
+  /**
+   * Fill a {@link Model} of this {@link Collection} by the model's ID.
+   *
+   * If an ID is not provided, a new model will be added to this collection.
+   *
+   * This method returns a single model if only one was given, but will return
+   * an array of all updated models if an array was given.
+   *
+   * @param records A model instance or plain object, or an array of either, to be filled in this collection.
+   * A model instance will be created and returned if passed a plain object.
+   * @param options
+   *
+   * @returns The filled model or array of filled models.
+   */
+  public set(records: (M | Element)[], options?: ModelOptions): M[]
+
+  /**
+   * Fill a {@link Model} of this {@link Collection} by the model's ID.
+   *
+   * If an ID is not provided, a new model will be added to this collection.
+   *
+   * This method returns a single model if only one was given, but will return
+   * an array of all filled models if an array was given.
+   *
+   * @param record A model instance or plain object, or an array of either, to be filled in this collection.
+   * A model instance will be created and returned if passed a plain object.
+   * @param options
+   *
+   * @returns The filled model or array of filled models.
+   */
+  public set(record: M | Element, options?: ModelOptions): M
+
+  /**
+   * Fill a {@link Model} of this {@link Collection} by the model's ID.
+   *
+   * If an ID is not provided, a new model will be added to this collection.
+   *
+   * This method returns a single model if only one was given, but will return
+   * an array of all filled models if an array was given.
+   *
+   * @param record A model instance or plain object, or an array of either, to be filled in this collection.
+   * A model instance will be created and returned if passed a plain object.
+   * @param options
+   *
+   * @returns The filled model or array of filled models.
+   */
+  public set(
+    record: M | Element | (M | Element)[],
+    options: ModelOptions = {}
+  ): M | M[] | void {
+    // If given an array, assume an array of models and add them all.
+    if (isArray(record)) {
+      return record.map((m) => this.set(m, options)).filter((m): m is M => !!m)
+    }
+
+    // Get the ID from model or record
+    const id = Model.getIdFromRecord(record)
+
+    // If we don't have an ID, we can't compare the model, so just add the model to the collection
+    if (isNull(id)) {
+      return this.add(record)
+    }
+
+    // Retrieve a model from this collection based on the given ID
+    const model = this.find(id)
+
+    // If we couldn't retrieve a model from this collection, then add the model to this collection
+    if (isNull(model)) {
+      return this.add(record)
+    }
+
+    // At this point, `model` should be an instance of Model.
+    assert(isModel(model), [
+      'Expected a model, plain object, or array of either.'
+    ])
+
+    // Fill the model found in the collection by the given attributes.
+    model.$set(record, options)
+
+    return model
   }
 
   /**
@@ -952,7 +1040,7 @@ export class Collection<M extends Model = Model> {
    * Returns the sum of a property of all models in the collection.
    *
    * @param {string|string[]|Function} key
-   * @return {number}
+   * @returns {number}
    */
   public sum(
     key: keyof ModelReference<M> | string | ((model: M) => string | number)
@@ -965,7 +1053,7 @@ export class Collection<M extends Model = Model> {
       if (isFunction(key)) {
         value = key(model)
       } else {
-        value = (model[key as string] as unknown) as string | number
+        value = model[key as string] as unknown as string | number
       }
 
       total += isString(value) ? parseFloat(value) : value
@@ -1006,6 +1094,82 @@ export class Collection<M extends Model = Model> {
   }
 
   /**
+   * Update a {@link Model} of this {@link Collection} by the model's ID.
+   *
+   * If an ID is not provided, a new model will be added to this collection.
+   *
+   * This method returns a single model if only one was given, but will return
+   * an array of all updated models if an array was given.
+   *
+   * @param records A model instance or plain object, or an array of either, to be updated in this collection.
+   * A model instance will be created and returned if passed a plain object.
+   *
+   * @returns The updated model or array of updated models.
+   */
+  public update(records: (M | Element)[]): M[]
+
+  /**
+   * Update a {@link Model} of this {@link Collection} by the model's ID.
+   *
+   * If an ID is not provided, a new model will be added to this collection.
+   *
+   * This method returns a single model if only one was given, but will return
+   * an array of all updated models if an array was given.
+   *
+   * @param record A model instance or plain object, or an array of either, to be updated in this collection.
+   * A model instance will be created and returned if passed a plain object.
+   *
+   * @returns The updated model or array of updated models.
+   */
+  public update(record: M | Element): M
+
+  /**
+   * Update a {@link Model} of this {@link Collection} by the model's ID.
+   *
+   * If an ID is not provided, a new model will be added to this collection.
+   *
+   * This method returns a single model if only one was given, but will return
+   * an array of all updated models if an array was given.
+   *
+   * @param record A model instance or plain object, or an array of either, to be updated in this collection.
+   * A model instance will be created and returned if passed a plain object.
+   *
+   * @returns The updated model or array of updated models.
+   */
+  public update(record: M | Element | (M | Element)[]): M | M[] | void {
+    // If given an array, assume an array of models and add them all.
+    if (isArray(record)) {
+      return record.map((m) => this.update(m)).filter((m): m is M => !!m)
+    }
+
+    // Get the ID from model or record
+    const id = Model.getIdFromRecord(record)
+
+    // If we don't have an ID, we can't compare the model, so just add the model to the collection
+    if (isNull(id)) {
+      return this.add(record)
+    }
+
+    // Retrieve a model from this collection based on the given ID
+    const model = this.find(id)
+
+    // If we couldn't retrieve a model from this collection, then add the model to this collection
+    if (isNull(model)) {
+      return this.add(record)
+    }
+
+    // At this point, `model` should be an instance of Model.
+    assert(isModel(model), [
+      'Expected a model, plain object, or array of either.'
+    ])
+
+    // Update the model found in the collection by the given attributes.
+    model.$update(record)
+
+    return model
+  }
+
+  /**
    * Filters the collection by a given key / value pair.
    */
   public where<V = unknown>(
@@ -1025,7 +1189,7 @@ export class Collection<M extends Model = Model> {
   /**
    * Filters the collection by a given key / value pair.
    */
-  public where<V extends unknown>(
+  public where<V>(
     key: keyof ModelReference<M> | string,
     operator?: V | Operator,
     value?: V
@@ -1035,11 +1199,11 @@ export class Collection<M extends Model = Model> {
     let comparisonOperator = operator
     let comparisonValue = value
 
-    if (operator === undefined || operator === true) {
+    if (operator === undefined || (operator as unknown) === true) {
       collection.models = collection.models.filter(
         (model) => model[key as string]
       )
-    } else if (operator === false) {
+    } else if ((operator as unknown) === false) {
       collection.models = collection.models.filter(
         (model) => !model[key as string]
       )
@@ -1091,7 +1255,7 @@ export class Collection<M extends Model = Model> {
   /**
    * Return the zero-based index of the given model in this collection.
    *
-   * @return {number} the index of a model in this collection, or -1 if not found.
+   * @returns {number} the index of a model in this collection, or -1 if not found.
    */
   private _indexOf(model: Model): number {
     if (!this._hasModelInRegistry(model)) {
@@ -1111,7 +1275,7 @@ export class Collection<M extends Model = Model> {
   }
 
   /**
-   * @return {Boolean} true if this collection has the model in its registry.
+   * @returns {Boolean} true if this collection has the model in its registry.
    */
   private _hasModelInRegistry(model: Model): boolean {
     return !!this._registry[model.$uid]
@@ -1153,7 +1317,7 @@ export class Collection<M extends Model = Model> {
    *
    * @param {Model} model
    *
-   * @return {Model}
+   * @returns {Model}
    */
   private _removeModel(model: M): M | undefined {
     return this._removeModelAtIndex(this._indexOf(model))
@@ -1169,7 +1333,7 @@ export class Collection<M extends Model = Model> {
     this.models = []
 
     // Notify each model that it has been removed from this collection.
-    models.every((model) => {
+    models.forEach((model) => {
       this.onRemove(model)
     })
   }
@@ -1190,7 +1354,7 @@ export class Collection<M extends Model = Model> {
   /**
    * Get the constructor of this collection.
    */
-  private _self(): typeof Collection {
+  private _constructor(): typeof Collection {
     return this.constructor as typeof Collection
   }
 

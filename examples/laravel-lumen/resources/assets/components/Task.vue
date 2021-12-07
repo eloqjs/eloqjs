@@ -62,7 +62,7 @@ export default {
     },
 
     async onDelete () {
-      await this.task.$delete().then(() => {
+      await this.task.$api().delete().then(() => {
         this.$message.success('Task deleted successfully')
       }).catch((error) => {
         this.$message.error('Failed to delete task!')
@@ -70,7 +70,7 @@ export default {
     },
 
     async onUpdate () {
-      await this.task.$save().then(() => {
+      await this.task.$api().save().then(() => {
         this.$message.success('Task saved successfully')
       }).catch((error) => {
         this.$message.error('Failed to save task!')

@@ -5,7 +5,7 @@ import { Builder } from '../../builder/Builder'
 import { HttpClientOptions } from '../../httpclient/HttpClientOptions'
 import { Operation } from '../../operation/Operation'
 import { FilterValue } from '../../query/specs/FilterSpec'
-import { OptionValue } from '../../query/specs/OptionSpec'
+import { ParamValue } from '../../query/specs/ParamSpec'
 import { CollectionPromise } from '../../response/CollectionPromise'
 import { DeletePromise } from '../../response/DeletePromise'
 import { RecordPromise } from '../../response/RecordPromise'
@@ -53,12 +53,45 @@ export class ModelAPIStatic<M extends typeof Model = typeof Model> {
     return this._query().find(id)
   }
 
+  /**
+   * Add a basic "where" clause to the query.
+   *
+   * @param {object} query - The query to filter.
+   */
+  public where(query: Record<string, any>): Builder<InstanceType<M>>
+
+  /**
+   * Add a basic "where" clause to the query.
+   *
+   * @param {string | string[]} attribute - The attribute being tested.
+   * @param {string} value - The value the attribute should be equal.
+   */
   public where(
     attribute: string | string[],
     value: FilterValue
+  ): Builder<InstanceType<M>>
+
+  /**
+   * @internal
+   */
+  public where(
+    attribute: string | string[] | Record<string, any>,
+    value?: FilterValue
+  ): Builder<InstanceType<M>>
+
+  public where(
+    attribute: string | string[] | Record<string, any>,
+    value?: FilterValue
   ): Builder<InstanceType<M>> {
     return this._query().where(attribute, value)
   }
+
+  /**
+   * Add a "where in" clause to the query.
+   *
+   * @param {object} query - The query to filter.
+   */
+  public whereIn(query: Record<string, any>): Builder<InstanceType<M>>
 
   /**
    * Add a "where in" clause to the query.
@@ -69,16 +102,39 @@ export class ModelAPIStatic<M extends typeof Model = typeof Model> {
   public whereIn(
     attribute: string | string[],
     values: FilterValue[]
+  ): Builder<InstanceType<M>>
+
+  /**
+   * @internal
+   */
+  public whereIn(
+    attribute: string | string[] | Record<string, any>,
+    values?: FilterValue[]
+  ): Builder<InstanceType<M>>
+
+  public whereIn(
+    attribute: string | string[] | Record<string, any>,
+    values?: FilterValue[]
   ): Builder<InstanceType<M>> {
     return this._query().whereIn(attribute, values)
   }
 
   /**
    * Specify a relation that should be eager loaded in the returned object graph.
+   *
    * @param {string | string[]} relationship - The relationship that should be eager loaded.
    */
   public with(relationship: string | string[]): Builder<InstanceType<M>> {
     return this._query().with(relationship)
+  }
+
+  /**
+   * Alias for the "with" method.
+   *
+   * @param {string | string[]} relationship - The relationship that should be eager loaded.
+   */
+  public include(relationship: string | string[]): Builder<InstanceType<M>> {
+    return this.with(relationship)
   }
 
   /**
@@ -93,18 +149,42 @@ export class ModelAPIStatic<M extends typeof Model = typeof Model> {
   /**
    * Specify the fields that should be included in the returned object graph.
    */
-  public select(field: string | string[]): Builder<InstanceType<M>> {
+  public select(
+    field: string | string[] | Record<string, string | string[]>
+  ): Builder<InstanceType<M>> {
     return this._query().select(field)
   }
 
   /**
    * Specify an attribute to sort by and the direction to sort in.
    *
-   * @param {string} attribute - The attribute to sort by.
+   * @param {object} query - The query attributes to sort.
+   */
+  public orderBy(
+    query: Record<string, 'asc' | 'desc'>
+  ): Builder<InstanceType<M>>
+
+  /**
+   * Specify an attribute to sort by and the direction to sort in.
+   *
+   * @param {string | string[]} attribute - The attribute to sort by.
    * @param {string} [direction] - The direction to sort in.
    */
   public orderBy(
-    attribute: string,
+    attribute: string | string[],
+    direction?: 'asc' | 'desc'
+  ): Builder<InstanceType<M>>
+
+  /**
+   * @internal
+   */
+  public orderBy(
+    attribute: string | string[] | Record<string, 'asc' | 'desc'>,
+    direction?: 'asc' | 'desc'
+  ): Builder<InstanceType<M>>
+
+  public orderBy(
+    attribute: string | string[] | Record<string, 'asc' | 'desc'>,
     direction?: 'asc' | 'desc'
   ): Builder<InstanceType<M>> {
     return this._query().orderBy(attribute, direction)
@@ -113,14 +193,34 @@ export class ModelAPIStatic<M extends typeof Model = typeof Model> {
   /**
    * Specify a custom query parameter to add to the resulting HTTP request URL.
    *
-   * @param {string} parameter - The name of the parameter, e.g. 'bar' in "http://foo.com?bar=baz"
-   * @param {OptionValue | OptionValue[]} value - The value of the parameter, e.g. 'baz' in "http://foo.com?bar=baz"
+   * @param {object} query - The custom query parameters, e.g. '{ bar: 'baz }' in "http://foo.com?bar=baz"
    */
-  public option(
-    parameter: string | Record<string, OptionValue | OptionValue[]>,
-    value?: OptionValue | OptionValue[]
+  public params(query: Record<string, any>): Builder<InstanceType<M>>
+
+  /**
+   * Specify a custom query parameter to add to the resulting HTTP request URL.
+   *
+   * @param {string} parameter - The name of the parameter, e.g. 'bar' in "http://foo.com?bar=baz"
+   * @param {ParamValue | ParamValue[]} value - The value of the parameter, e.g. 'baz' in "http://foo.com?bar=baz"
+   */
+  public params(
+    parameter: string | string[],
+    value: ParamValue | ParamValue[]
+  ): Builder<InstanceType<M>>
+
+  /**
+   * @internal
+   */
+  public params(
+    parameter: string | string[] | Record<string, any>,
+    value?: ParamValue | ParamValue[]
+  ): Builder<InstanceType<M>>
+
+  public params(
+    parameter: string | string[] | Record<string, any>,
+    value?: ParamValue | ParamValue[]
   ): Builder<InstanceType<M>> {
-    return this._query().option(parameter, value)
+    return this._query().params(parameter, value)
   }
 
   /**

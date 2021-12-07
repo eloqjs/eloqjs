@@ -1,5 +1,4 @@
-import { assertModel } from '@eloqjs/test-utils'
-
+import { assertModel } from '../../Helpers'
 import { axiosMock } from '../../setup'
 import * as Data from './dummy/data'
 import Post from './dummy/models/Post'
@@ -47,6 +46,7 @@ describe('Feature – Models – Attach', () => {
     })
 
     const post = await new User(Data.User).posts
+      .api()
       .attach({
         title: 'My awesome post!'
       })
@@ -58,7 +58,7 @@ describe('Feature – Models – Attach', () => {
 
   it('should throw an error when parent model do not have an ID', () => {
     const error = () => {
-      new User({ name: 'John Doe' }).posts.attach({
+      new User({ name: 'John Doe' }).posts.api().attach({
         title: 'My awesome post!'
       })
     }

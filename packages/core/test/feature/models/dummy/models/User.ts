@@ -7,7 +7,10 @@ export default class User extends BaseModel {
 
   static fields() {
     return {
-      id: this.attr(null)
+      id: {
+        type: Number,
+        nullable: true
+      }
     }
   }
 }

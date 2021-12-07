@@ -1,10 +1,9 @@
 import { Collection, Element, Item, Model as BaseModel } from '@eloqjs/core'
 
-import * as Attributes from '../attributes'
 import { Builder } from '../builder/Builder'
 import { HttpClientOptions } from '../httpclient/HttpClientOptions'
 import { FilterValue } from '../query/specs/FilterSpec'
-import { OptionValue } from '../query/specs/OptionSpec'
+import { ParamValue } from '../query/specs/ParamSpec'
 import { CollectionPromise } from '../response/CollectionPromise'
 import { DeletePromise } from '../response/DeletePromise'
 import { RecordPromise } from '../response/RecordPromise'
@@ -53,13 +52,54 @@ export class Model extends BaseModel {
     return this._api().save(record)
   }
 
+  /**
+   * Add a basic "where" clause to the query.
+   *
+   * @param {object} query - The query to filter.
+   */
+  public static where<M extends typeof Model>(
+    this: M,
+    query: Record<string, any>
+  ): Builder<InstanceType<M>>
+
+  /**
+   * Add a basic "where" clause to the query.
+   *
+   * @param {string | string[]} attribute - The attribute being tested.
+   * @param {string} value - The value the attribute should be equal.
+   */
   public static where<M extends typeof Model>(
     this: M,
     attribute: string | string[],
     value: FilterValue
+  ): Builder<InstanceType<M>>
+
+  /**
+   * @internal
+   */
+  public static where<M extends typeof Model>(
+    this: M,
+    attribute: string | string[] | Record<string, any>,
+    value?: FilterValue
+  ): Builder<InstanceType<M>>
+
+  public static where<M extends typeof Model>(
+    this: M,
+    attribute: string | string[] | Record<string, any>,
+    value?: FilterValue
   ): Builder<InstanceType<M>> {
     return this._api().where(attribute, value)
   }
+
+  /**
+   * Add a "where in" clause to the query.
+   *
+   * @param {object} query - The query to filter.
+   */
+  public static whereIn<M extends typeof Model>(
+    this: M,
+    query: Record<string, any>
+  ): Builder<InstanceType<M>>
 
   /**
    * Add a "where in" clause to the query.
@@ -71,12 +111,28 @@ export class Model extends BaseModel {
     this: M,
     attribute: string | string[],
     values: FilterValue[]
+  ): Builder<InstanceType<M>>
+
+  /**
+   * @internal
+   */
+  public static whereIn<M extends typeof Model>(
+    this: M,
+    attribute: string | string[] | Record<string, any>,
+    values?: FilterValue[]
+  ): Builder<InstanceType<M>>
+
+  public static whereIn<M extends typeof Model>(
+    this: M,
+    attribute: string | string[] | Record<string, any>,
+    values?: FilterValue[]
   ): Builder<InstanceType<M>> {
     return this._api().whereIn(attribute, values)
   }
 
   /**
    * Specify a relation that should be eager loaded in the returned object graph.
+   *
    * @param {string | string[]} relationship - The relationship that should be eager loaded.
    */
   public static with<M extends typeof Model>(
@@ -84,6 +140,18 @@ export class Model extends BaseModel {
     relationship: string | string[]
   ): Builder<InstanceType<M>> {
     return this._api().with(relationship)
+  }
+
+  /**
+   * Alias for the "with" method.
+   *
+   * @param {string | string[]} relationship - The relationship that should be eager loaded.
+   */
+  public static include<M extends typeof Model>(
+    this: M,
+    relationship: string | string[]
+  ): Builder<InstanceType<M>> {
+    return this.with(relationship)
   }
 
   /**
@@ -103,7 +171,7 @@ export class Model extends BaseModel {
    */
   public static select<M extends typeof Model>(
     this: M,
-    field: string | string[]
+    field: string | string[] | Record<string, string | string[]>
   ): Builder<InstanceType<M>> {
     return this._api().select(field)
   }
@@ -111,12 +179,37 @@ export class Model extends BaseModel {
   /**
    * Specify an attribute to sort by and the direction to sort in.
    *
-   * @param {string} attribute - The attribute to sort by.
+   * @param {object} query - The query attributes to sort.
+   */
+  public static orderBy<M extends typeof Model>(
+    this: M,
+    query: Record<string, 'asc' | 'desc'>
+  ): Builder<InstanceType<M>>
+
+  /**
+   * Specify an attribute to sort by and the direction to sort in.
+   *
+   * @param {string | string[]} attribute - The attribute to sort by.
    * @param {string} [direction] - The direction to sort in.
    */
   public static orderBy<M extends typeof Model>(
     this: M,
-    attribute: string,
+    attribute: string | string[],
+    direction?: 'asc' | 'desc'
+  ): Builder<InstanceType<M>>
+
+  /**
+   * @internal
+   */
+  public static orderBy<M extends typeof Model>(
+    this: M,
+    attribute: string | string[] | Record<string, 'asc' | 'desc'>,
+    direction?: 'asc' | 'desc'
+  ): Builder<InstanceType<M>>
+
+  public static orderBy<M extends typeof Model>(
+    this: M,
+    attribute: string | string[] | Record<string, 'asc' | 'desc'>,
     direction?: 'asc' | 'desc'
   ): Builder<InstanceType<M>> {
     return this._api().orderBy(attribute, direction)
@@ -125,15 +218,40 @@ export class Model extends BaseModel {
   /**
    * Specify a custom query parameter to add to the resulting HTTP request URL.
    *
-   * @param {string} parameter - The name of the parameter, e.g. 'bar' in "http://foo.com?bar=baz"
-   * @param {OptionValue | OptionValue[]} value - The value of the parameter, e.g. 'baz' in "http://foo.com?bar=baz"
+   * @param {object} query - The custom query parameters, e.g. '{ bar: 'baz }' in "http://foo.com?bar=baz"
    */
-  public static option<M extends typeof Model>(
+  public static params<M extends typeof Model>(
     this: M,
-    parameter: string | Record<string, OptionValue | OptionValue[]>,
-    value?: OptionValue | OptionValue[]
+    query: Record<string, any>
+  ): Builder<InstanceType<M>>
+
+  /**
+   * Specify a custom query parameter to add to the resulting HTTP request URL.
+   *
+   * @param {string} parameter - The name of the parameter, e.g. 'bar' in "http://foo.com?bar=baz"
+   * @param {ParamValue | ParamValue[]} value - The value of the parameter, e.g. 'baz' in "http://foo.com?bar=baz"
+   */
+  public static params<M extends typeof Model>(
+    this: M,
+    parameter: string | string[],
+    value: ParamValue | ParamValue[]
+  ): Builder<InstanceType<M>>
+
+  /**
+   * @internal
+   */
+  public static params<M extends typeof Model>(
+    this: M,
+    parameter: string | string[] | Record<string, any>,
+    value?: ParamValue | ParamValue[]
+  ): Builder<InstanceType<M>>
+
+  public static params<M extends typeof Model>(
+    this: M,
+    parameter: string | string[] | Record<string, any>,
+    value?: ParamValue | ParamValue[]
   ): Builder<InstanceType<M>> {
-    return this._api().option(parameter, value)
+    return this._api().params(parameter, value)
   }
 
   /**
@@ -192,20 +310,6 @@ export class Model extends BaseModel {
   }
 
   /**
-   * Create a has one relationship.
-   */
-  protected static hasOne(related: typeof Model): Attributes.HasOne {
-    return new Attributes.HasOne(this, related)
-  }
-
-  /**
-   * Create a has many relationship.
-   */
-  protected static hasMany(related: typeof Model): Attributes.HasMany {
-    return new Attributes.HasMany(this, related)
-  }
-
-  /**
    * Get an [Static API]{@link ModelAPIStatic} instance from a static {@link Model}.
    */
   private static _api<M extends typeof Model>(this: M): ModelAPIStatic<M> {
@@ -226,7 +330,7 @@ export class Model extends BaseModel {
   /**
    * Get a fresh instance of this {@link Model}.
    *
-   * @return A {@link Promise} resolving to:
+   * @returns A {@link Promise} resolving to:
    *
    * * the representation of this {@link Model} instance in the API if this {@link Model} has an ID and this ID can.
    * be found in the API too

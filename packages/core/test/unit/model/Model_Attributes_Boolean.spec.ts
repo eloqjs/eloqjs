@@ -10,8 +10,15 @@ describe('Unit – Model - Attributes – Boolean', () => {
 
       static fields() {
         return {
-          id: this.attr(null),
-          bool: this.boolean(true)
+          id: {
+            type: Number,
+            nullable: true
+          },
+          bool: {
+            type: Boolean,
+            default: true,
+            cast: true
+          }
         }
       }
     }
@@ -19,11 +26,11 @@ describe('Unit – Model - Attributes – Boolean', () => {
     expect(new User({}).bool).toBe(true)
     expect(new User({ bool: '' }).bool).toBe(false)
     expect(new User({ bool: 'string' }).bool).toBe(true)
-    expect(new User({ bool: '0' }).bool).toBe(false)
+    expect(new User({ bool: '0' }).bool).toBe(true)
     expect(new User({ bool: 0 }).bool).toBe(false)
     expect(new User({ bool: 1 }).bool).toBe(true)
     expect(new User({ bool: true }).bool).toBe(true)
-    expect(new User({ bool: null }).bool).toBe(false)
+    // expect(new User({ bool: null }).bool).toBe(false)
   })
 
   it('can mutate the value by specifying mutator at attribute', () => {
@@ -35,8 +42,15 @@ describe('Unit – Model - Attributes – Boolean', () => {
 
       static fields() {
         return {
-          id: this.attr(null),
-          bool: this.boolean(true, (value: any) => !value)
+          id: {
+            type: Number,
+            nullable: true
+          },
+          bool: {
+            type: Boolean,
+            default: true,
+            mutator: (value: any) => !value
+          }
         }
       }
     }
@@ -44,7 +58,7 @@ describe('Unit – Model - Attributes – Boolean', () => {
     expect(new User({}).bool).toBe(false)
     expect(new User({ bool: '' }).bool).toBe(true)
     expect(new User({ bool: 'string' }).bool).toBe(false)
-    expect(new User({ bool: '0' }).bool).toBe(true)
+    expect(new User({ bool: '0' }).bool).toBe(false)
     expect(new User({ bool: 0 }).bool).toBe(true)
     expect(new User({ bool: 1 }).bool).toBe(false)
     expect(new User({ bool: true }).bool).toBe(false)
@@ -60,8 +74,14 @@ describe('Unit – Model - Attributes – Boolean', () => {
 
       static fields() {
         return {
-          id: this.attr(null),
-          bool: this.boolean(true)
+          id: {
+            type: Number,
+            nullable: true
+          },
+          bool: {
+            type: Boolean,
+            default: true
+          }
         }
       }
 
@@ -77,7 +97,7 @@ describe('Unit – Model - Attributes – Boolean', () => {
     expect(new User({}).bool).toBe(false)
     expect(new User({ bool: '' }).bool).toBe(true)
     expect(new User({ bool: 'string' }).bool).toBe(false)
-    expect(new User({ bool: '0' }).bool).toBe(true)
+    expect(new User({ bool: '0' }).bool).toBe(false)
     expect(new User({ bool: 0 }).bool).toBe(true)
     expect(new User({ bool: 1 }).bool).toBe(false)
     expect(new User({ bool: true }).bool).toBe(false)

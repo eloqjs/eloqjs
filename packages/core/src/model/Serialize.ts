@@ -1,9 +1,9 @@
 import { Collection } from '../collection/Collection'
-import { isArray, isCollection, isNull, isObject } from '../support/Utils'
+import { isArray, isCollection, isNull, isPlainObject } from '../support/Utils'
 import { Element, Item } from '../types/Data'
 import { Model } from './Model'
 
-export interface Options {
+export interface SerializeOptions {
   /**
    * Whether the relationships should be serialized.
    * If set to `false`, only ID's will be included.
@@ -21,7 +21,7 @@ export interface Options {
   shouldPatch?: boolean
 }
 
-export const defaultOptions: Required<Options> = {
+export const defaultOptions: Required<SerializeOptions> = {
   relations: true,
   isRequest: false,
   shouldPatch: false
@@ -39,7 +39,7 @@ export function value(v: unknown): unknown {
     return array(v)
   }
 
-  if (isObject(v)) {
+  if (isPlainObject(v)) {
     return object(v)
   }
 
@@ -98,5 +98,5 @@ export function relation(
  * Serialize given relation into empty json.
  */
 export function emptyRelation(relation: Item | Collection): [] | null {
-  return isArray(relation) ? [] : null
+  return isCollection(relation) ? [] : null
 }

@@ -9,7 +9,7 @@ export class SaveResponse<M extends Model = Model> extends Response {
   public readonly data: M
 
   public constructor(httpClientResponse: HttpClientResponse | null, model: M) {
-    super(httpClientResponse, model.$self())
+    super(httpClientResponse, model.$constructor())
 
     this.data = this.resolveData(model)
   }

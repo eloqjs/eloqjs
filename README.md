@@ -30,10 +30,10 @@ Or locally:
 
 Whoever contributes to this project! ❤️
 
-This package was based and inspired by some amazing packages!
+This project was based and inspired by some amazing packages!
 
 - [Laravel Eloquent][laravel-eloquent-src]
-- [Vuex ORM][vuex-orm-src] by [Kia King Ishii][vuex-orm-author]
+- [Vuex ORM][vuex-orm-src] and [Vuex ORM Next][vuex-orm-next-src] by [Kia King Ishii][vuex-orm-author]
 - [Vue MC][vue-mc-src] by [Rudi Theunissen][vue-mc-author] 
 - [Vue API Query][vue-api-query-src] by [Robson Tenório][vue-api-query-author]
 - [Coloquent][coloquent-src] by [David Duwaer][coloquent-author]
@@ -77,6 +77,7 @@ Copyright (c) João Pedro Antunes Silva
 [laravel-eloquent-src]: https://laravel.com/docs/eloquent
 
 [vuex-orm-src]: https://github.com/vuex-orm/vuex-orm
+[vuex-orm-next-src]: https://github.com/vuex-orm/vuex-orm-next
 [vuex-orm-author]: https://github.com/kiaking
 
 [vue-mc-src]: https://github.com/FiguredLimited/vue-mc

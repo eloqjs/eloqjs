@@ -7,25 +7,25 @@
     "nuxt:start": "nuxt-ts start"
   },
   "dependencies": {
-    "@eloqjs/api": "0.0.0-development",
+    "@eloqjs/api": "file:../../packages/api",
     "@eloqjs/collection": "^1.0.0-alpha.7",
-    "@eloqjs/core": "0.0.0-development",
-    "@nuxt/typescript-runtime": "^2.0.1",
-    "@nuxtjs/axios": "^5.12.5",
+    "@eloqjs/core": "file:../../packages/core",
+    "@nuxt/typescript-runtime": "^2.1.0",
+    "@nuxtjs/axios": "^5.13.6",
     "body-parser": "^1.19.0",
-    "core-js": "^3.8.3",
+    "core-js": "^3.19.0",
     "express": "^4.17.1",
-    "faker": "^5.2.0",
-    "nuxt": "^2.14.12"
+    "faker": "^5.5.3",
+    "nuxt": "^2.15.8"
   },
   "devDependencies": {
-    "@nuxt/types": "^2.14.12",
-    "@nuxt/typescript-build": "^2.0.4",
-    "@nuxtjs/eslint-config": "^5.0.0",
-    "@nuxtjs/eslint-config-typescript": "^5.0.0",
+    "@nuxt/types": "^2.15.8",
+    "@nuxt/typescript-build": "^2.1.0",
+    "@nuxtjs/eslint-config": "^7.0.0",
+    "@nuxtjs/eslint-config-typescript": "^7.0.2",
     "@nuxtjs/eslint-module": "^3.0.2",
-    "@nuxtjs/tailwindcss": "^3.4.2",
-    "@types/faker": "^5.1.5",
-    "eslint-plugin-nuxt": "^2.0.0"
+    "@nuxtjs/tailwindcss": "^4.2.1",
+    "@types/faker": "^5.5.9",
+    "eslint-plugin-nuxt": "^3.0.0"
   }
 }

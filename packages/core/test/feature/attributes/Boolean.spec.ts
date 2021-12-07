@@ -8,8 +8,7 @@ describe('Feature – Attributes – Boolean', () => {
     { id: 4, bool: '0' },
     { id: 5, bool: 0 },
     { id: 6, bool: 1 },
-    { id: 7, bool: true },
-    { id: 8, bool: null }
+    { id: 7, bool: true }
   ]
 
   it('should cast the value to `Boolean`', async () => {
@@ -21,8 +20,15 @@ describe('Feature – Attributes – Boolean', () => {
 
       static fields() {
         return {
-          id: this.attr(null),
-          bool: this.boolean(true)
+          id: {
+            type: Number,
+            nullable: true
+          },
+          bool: {
+            type: Boolean,
+            cast: true,
+            default: true
+          }
         }
       }
     }
@@ -36,11 +42,10 @@ describe('Feature – Attributes – Boolean', () => {
     expect(users[0].bool).toBeTruthy()
     expect(users[1].bool).toBeFalsy()
     expect(users[2].bool).toBeTruthy()
-    expect(users[3].bool).toBeFalsy()
+    expect(users[3].bool).toBeTruthy()
     expect(users[4].bool).toBeFalsy()
     expect(users[5].bool).toBeTruthy()
     expect(users[6].bool).toBeTruthy()
-    expect(users[7].bool).toBeFalsy()
   })
 
   it('should accept `null` when there is `nullable` chain', async () => {
@@ -52,22 +57,30 @@ describe('Feature – Attributes – Boolean', () => {
 
       static fields() {
         return {
-          id: this.attr(null),
-          bool: this.boolean(true).nullable()
+          id: {
+            type: Number,
+            nullable: true
+          },
+          bool: {
+            type: Boolean,
+            cast: true,
+            nullable: true,
+            default: true
+          }
         }
       }
     }
 
     const users = []
 
-    for (const record of data) {
+    for (const record of [...data, { id: 8, bool: null }]) {
       users.push(new User(record))
     }
 
     expect(users[0].bool).toBeTruthy()
     expect(users[1].bool).toBeFalsy()
     expect(users[2].bool).toBeTruthy()
-    expect(users[3].bool).toBeFalsy()
+    expect(users[3].bool).toBeTruthy()
     expect(users[4].bool).toBeFalsy()
     expect(users[5].bool).toBeTruthy()
     expect(users[6].bool).toBeTruthy()

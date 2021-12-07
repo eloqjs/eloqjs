@@ -1,5 +1,4 @@
-import { assertModel } from '@eloqjs/test-utils'
-
+import { assertModel } from '../../Helpers'
 import { axiosMock } from '../../setup'
 import * as Data from './dummy/data'
 import Post from './dummy/models/Post'
@@ -78,7 +77,7 @@ describe('Feature – Models – Sync', () => {
 
     post.title = 'Updated Title'
 
-    await new User(Data.User).posts.sync(post)
+    await new User(Data.User).posts.api().sync(post)
 
     expect(post).toBeInstanceOf(Post)
     assertModel(post, expected)
@@ -102,7 +101,7 @@ describe('Feature – Models – Sync', () => {
 
     post.title = 'Updated Title'
 
-    await new User(Data.User).posts.sync(post)
+    await new User(Data.User).posts.api().sync(post)
 
     expect(post).toBeInstanceOf(Post)
     assertModel(post, expected)
@@ -110,7 +109,7 @@ describe('Feature – Models – Sync', () => {
 
   it('should throw an error when parent model do not have an ID', async () => {
     const error = () => {
-      new User({ name: 'John Doe' }).posts.sync({
+      new User({ name: 'John Doe' }).posts.api().sync({
         title: 'My awesome post!'
       })
     }
@@ -122,7 +121,7 @@ describe('Feature – Models – Sync', () => {
 
   it('should throw an error when relationship do not have an ID', () => {
     const error = () => {
-      new User(Data.User).posts.sync({
+      new User(Data.User).posts.api().sync({
         title: 'My awesome post!'
       })
     }

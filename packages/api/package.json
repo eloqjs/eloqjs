@@ -1,12 +1,16 @@
 {
   "name": "@eloqjs/api",
-  "version": "0.0.0-development",
+  "version": "0.0.0",
   "keywords": [
     "eloqjs",
     "eloquent",
     "orm"
   ],
-  "repository": "github:eloqjs/eloqjs",
+  "repository": {
+    "type": "git",
+    "url": "ssh://git@github.com/eloqjs/eloqjs.git",
+    "directory": "packages/api"
+  },
   "license": "MIT",
   "author": "João Pedro Antunes Silva",
   "exports": {
@@ -23,28 +27,24 @@
     "dist"
   ],
   "scripts": {
-    "dev": "siroc dev",
     "build": "yarn run clean && yarn run compile",
-    "watch": "yarn run compile --watch",
     "clean": "rimraf -rf ./dist",
     "compile": "siroc build",
+    "coverage": "jest --collect-coverage",
+    "dev": "siroc dev",
     "lint": "eslint --ext .ts,.js,.json .",
     "lint:fix": "yarn lint --fix",
     "test": "jest",
     "test:watch": "jest --watch",
-    "coverage": "jest --collect-coverage"
+    "watch": "yarn run compile --watch"
   },
   "dependencies": {
+    "@eloqjs/core": "0.0.0",
     "defu": "^5.0.0"
   },
   "devDependencies": {
-    "@eloqjs/core": "0.0.0-development",
-    "@eloqjs/test-utils": "0.0.0-development",
-    "axios": "^0.21.1",
-    "axios-mock-adapter": "^1.19.0"
-  },
-  "peerDependencies": {
-    "@eloqjs/core": "0.0.0-development"
+    "axios": "^0.24.0",
+    "axios-mock-adapter": "^1.20.0"
   },
   "publishConfig": {
     "access": "public"

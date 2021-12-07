@@ -1,5 +1,16 @@
+import { Relation } from '../relations'
 import { Map } from './Map'
-import { forceArray, isEmpty } from './Utils'
+import {
+  clone,
+  forceArray,
+  isArray,
+  isCollection,
+  isEmpty,
+  isEqual,
+  isModel,
+  isPlainObject,
+  isString
+} from './Utils'
 
 export class AttrMap<T> extends Map<T> {
   protected reference: Record<string, T> = {}
@@ -27,7 +38,9 @@ export class AttrMap<T> extends Map<T> {
       return
     }
 
-    attributes = forceArray(attributes)
+    attributes = forceArray(attributes).filter((attribute) =>
+      Object.keys(this.data).includes(attribute)
+    )
 
     for (const attribute of attributes) {
       this.reference[attribute] = this.data[attribute]
@@ -50,7 +63,9 @@ export class AttrMap<T> extends Map<T> {
       return
     }
 
-    attributes = forceArray(attributes)
+    attributes = forceArray(attributes).filter((attribute) =>
+      Object.keys(this.data).includes(attribute)
+    )
 
     for (const attribute of attributes) {
       this.data[attribute] = this.reference[attribute]
@@ -85,7 +100,14 @@ export class AttrMap<T> extends Map<T> {
     const dirty: Record<string, T> = {}
 
     for (const key in this.data) {
-      if (this.$get(key) !== this.get(key)) {
+      const reference = this.$get(key)
+      const value = this.get(key)
+      const isDirty =
+        value instanceof Relation
+          ? this._isRelationDirty(value)
+          : !isEqual(value, reference)
+
+      if (isDirty) {
         dirty[key] = this.get(key)
       }
     }
@@ -96,7 +118,7 @@ export class AttrMap<T> extends Map<T> {
   /**
    * Get the attributes that were changed.
    *
-   * @return array
+   * @returns array
    */
   public getChanges(): Record<string, T> {
     return this.changes
@@ -109,6 +131,10 @@ export class AttrMap<T> extends Map<T> {
     changes: Record<string, T>,
     attributes: string[] = []
   ): boolean {
+    attributes = attributes.filter((attribute) =>
+      Object.keys(this.data).includes(attribute)
+    )
+
     // If no specific attributes were provided, we will just see if the dirty array
     // already contains any attributes. If it does we will just return that this
     // count is greater than zero. Else, we need to check specific attributes.
@@ -130,7 +156,32 @@ export class AttrMap<T> extends Map<T> {
 
   private _setReference(key: string, value: T): void {
     if (!(key in this.reference)) {
-      this.reference[key] = value
+      if (isArray(value) || isPlainObject(value)) {
+        this.reference[key] = clone(value, (_key, value) => {
+          const dateRegex = /^\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\d.\d\d\dZ$/
+
+          // Revive date objects
+          if (isString(value) && dateRegex.test(value)) {
+            return new Date(value)
+          }
+
+          return value
+        })
+      } else {
+        this.reference[key] = value
+      }
     }
+  }
+
+  private _isRelationDirty(relation: Relation) {
+    if (isCollection(relation.data)) {
+      return relation.data.models.some((model) => model.$isDirty())
+    }
+
+    if (isModel(relation.data)) {
+      return relation.data.$isDirty()
+    }
+
+    return false
   }
 }

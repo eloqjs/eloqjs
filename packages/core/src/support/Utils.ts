@@ -159,6 +159,13 @@ export function isModel(value: unknown): value is Model {
 }
 
 /**
+ * Determines whether the given value is the instance of {@link Model}.
+ */
+export function isModelClass(value: unknown): value is typeof Model {
+  return isFunction(value) && value.prototype instanceof Model
+}
+
+/**
  * Determines whether the given value is the instance of {@link Collection}.
  */
 export function isCollection(value: unknown): value is Collection {
@@ -182,6 +189,31 @@ export function isEmpty(
 }
 
 /**
+ * Determines whether the given values are equal or not.
+ */
+export function isEqual(a: unknown, b: unknown): boolean {
+  if (typeof a !== typeof b) {
+    return false
+  }
+
+  if (
+    (isArray(a) || isPlainObject(a)) &&
+    (isArray(b) || isPlainObject(b)) &&
+    size(a) !== size(b)
+  ) {
+    return false
+  }
+
+  if (isArray(a) && isArray(b)) {
+    return a.every(
+      (val, index) => JSON.stringify(val) === JSON.stringify(b[index])
+    )
+  }
+
+  return JSON.stringify(a) === JSON.stringify(b)
+}
+
+/**
  * Gets the size of collection by returning its length for array-like values
  * or the number of own enumerable string keyed properties for objects.
  */
@@ -189,6 +221,19 @@ export function size(collection: unknown[] | Record<string, unknown>): number {
   return isArray(collection)
     ? collection.length
     : Object.keys(collection).length
+}
+
+/**
+ * Clone the given value by stringifying and parsing it.
+ *
+ * @param value The value to be cloned.
+ * @param reviver If a function, this prescribes how the value originally produced by parsing is transformed, before being returned.
+ */
+export function clone(
+  value: unknown,
+  reviver?: ((key: string, value: any) => any) | undefined
+) {
+  return JSON.parse(JSON.stringify(value), reviver)
 }
 
 /**
@@ -206,4 +251,9 @@ function getTag(value: unknown): string {
     return isUndefined(value) ? '[object Undefined]' : '[object Null]'
   }
   return Object.prototype.toString.call(value)
+}
+
+export function capitalize(value: string): string {
+  if (typeof value !== 'string') return ''
+  return value.charAt(0).toUpperCase() + value.slice(1)
 }

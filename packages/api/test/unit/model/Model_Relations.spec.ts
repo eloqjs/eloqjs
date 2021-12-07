@@ -1,4 +1,5 @@
-import { Relations } from '../../../src'
+import { Relations } from '@eloqjs/core'
+
 import BaseModel from '../../dummy/models/BaseModel'
 import Post from '../../feature/models/dummy/models/Post'
 
@@ -12,8 +13,14 @@ describe('Unit - Model – Relations', () => {
 
       static fields() {
         return {
-          id: this.attr(null),
-          profile: this.hasOne(Profile)
+          id: {
+            type: Number,
+            nullable: true
+          },
+          profile: {
+            type: Profile,
+            relation: 'HasOne'
+          }
         }
       }
     }
@@ -26,8 +33,14 @@ describe('Unit - Model – Relations', () => {
 
       static fields() {
         return {
-          id: this.attr(null),
-          userId: this.attr(null)
+          id: {
+            type: Number,
+            nullable: true
+          },
+          userId: {
+            type: Number,
+            nullable: true
+          }
         }
       }
     }

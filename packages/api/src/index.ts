@@ -6,23 +6,9 @@ import './types/eloqjs'
 export { Model } from './model/Model'
 
 /**
- * Attributes
- */
-export * as Attributes from './attributes'
-
-/**
- * Relationships
- */
-export * as Relations from './relations'
-
-/**
  * API
  */
-// export * as ModelAPI from './model/api'
-// export * as RelationsAPI from './relations/api'
-
 export { ModelAPIInstance, ModelAPIStatic } from './model/api'
-export { RelationAPI } from './relations/api'
 
 /**
  * HTTP Client
@@ -47,7 +33,12 @@ export type { Config } from './contracts/Config'
 /**
  * Plugin
  */
-export type { Options, Plugin, PluginComponents, use } from './plugins/use'
+export type {
+  Plugin,
+  PluginComponents,
+  PluginOptions,
+  use
+} from './plugins/use'
 
 /**
  * ELOQJS API (Default)

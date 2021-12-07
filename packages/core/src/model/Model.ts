@@ -1,9 +1,8 @@
 import defu from 'defu'
 
-import * as Attributes from '../attributes'
-import { Mutator, Mutators } from '../attributes/Contracts'
 import { Collection } from '../collection/Collection'
 import * as Relations from '../relations'
+import { RelationEnum } from '../relations/RelationEnum'
 import { AttrMap } from '../support/AttrMap'
 import { Map } from '../support/Map'
 import { Uid as UidGenerator } from '../support/Uid'
@@ -15,6 +14,7 @@ import {
   isEmptyString,
   isFunction,
   isModel,
+  isNull,
   isNullish,
   isNumber,
   isObject,
@@ -23,14 +23,17 @@ import {
   isUndefined,
   ValueOf
 } from '../support/Utils'
-import { Element } from '../types/Data'
+import { Element, Item } from '../types/Data'
+import { Mutators } from './Contracts'
 import * as Contracts from './Contracts'
+import { Field } from './field/Field'
+import { mutateHasOne } from './field/utils/relation'
 import * as Serialize from './Serialize'
 
-export type ModelFields = Record<string, Attributes.Attribute>
+export type ModelFields = Record<string, Field>
 export type ModelSchemas = Record<string, ModelFields>
 export type ModelRegistries = Record<string, ModelRegistry>
-export type ModelRegistry = Record<string, () => Attributes.Attribute>
+export type ModelRegistry = Record<string, () => Field>
 export type ModelReference<T> = Readonly<Omit<T, keyof Model>>
 
 export interface ModelOptions {
@@ -84,12 +87,6 @@ export class Model {
    * The primary key to be used for the model.
    */
   public static primaryKey: string = 'id'
-
-  /**
-   * Attributes that should be read-only.
-   * These attributes will be excluded from the payload when saving.
-   */
-  protected static readOnlyAttributes: string[] = []
 
   /**
    * The schema for the model. It contains the result of the `fields`
@@ -169,7 +166,8 @@ export class Model {
   /**
    * The unmutated relationships of the record.
    */
-  private readonly _relationships: AttrMap<Relations.Relation> = new AttrMap<Relations.Relation>()
+  private readonly _relationships: AttrMap<Relations.Relation> =
+    new AttrMap<Relations.Relation>()
 
   /**
    * The options of the record.
@@ -202,35 +200,35 @@ export class Model {
    * Get the model's ID.
    */
   public get $id(): string | number | null {
-    return this.$self().getIdFromRecord(this)
+    return this.$constructor().getIdFromRecord(this)
   }
 
   /**
    * Get the primary key for the model.
    */
   public get $primaryKey(): string {
-    return this.$self().primaryKey
+    return this.$constructor().primaryKey
   }
 
   /**
    * Determines whether the model has an ID.
    */
   public get $hasId(): boolean {
-    return this.$self().isValidId(this.$id)
+    return this.$constructor().isValidId(this.$id)
   }
 
   /**
    * Get the resource route of the model.
    */
   public get $resource(): string {
-    return this.$self().getResource()
+    return this.$constructor().getResource()
   }
 
   /**
    * Get the {@link entity} for this model.
    */
   public get $entity(): string {
-    return this.$self().entity
+    return this.$constructor().entity
   }
 
   public get $collections(): Collection<this>[] {
@@ -247,17 +245,14 @@ export class Model {
   /**
    * The definition of the fields of the model and its relations.
    */
-  public static fields(): ModelFields {
+  public static fields(): Record<string, any> {
     return {}
   }
 
   /**
    * Set the attribute to the registry.
    */
-  public static setRegistry(
-    key: string,
-    attribute: () => Attributes.Attribute
-  ): typeof Model {
+  public static setRegistry(key: string, attribute: () => Field): typeof Model {
     if (!this._registries[this.entity]) {
       this._registries[this.entity] = {}
     }
@@ -384,22 +379,9 @@ export class Model {
    * Determines whether the model has the given relationship.
    */
   public static hasRelation(relationship: typeof Model): boolean {
-    const fields = this.getFields()
-    let flag = false
-
-    for (const key in fields) {
-      const field = fields[key]
-
-      if (field instanceof Attributes.Relation) {
-        flag = field.related === relationship
-
-        if (flag) {
-          break
-        }
-      }
-    }
-
-    return flag
+    return Object.values(this.getFields()).some(
+      (field) => field.relation && field.type === relationship
+    )
   }
 
   /**
@@ -438,74 +420,19 @@ export class Model {
   }
 
   /**
-   * Create an attr attribute.
-   */
-  protected static attr(
-    value?: unknown,
-    mutator?: Mutator<any>
-  ): Attributes.Attr {
-    return new Attributes.Attr(this, value, mutator)
-  }
-
-  /**
-   * Create a string attribute.
-   */
-  protected static string(
-    value?: string | null,
-    mutator?: Mutator<string | null>
-  ): Attributes.String {
-    return new Attributes.String(this, value, mutator)
-  }
-
-  /**
-   * Create a number attribute.
-   */
-  protected static number(
-    value?: number | null,
-    mutator?: Mutator<number | null>
-  ): Attributes.Number {
-    return new Attributes.Number(this, value, mutator)
-  }
-
-  /**
-   * Create a boolean attribute.
-   */
-  protected static boolean(
-    value?: boolean | null,
-    mutator?: Mutator<boolean | null>
-  ): Attributes.Boolean {
-    return new Attributes.Boolean(this, value, mutator)
-  }
-
-  /**
-   * Create an uid attribute.
-   */
-  protected static uid(value?: () => string | number): Attributes.Uid {
-    return new Attributes.Uid(this, value)
-  }
-
-  /**
-   * Create a has one relationship.
-   */
-  protected static hasOne(related: typeof Model): Attributes.HasOne {
-    return new Attributes.HasOne(this, related)
-  }
-
-  /**
-   * Create a has many relationship.
-   */
-  protected static hasMany(related: typeof Model): Attributes.HasMany {
-    return new Attributes.HasMany(this, related)
-  }
-
-  /**
    * Build the schema by evaluating fields and registry.
    */
   private static _initializeSchema(): void {
     this._schemas[this.entity] = {}
+    const fields = this.fields()
+    const _fields = {}
+
+    for (const key in this.fields()) {
+      _fields[key] = new Field(key, fields[key], this)
+    }
 
     const registry = {
-      ...this.fields(),
+      ..._fields,
       ...this._registries[this.entity]
     }
 
@@ -569,7 +496,7 @@ export class Model {
   /**
    * Get the constructor of this model.
    */
-  public $self(): typeof Model {
+  public $constructor(): typeof Model {
     return this.constructor as typeof Model
   }
 
@@ -630,8 +557,8 @@ export class Model {
    */
   public $setOptions(options: ModelOptions): void {
     const _options = {
-      ...this.$self()._getDefaultOptions(),
-      ...this.$self().options(),
+      ...this.$constructor()._getDefaultOptions(),
+      ...this.$constructor().options(),
       ...options
     }
 
@@ -644,7 +571,7 @@ export class Model {
    * Get the model options.
    */
   public $getOptions(): ModelOptions {
-    return (this._options.toArray() as unknown) as ModelOptions
+    return this._options.toArray() as unknown as ModelOptions
   }
 
   /**
@@ -673,13 +600,13 @@ export class Model {
    * Get the model fields for this model.
    */
   public $fields(): ModelFields {
-    return this.$self().getFields()
+    return this.$constructor().getFields()
   }
 
   /**
    * Get a model field for this model.
    */
-  public $getField(attribute: string): Attributes.Attribute {
+  public $getField(attribute: string): Field {
     const fields = this.$fields()
 
     assert(attribute in fields, [
@@ -693,9 +620,29 @@ export class Model {
    * Set the value of an attribute and registers the magic "getter". This method should always be
    * used when setting the value of an attribute.
    *
-   * @return The value that was set.
+   * @returns The value that was set.
    */
-  public $set<T = any>(attribute: string, value: T): T | undefined {
+  public $set<T = any>(attribute: string | Element, value?: T): T | undefined {
+    // If the given attributes is a model, then serialize it.
+    if (isModel(attribute)) {
+      attribute = attribute.$toJson()
+    }
+
+    // Allow batch set of multiple attributes at once, ie. $set({...});
+    if (isPlainObject(attribute)) {
+      const fields = this.$fields()
+
+      for (const key in fields) {
+        if (!(key in attribute)) {
+          continue
+        }
+
+        this.$set(key, attribute[key])
+      }
+
+      return
+    }
+
     const defined = attribute in this
 
     // Only register the pass-through property if it's not already set up.
@@ -703,20 +650,58 @@ export class Model {
     if (!defined) {
       this._registerAttribute(attribute)
       this._registerReference(attribute)
+    } else {
+      const beforeSet = this.$emit('beforeSet', { attribute, value })
+
+      // Don't set if the hook return false.
+      if (beforeSet === false) {
+        return
+      }
     }
 
     // Current value of the attribute, or `undefined` if not set
     const previous: any = this._getAttribute(attribute)
     const field = this.$getField(attribute)
 
-    // If the field is an attribute and the value is undefined, then apply default value of the field.
-    // Or if the field is a relation, then apply the relation class.
-    if (isUndefined(value) || field instanceof Attributes.Relation) {
-      value = field.make(value, this, attribute, false) as T
-    }
+    // If we have a relationship that was previous defined, we need to access it and set the given attribute,
+    // so we don't generate a new model instance.
+    if (field.relation && previous instanceof Relations.Relation) {
+      switch (field.relation) {
+        // It's the "Has One" relation, so we access the model and set the attribute.
+        case RelationEnum.HAS_ONE: {
+          const model = previous.data as Item
 
-    // Set the attribute value.
-    this._setAttribute(attribute, value)
+          if (isNull(model)) {
+            previous.data = mutateHasOne(value as Element, previous.model)
+          } else {
+            model.$set(value as Element)
+          }
+
+          break
+        }
+        // It's the "Has Many" relation, so we access the collection and loop through its models,
+        // then set attributes of each one of them.
+        case RelationEnum.HAS_MANY: {
+          const collection = previous.data as Collection
+          let _value: unknown = value
+
+          if (_value instanceof Relations.Relation) {
+            _value = (_value.data as Collection).map((model) => model.$toJson())
+          }
+
+          collection.set(_value as Element | Element[])
+          break
+        }
+      }
+
+      // Otherwise, we just resolve the value
+    } else {
+      // Resolve the value
+      value = field.make(value, this)
+
+      // Set the attribute value.
+      this._setAttribute(attribute, value)
+    }
 
     // TODO: Deep equality comparison
     // Only consider a change if the attribute was already defined.
@@ -734,23 +719,17 @@ export class Model {
    * Return an attribute's value or a fallback value
    * if this model doesn't have the attribute.
    *
-   * @return The value of the attribute or `fallback` if not found.
+   * @returns The value of the attribute or `fallback` if not found.
    */
   public $get(attribute: string, fallback?: unknown): any {
     let value = this._getAttribute(attribute)
-    const field = this.$getField(attribute)
 
     // Use the fallback if the value is undefined.
     if (isUndefined(value)) {
       value = fallback
     }
 
-    // We don't want to mutate relationships.
-    if (field instanceof Attributes.Relation) {
-      return value
-    }
-
-    return field.make(value, this, attribute)
+    return value
   }
 
   /**
@@ -762,23 +741,17 @@ export class Model {
    * you're also editing that field. The title will be updating reactively if
    * it's bound to the active attribute, so bind to the saved one instead.
    *
-   * @return The value of the attribute's reference or `fallback` if not found.
+   * @returns The value of the attribute's reference or `fallback` if not found.
    */
   public $saved(attribute: string, fallback?: unknown): any {
     let value = this._getReference(attribute)
-    const field = this.$getField(attribute)
 
     // Use the fallback if the value is undefined.
     if (isUndefined(value)) {
       value = fallback
     }
 
-    // We don't want to mutate relationships.
-    if (field instanceof Attributes.Relation) {
-      return value
-    }
-
-    return field.make(value, this.$, attribute)
+    return value
   }
 
   /**
@@ -795,13 +768,18 @@ export class Model {
       let value = attributes[key]
 
       // Some times we might not want to fill relationships
-      if (field instanceof Attributes.Relation && !fillRelation) {
+      if (field.relation && !fillRelation) {
         continue
       }
 
       // It's not a requirement to respond with a complete dataset, so we merge with current data.
       if (isUndefined(value)) {
         value = this._getAttribute(key)
+      }
+
+      // We must get the data from relationships
+      if (field.relation && value instanceof Relations.Relation) {
+        value = value.data
       }
 
       this.$set(key, value)
@@ -815,6 +793,11 @@ export class Model {
     attributes: Element | string | number | null | undefined = undefined,
     options: ModelOptions = {}
   ): void {
+    // If the given attributes is a model, then serialize it.
+    if (isModel(attributes)) {
+      attributes = attributes.$toJson()
+    }
+
     // No content means we don't want to update the model at all.
     // The attributes that we passed in the request should now be considered
     // the source of truth, so we should update the reference attributes here.
@@ -833,15 +816,88 @@ export class Model {
       this.$syncChanges()
       this.$syncReference()
 
+      // We also need to sync all relationships that have been modified.
+      // To do so, we loop through the attributes.
+      const fields = this.$fields()
+
+      for (const key in fields) {
+        if (!(key in attributes)) {
+          continue
+        }
+
+        // Get the field by attribute's key
+        const field = fields[key]
+
+        // Then, we check if the field is a relationship.
+        if (field.relation) {
+          // If so, we get the relationship.
+          const relation = this._relationships.get(key)
+
+          // Now we switch between the different types of relations.
+          switch (field.relation) {
+            // It's the "Has One" relation, so we access the model and sync it.
+            case RelationEnum.HAS_ONE: {
+              const model = relation.data as Item
+
+              if (!isNull(model)) {
+                // We need to sync changes before references
+                model.$syncChanges()
+                model.$syncReference()
+              }
+              break
+            }
+            // It's the "Has Many" relation, so we access the collection and loop through its models,
+            // then sync each one of them.
+            case RelationEnum.HAS_MANY: {
+              const collection = relation.data as Collection
+              let attribute = attributes[key]
+
+              // If the given value was a relation, then get its collection
+              if (attribute instanceof Relations.Relation) {
+                attribute = attribute.data
+              }
+
+              for (const record of attribute) {
+                // Get the ID from model or record
+                const id = this.$constructor().getIdFromRecord(record)
+
+                // If we don't have an ID, we can't compare the model
+                if (isNull(id)) {
+                  break
+                }
+
+                // Retrieve a model from the collection based on the given ID
+                const model = collection.find(id)
+
+                // If we couldn't retrieve a model from the collection
+                if (isNull(model)) {
+                  break
+                }
+
+                // At this point, `model` should be an instance of Model.
+                if (!isModel(model)) {
+                  break
+                }
+
+                // We need to sync changes before references
+                model.$syncChanges()
+                model.$syncReference()
+              }
+              break
+            }
+          }
+        }
+      }
+
       // There is some data, but it's not an object, so we can assume that the
       // response only returned an ID for this model.
     } else {
-      const id = this.$self().parseId(attributes)
+      const id = this.$constructor().parseId(attributes)
 
       // It's possible that the response didn't actually return a valid
       // ID, so before we try to use it we should make sure that
       // we're not accidentally assigning the wrong data as ID.
-      if (this.$self().isValidId(id)) {
+      if (this.$constructor().isValidId(id)) {
         // If an ID already exists on this model and the returned
         // ID is not the same, this almost definitely indicates
         // an unexpected state. The default is to protect against this
@@ -866,7 +922,7 @@ export class Model {
   /**
    * Serialize given model POJO.
    */
-  public $serialize(options: Serialize.Options = {}): Element {
+  public $serialize(options: Serialize.SerializeOptions = {}): Element {
     const _option = {
       ...Serialize.defaultOptions,
       ...options
@@ -878,33 +934,28 @@ export class Model {
     for (const key in fields) {
       const field = fields[key]
 
-      switch (true) {
-        default:
-        case field instanceof Attributes.Type: {
-          if (_option.shouldPatch && this._attributes.isClean(key)) {
-            continue
-          }
+      // Exclude read-only attributes for requests.
+      if (field.readOnly && _option.isRequest) {
+        continue
+      }
 
-          const value = this._attributes.get(key)
-
-          // Exclude read-only attributes.
-          if (!this.$self().readOnlyAttributes.includes(key)) {
-            result[key] = Serialize.value(value)
-          }
-
-          break
+      if (field.relation) {
+        if (_option.shouldPatch && this._relationships.isClean(key)) {
+          continue
         }
-        case field instanceof Attributes.Relation: {
-          if (_option.shouldPatch && this._relationships.isClean(key)) {
-            continue
-          }
 
-          const value = this._relationships.get(key).data
+        const value = this._relationships.get(key).data
 
-          result[key] = _option.relations
-            ? Serialize.relation(value, _option.isRequest)
-            : Serialize.emptyRelation(value)
+        result[key] = _option.relations
+          ? Serialize.relation(value, _option.isRequest)
+          : Serialize.emptyRelation(value)
+      } else {
+        if (_option.shouldPatch && this._attributes.isClean(key)) {
+          continue
         }
+
+        const value = this._attributes.get(key)
+        result[key] = Serialize.value(value)
       }
     }
 
@@ -919,10 +970,10 @@ export class Model {
   }
 
   /**
-   * Serialize this model, or the given model, as POJO.
+   * Serialize this model as POJO.
    */
-  public $toJson(model?: Model, options: Serialize.Options = {}): Element {
-    return (model ?? this).$serialize(options)
+  public $toJson(options: Serialize.SerializeOptions = {}): Element {
+    return this.$serialize(options)
   }
 
   /**
@@ -992,6 +1043,35 @@ export class Model {
     this._attributes.syncReference(attributes)
     this._relationships.syncReference(attributes)
 
+    /*const fields = this.$fields()
+
+    for (const key in fields) {
+      const field = fields[key]
+
+      if (field.relation) {
+        const relation = this._relationships.get(key)
+
+        switch (field.relation) {
+          case RelationEnum.HAS_ONE: {
+            const model = relation.data as Item
+
+            if (!isNull(model)) {
+              model.$syncReference()
+            }
+            break
+          }
+          case RelationEnum.HAS_MANY: {
+            const collection = relation.data as Collection
+            collection.syncReference()
+            break
+          }
+          default: {
+            //
+          }
+        }
+      }
+    }*/
+
     // A copy of the saved state after the attributes were synced.
     const after = this._getReferences()
 
@@ -1057,17 +1137,8 @@ export class Model {
    * attributes, and is not reversible.
    */
   public $clearAttributes(): void {
-    const fields = this.$fields()
-
     for (const key in this.$fields()) {
-      const field = fields[key]
-
-      if (
-        field instanceof Attributes.Type ||
-        field instanceof Attributes.Relation
-      ) {
-        this[key] = undefined
-      }
+      this[key] = undefined
     }
 
     this._attributes.syncReference()
@@ -1135,7 +1206,7 @@ export class Model {
     const hooks: Contracts.MutationHook[] = []
 
     // Build global hooks
-    hooks.push(...this.$self()._buildGlobalHooks(event))
+    hooks.push(...this.$constructor()._buildGlobalHooks(event))
 
     // Build local hooks
     hooks.push(...this._buildLocalHooks(event))
@@ -1201,7 +1272,7 @@ export class Model {
    * Bootstrap this model.
    */
   private _boot(options: ModelOptions): void {
-    this.$self()._boot()
+    this.$constructor()._boot()
     this._generateUid()
     this.$setOptions(options)
   }
@@ -1260,18 +1331,10 @@ export class Model {
     const field = this.$getField(attribute)
 
     // Set the attribute based on field type.
-    switch (true) {
-      default:
-      case field instanceof Attributes.Type: {
-        this._attributes.set(attribute, value)
-
-        break
-      }
-      case field instanceof Attributes.Relation: {
-        this._relationships.set(attribute, value)
-
-        break
-      }
+    if (field.relation) {
+      this._relationships.set(attribute, value)
+    } else {
+      this._attributes.set(attribute, value)
     }
 
     return value
@@ -1280,25 +1343,17 @@ export class Model {
   /**
    * Get an attribute from {@link _attributes} or {@link _relationships}, based on field type.
    *
-   * @return The unmutated value of attribute.
+   * @returns The unmutated value of attribute.
    */
   private _getAttribute(attribute: string): any {
     const field = this.$getField(attribute)
     let value: any
 
     // Get the attribute based on field type.
-    switch (true) {
-      default:
-      case field instanceof Attributes.Type: {
-        value = this._attributes.get(attribute)
-
-        break
-      }
-      case field instanceof Attributes.Relation: {
-        value = this._relationships.get(attribute)
-
-        break
-      }
+    if (field.relation) {
+      value = this._relationships.get(attribute)
+    } else {
+      value = this._attributes.get(attribute)
     }
 
     return value
@@ -1310,7 +1365,7 @@ export class Model {
    * Do not confuse with the public method {@link $getAttributes},
    * which serializes the model and get all attributes without relationships.
    *
-   * @return The unmutated attributes.
+   * @returns The unmutated attributes.
    */
   private _getAttributes(): Record<string, any> {
     const attributes = {}
@@ -1325,25 +1380,17 @@ export class Model {
   /**
    * Get an attribute's reference from {@link _attributes} or {@link _relationships}, based on field type.
    *
-   * @return The unmutated value of attribute's reference.
+   * @returns The unmutated value of attribute's reference.
    */
   private _getReference(attribute: string): any {
     const field = this.$getField(attribute)
     let value: any
 
     // Get the attribute based on field type.
-    switch (true) {
-      default:
-      case field instanceof Attributes.Type: {
-        value = this._attributes.$get(attribute)
-
-        break
-      }
-      case field instanceof Attributes.Relation: {
-        value = this._relationships.$get(attribute)
-
-        break
-      }
+    if (field.relation) {
+      value = this._relationships.$get(attribute)
+    } else {
+      value = this._attributes.$get(attribute)
     }
 
     return value
@@ -1352,7 +1399,7 @@ export class Model {
   /**
    * Get references of all attributes from {@link _attributes} and {@link _relationships}.
    *
-   * @return The unmutated references of attributes.
+   * @returns The unmutated references of attributes.
    */
   private _getReferences(): Record<string, any> {
     const references = {}

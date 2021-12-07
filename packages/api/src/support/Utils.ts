@@ -61,6 +61,32 @@ export function isObject(value: unknown): value is Record<string, unknown> {
 }
 
 /**
+ * Determines whether the given value is the type of `object`, that is, an object created by the
+ * `Object` constructor or one with a `[[Prototype]]` of `null`.
+ *
+ * Based on [Lodash#isPlainObject]{@link https://github.com/lodash/lodash/blob/master/isPlainObject.js} (MIT)
+ */
+export function isPlainObject(
+  value: unknown
+): value is Record<string, unknown> {
+  if (!isObject(value) || getTag(value) != '[object Object]') {
+    return false
+  }
+
+  if (isNull(Object.getPrototypeOf(value))) {
+    return true
+  }
+
+  let proto = value
+
+  while (!isNull(Object.getPrototypeOf(proto))) {
+    proto = Object.getPrototypeOf(proto)
+  }
+
+  return Object.getPrototypeOf(value) === proto
+}
+
+/**
  * Determines whether the given value is the type of `array`.
  */
 export function isArray(value: unknown): value is unknown[] {
@@ -140,4 +166,21 @@ export function size(collection: unknown[] | Record<string, unknown>): number {
   return isArray(collection)
     ? collection.length
     : Object.keys(collection).length
+}
+
+/**
+ * Gets the `toStringTag` of `value`.
+ *
+ * @param value The value to query.
+ * @returns Returns the `toStringTag`.
+ *
+ * Based on
+ * [Lodash#internal#getTag]{@link https://github.com/lodash/lodash/blob/2f79053d7bc7c9c9561a30dda202b3dcd2b72b90/.internal/getTag.js}
+ * (MIT)
+ */
+function getTag(value: unknown): string {
+  if (value == null) {
+    return isUndefined(value) ? '[object Undefined]' : '[object Null]'
+  }
+  return Object.prototype.toString.call(value)
 }

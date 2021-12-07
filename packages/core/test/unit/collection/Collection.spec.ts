@@ -10,7 +10,10 @@ describe('Unit – Collection', () => {
 
     static fields() {
       return {
-        id: this.attr(null)
+        id: {
+          type: Number,
+          nullable: true
+        }
       }
     }
   }

@@ -6,22 +6,22 @@
     "lumen:watch": "yarn run lumen:dev --watch"
   },
   "dependencies": {
-    "@eloqjs/api": "0.0.0-development",
-    "@eloqjs/core": "0.0.0-development",
-    "axios": "^0.21.1",
+    "@eloqjs/api": "file:../../packages/api",
+    "@eloqjs/core": "file:../../packages/core",
+    "axios": "^0.24.0",
     "cross-env": "^5.2.0",
     "debounce": "^1.2.1",
     "element-theme-default": "^1.4.13",
-    "element-ui": "^2.11.1",
+    "element-ui": "^2.15.6",
     "laravel-mix": "4.1.2",
-    "lodash": "^4.17.19",
-    "node-sass": "^4.12.0",
-    "sass-loader": "^7.2.0",
-    "vue": "^2.6.10"
+    "lodash": "^4.17.21",
+    "node-sass": "^6.0.1",
+    "sass-loader": "^12.3.0",
+    "vue": "^2.6.14"
   },
   "devDependencies": {
-    "browser-sync": "^2.26.14",
+    "browser-sync": "^2.27.7",
     "browser-sync-webpack-plugin": "2.0.1",
-    "vue-template-compiler": "^2.6.10"
+    "vue-template-compiler": "^2.6.14"
   }
 }

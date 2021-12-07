@@ -18,11 +18,6 @@ export type { CollectionOptions } from './collection/Collection'
 export { Collection } from './collection/Collection'
 
 /**
- * Attributes
- */
-export * as Attributes from './attributes'
-
-/**
  * Relationships
  */
 export * as Relations from './relations'
@@ -35,35 +30,24 @@ export type { Element, Instance, Item } from './types/Data'
 /**
  * Plugin
  */
-export type { Options, Plugin, PluginComponents, use } from './plugins/use'
+export type {
+  Plugin,
+  PluginComponents,
+  PluginOptions,
+  use
+} from './plugins/use'
 
 /**
  * ELOQJS (Default)
  */
-import {
-  Attr,
-  Attribute,
-  Boolean,
-  HasMany,
-  HasOne,
-  Number,
-  Relation,
-  String,
-  Type
-} from './attributes'
+import { Collection } from './collection/Collection'
 import { Model } from './model/Model'
 import { use } from './plugins/use'
+import { Relation } from './relations'
 
 export default {
   use,
   Model,
-  Attribute,
-  Type,
-  Attr,
-  String,
-  Number,
-  Boolean,
-  Relation,
-  HasOne,
-  HasMany
+  Collection,
+  Relation
 }

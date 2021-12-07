@@ -25,3 +25,7 @@ export interface GlobalHooks {
 export interface LocalHooks {
   [on: string]: LocalHook[]
 }
+
+export type Mutator<T> = (value: T) => T
+
+export type Mutators = Record<string, Mutator<any>>
