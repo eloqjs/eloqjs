@@ -724,8 +724,8 @@ export class Model {
   public $get(attribute: string, fallback?: unknown): any {
     let value = this._getAttribute(attribute)
 
-    // Use the fallback if the value is undefined.
-    if (isUndefined(value)) {
+    // Use the fallback if the value is nullish.
+    if (isNullish(value)) {
       value = fallback
     }
 
