@@ -199,7 +199,7 @@ export class Model {
   /**
    * Get the model's ID.
    */
-  public get $id(): string | number | null {
+  public get $id(): string | number | undefined {
     return this.$constructor().getIdFromRecord(this)
   }
 
@@ -263,7 +263,7 @@ export class Model {
   }
 
   /**
-   * Clear the list of booted models so they can be re-booted.
+   * Clear the list of booted models, so they can be re-booted.
    */
   public static clearBootedModels(): void {
     this._booted = {}
@@ -308,7 +308,7 @@ export class Model {
   public static getIdFromRecord<M extends typeof Model>(
     this: M,
     record: InstanceType<M> | Element
-  ): string | number | null {
+  ): string | number | undefined {
     // Get the primary key value from attributes.
     const value = isModel(record)
       ? record._attributes.get(this.primaryKey)
@@ -320,12 +320,12 @@ export class Model {
   /**
    * Get correct index id, which is `string` | `number`, from the given value.
    */
-  public static getIdFromValue(value: unknown): string | number | null {
+  public static getIdFromValue(value: unknown): string | number | undefined {
     if (this.isValidId(value)) {
       return value
     }
 
-    return null
+    return undefined
   }
 
   /**
@@ -360,11 +360,7 @@ export class Model {
       return true
     }
 
-    if (isNumber(value)) {
-      return true
-    }
-
-    return false
+    return !!isNumber(value)
   }
 
   /**
@@ -862,7 +858,7 @@ export class Model {
                 const id = this.$constructor().getIdFromRecord(record)
 
                 // If we don't have an ID, we can't compare the model
-                if (isNull(id)) {
+                if (isUndefined(id)) {
                   break
                 }
 
