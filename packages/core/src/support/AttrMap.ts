@@ -21,6 +21,10 @@ export class AttrMap<T> extends Map<T> {
     super.set(key, value)
   }
 
+  public $set(key: string, value: T): void {
+    this.reference[key] = value
+  }
+
   public $get(key: string): T {
     return this.reference[key]
   }

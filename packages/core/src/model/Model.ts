@@ -1374,6 +1374,22 @@ export class Model {
   }
 
   /**
+   * Force set a reference in `{@link _attributes}` or {@link _relationships}, based on field type.
+   */
+  private _setReference(attribute: string, value: any): any {
+    const field = this.$getField(attribute)
+
+    // Set the attribute based on field type.
+    if (field.relation) {
+      this._relationships.$set(attribute, value)
+    } else {
+      this._attributes.$set(attribute, value)
+    }
+
+    return value
+  }
+
+  /**
    * Get an attribute's reference from {@link _attributes} or {@link _relationships}, based on field type.
    *
    * @returns The unmutated value of attribute's reference.
