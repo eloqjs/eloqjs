@@ -972,6 +972,42 @@ export class Model {
     return this.$serialize(options)
   }
 
+  public $clone(): this {
+    const clone = new (this.$constructor())() as this
+
+    // Clone options
+    const options = this.$getOptions()
+    clone.$setOptions(options)
+
+    // Clone collections register
+    clone.$registerCollection(this.$collections)
+
+    // Clone hooks
+    for (const on in this._localHooks) {
+      for (const hook of this._localHooks[on]) {
+        clone.$on(on, hook.callback)
+      }
+    }
+
+    // Clone current attributes
+    for (const [attribute, value] of Object.entries(this._getAttributes())) {
+      clone._setAttribute(attribute, value)
+    }
+
+    // Clone references
+    // Must be cloned after attributes
+    for (const [attribute, value] of Object.entries(this._getReferences())) {
+      clone._setReference(attribute, value)
+    }
+
+    // Clone changes
+    for (const [attribute, value] of Object.entries(this.$getChanges())) {
+      clone._setChange(attribute, value)
+    }
+
+    return clone
+  }
+
   /**
    * Adds this model to all registered collections.
    */
