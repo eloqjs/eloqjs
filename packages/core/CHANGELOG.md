@@ -3,6 +3,27 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.0.1-alpha.9](https://github.com/eloqjs/eloqjs/compare/v0.0.1-alpha.8...v0.0.1-alpha.9) (2022-02-03)
+
+
+### Bug Fixes
+
+* **core-collection:** fix `sum` method ([720b48c](https://github.com/eloqjs/eloqjs/commit/720b48c3d16e3c031dfb3b3f10dad8f026b8cd21))
+* **core-model:** `$id` should return `undefined` ([6f82968](https://github.com/eloqjs/eloqjs/commit/6f8296806325aa69b251190db952ac32cbaba56e))
+* **core-model:** use the fallback if the value is nullish ([c5aa229](https://github.com/eloqjs/eloqjs/commit/c5aa2290885c7aa6bf0fb0a6e27fbbab3d80add0))
+* **core-model:** use the fallback if the value is nullish ([21304d9](https://github.com/eloqjs/eloqjs/commit/21304d996ee9ab3bba3893393895c8b213b2a83a))
+
+
+### Features
+
+* **core-model:** add `_setChange` method ([b01c885](https://github.com/eloqjs/eloqjs/commit/b01c8857a8a48cd3c4bd0bf0e9f3d67cd7c6956b))
+* **core-model:** add `_setReference` method ([d451bed](https://github.com/eloqjs/eloqjs/commit/d451bed789cfbd1bc329fbe6b23699172a1a5c71))
+* **core-model:** add `$clone` method ([cabcf95](https://github.com/eloqjs/eloqjs/commit/cabcf951e41e9182b3e6cca5a3ebb76644c4a95b))
+
+
+
+
+
 ## [0.0.1-alpha.8](https://github.com/eloqjs/eloqjs/compare/v0.0.1-alpha.7...v0.0.1-alpha.8) (2021-11-26)
 
 
