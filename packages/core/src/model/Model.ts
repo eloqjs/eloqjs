@@ -721,7 +721,7 @@ export class Model {
     let value = this._getAttribute(attribute)
 
     // Use the fallback if the value is nullish.
-    if (isNullish(value)) {
+    if (isNullish(value) && fallback) {
       value = fallback
     }
 
@@ -742,8 +742,8 @@ export class Model {
   public $saved(attribute: string, fallback?: unknown): any {
     let value = this._getReference(attribute)
 
-    // Use the fallback if the value is undefined.
-    if (isUndefined(value)) {
+    // Use the fallback if the value is nullish.
+    if (isNullish(value) && fallback) {
       value = fallback
     }
 
