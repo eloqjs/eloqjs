@@ -14,6 +14,17 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 
 
+## [0.0.1-alpha.9](https://github.com/eloqjs/eloqjs/compare/v0.0.1-alpha.8...v0.0.1-alpha.9) (2022-02-03)
+
+
+### Bug Fixes
+
+* **api:** check if `$id` is `undefined` ([f930df1](https://github.com/eloqjs/eloqjs/commit/f930df1761fe83acfabb2f87be56e9b567991736))
+
+
+
+
+
 ## [0.0.1-alpha.8](https://github.com/eloqjs/eloqjs/compare/v0.0.1-alpha.7...v0.0.1-alpha.8) (2021-11-26)
 
 **Note:** Version bump only for package @eloqjs/api
