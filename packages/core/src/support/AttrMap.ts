@@ -124,6 +124,15 @@ export class AttrMap<T> extends Map<T> {
    *
    * @returns array
    */
+  public setChange(key: string, value: T): void {
+    this.changes[key] = value
+  }
+
+  /**
+   * Get the attributes that were changed.
+   *
+   * @returns array
+   */
   public getChanges(): Record<string, T> {
     return this.changes
   }

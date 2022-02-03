@@ -1424,6 +1424,22 @@ export class Model {
   }
 
   /**
+   * Force set a change in `{@link _attributes}` or {@link _relationships}, based on field type.
+   */
+  private _setChange(attribute: string, value: any): any {
+    const field = this.$getField(attribute)
+
+    // Set the attribute based on field type.
+    if (field.relation) {
+      this._relationships.setChange(attribute, value)
+    } else {
+      this._attributes.setChange(attribute, value)
+    }
+
+    return value
+  }
+
+  /**
    * Get local hook of the given name as array by stripping id key and keep
    * only hook functions.
    */
