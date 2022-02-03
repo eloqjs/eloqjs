@@ -14,6 +14,18 @@ describe('Feature – Collections – Sum', () => {
     expect(collection.sum('price')).toBe(750)
   })
 
+  it('should sum all models even if column is string', () => {
+    const collection = new Collection<Product>([], {
+      model: Product
+    })
+
+    collection.add({ price: '150' })
+    collection.add({ price: 250 })
+    collection.add({ price: '350' })
+
+    expect(collection.sum('price')).toBe(750)
+  })
+
   it('should sum all models even if column does not exist', () => {
     const collection = new Collection<Product>([], {
       model: Product
