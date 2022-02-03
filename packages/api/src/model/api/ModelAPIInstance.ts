@@ -6,7 +6,7 @@ import { HttpClientOptions } from '../../httpclient/HttpClientOptions'
 import { Operation } from '../../operation/Operation'
 import { DeletePromise } from '../../response/DeletePromise'
 import { SavePromise } from '../../response/SavePromise'
-import { assert, isEmpty, isNull } from '../../support/Utils'
+import { assert, isEmpty, isUndefined } from '../../support/Utils'
 import { ModelAPIStatic } from './ModelAPIStatic'
 
 export class ModelAPIInstance<M extends Model = Model> {
@@ -85,7 +85,7 @@ export class ModelAPIInstance<M extends Model = Model> {
 
     const selfId = this.model.$id
 
-    assert(!isNull(selfId), [
+    assert(!isUndefined(selfId), [
       'Cannot attach a related model to a parent that has no ID.'
     ])
 
@@ -110,13 +110,15 @@ export class ModelAPIInstance<M extends Model = Model> {
 
     const selfId = this.model.$id
 
-    assert(!isNull(selfId), [
+    assert(!isUndefined(selfId), [
       'Cannot detach a related model from a parent that has no ID.'
     ])
 
     const relationId = relationship.$id
 
-    assert(!isNull(relationId), ['Cannot detach a related model with no ID.'])
+    assert(!isUndefined(relationId), [
+      'Cannot detach a related model with no ID.'
+    ])
 
     return this._operation(relationship).delete(
       `${this.model.$resource}/${selfId}/${relationship.$resource}/${relationId}`
@@ -131,14 +133,16 @@ export class ModelAPIInstance<M extends Model = Model> {
 
     const selfId = this.model.$id
 
-    assert(!isNull(selfId), [
+    assert(!isUndefined(selfId), [
       'Cannot sync a related model to a parent that has no ID.'
     ])
 
     // Get ID before serialize, otherwise the ID may not be available.
     const relationId = relationship.$id
 
-    assert(!isNull(relationId), ['Cannot sync a related model with no ID.'])
+    assert(!isUndefined(relationId), [
+      'Cannot sync a related model with no ID.'
+    ])
 
     return this._operation(relationship).update(
       `${this.model.$resource}/${selfId}/${relationship.$resource}/${relationId}`

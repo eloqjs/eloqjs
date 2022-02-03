@@ -199,7 +199,7 @@ export class Model {
   /**
    * Get the model's ID.
    */
-  public get $id(): string | number | null {
+  public get $id(): string | number | undefined {
     return this.$constructor().getIdFromRecord(this)
   }
 
@@ -263,7 +263,7 @@ export class Model {
   }
 
   /**
-   * Clear the list of booted models so they can be re-booted.
+   * Clear the list of booted models, so they can be re-booted.
    */
   public static clearBootedModels(): void {
     this._booted = {}
@@ -308,7 +308,7 @@ export class Model {
   public static getIdFromRecord<M extends typeof Model>(
     this: M,
     record: InstanceType<M> | Element
-  ): string | number | null {
+  ): string | number | undefined {
     // Get the primary key value from attributes.
     const value = isModel(record)
       ? record._attributes.get(this.primaryKey)
@@ -320,12 +320,12 @@ export class Model {
   /**
    * Get correct index id, which is `string` | `number`, from the given value.
    */
-  public static getIdFromValue(value: unknown): string | number | null {
+  public static getIdFromValue(value: unknown): string | number | undefined {
     if (this.isValidId(value)) {
       return value
     }
 
-    return null
+    return undefined
   }
 
   /**
@@ -360,11 +360,7 @@ export class Model {
       return true
     }
 
-    if (isNumber(value)) {
-      return true
-    }
-
-    return false
+    return !!isNumber(value)
   }
 
   /**
@@ -724,8 +720,8 @@ export class Model {
   public $get(attribute: string, fallback?: unknown): any {
     let value = this._getAttribute(attribute)
 
-    // Use the fallback if the value is undefined.
-    if (isUndefined(value)) {
+    // Use the fallback if the value is nullish.
+    if (isNullish(value) && fallback) {
       value = fallback
     }
 
@@ -746,8 +742,8 @@ export class Model {
   public $saved(attribute: string, fallback?: unknown): any {
     let value = this._getReference(attribute)
 
-    // Use the fallback if the value is undefined.
-    if (isUndefined(value)) {
+    // Use the fallback if the value is nullish.
+    if (isNullish(value) && fallback) {
       value = fallback
     }
 
@@ -862,7 +858,7 @@ export class Model {
                 const id = this.$constructor().getIdFromRecord(record)
 
                 // If we don't have an ID, we can't compare the model
-                if (isNull(id)) {
+                if (isUndefined(id)) {
                   break
                 }
 
@@ -974,6 +970,42 @@ export class Model {
    */
   public $toJson(options: Serialize.SerializeOptions = {}): Element {
     return this.$serialize(options)
+  }
+
+  public $clone(): this {
+    const clone = new (this.$constructor())() as this
+
+    // Clone options
+    const options = this.$getOptions()
+    clone.$setOptions(options)
+
+    // Clone collections register
+    clone.$registerCollection(this.$collections)
+
+    // Clone hooks
+    for (const on in this._localHooks) {
+      for (const hook of this._localHooks[on]) {
+        clone.$on(on, hook.callback)
+      }
+    }
+
+    // Clone current attributes
+    for (const [attribute, value] of Object.entries(this._getAttributes())) {
+      clone._setAttribute(attribute, value)
+    }
+
+    // Clone references
+    // Must be cloned after attributes
+    for (const [attribute, value] of Object.entries(this._getReferences())) {
+      clone._setReference(attribute, value)
+    }
+
+    // Clone changes
+    for (const [attribute, value] of Object.entries(this.$getChanges())) {
+      clone._setChange(attribute, value)
+    }
+
+    return clone
   }
 
   /**
@@ -1378,6 +1410,22 @@ export class Model {
   }
 
   /**
+   * Force set a reference in `{@link _attributes}` or {@link _relationships}, based on field type.
+   */
+  private _setReference(attribute: string, value: any): any {
+    const field = this.$getField(attribute)
+
+    // Set the attribute based on field type.
+    if (field.relation) {
+      this._relationships.$set(attribute, value)
+    } else {
+      this._attributes.$set(attribute, value)
+    }
+
+    return value
+  }
+
+  /**
    * Get an attribute's reference from {@link _attributes} or {@link _relationships}, based on field type.
    *
    * @returns The unmutated value of attribute's reference.
@@ -1409,6 +1457,22 @@ export class Model {
     }
 
     return references
+  }
+
+  /**
+   * Force set a change in `{@link _attributes}` or {@link _relationships}, based on field type.
+   */
+  private _setChange(attribute: string, value: any): any {
+    const field = this.$getField(attribute)
+
+    // Set the attribute based on field type.
+    if (field.relation) {
+      this._relationships.setChange(attribute, value)
+    } else {
+      this._attributes.setChange(attribute, value)
+    }
+
+    return value
   }
 
   /**

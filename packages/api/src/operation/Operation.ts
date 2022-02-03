@@ -7,7 +7,7 @@ import { RequestOperation } from '../request/RequestOperation'
 import { DeletePromise } from '../response/DeletePromise'
 import { SavePromise } from '../response/SavePromise'
 import { SaveResponse } from '../response/SaveResponse'
-import { assert, isEmpty, isNull } from '../support/Utils'
+import { assert, isEmpty, isUndefined } from '../support/Utils'
 
 export class Operation<M extends Model = Model> {
   protected model: M
@@ -114,7 +114,7 @@ export class Operation<M extends Model = Model> {
   public update(url?: string): SavePromise<M> {
     const id = this.model.$id
 
-    assert(!isNull(id), ['Cannot update a model with no ID.'])
+    assert(!isUndefined(id), ['Cannot update a model with no ID.'])
 
     const record = this.model.$serialize({
       isRequest: true,
@@ -198,7 +198,7 @@ export class Operation<M extends Model = Model> {
     // Get ID before serialize, otherwise the ID may not be available.
     const id = this.model.$id
 
-    assert(!isNull(id), ['Cannot delete a model with no ID.'])
+    assert(!isUndefined(id), ['Cannot delete a model with no ID.'])
 
     return this.requestHandler.request(
       {

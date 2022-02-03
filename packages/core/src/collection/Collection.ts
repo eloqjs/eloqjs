@@ -527,7 +527,7 @@ export class Collection<M extends Model = Model> {
   /**
    * Returns an array of primary keys.
    */
-  public modelKeys(): (string | number | null)[] {
+  public modelKeys(): (string | number | undefined)[] {
     return this.models.map((model) => model.$id)
   }
 
@@ -907,7 +907,7 @@ export class Collection<M extends Model = Model> {
     const id = Model.getIdFromRecord(record)
 
     // If we don't have an ID, we can't compare the model, so just add the model to the collection
-    if (isNull(id)) {
+    if (isUndefined(id)) {
       return this.add(record)
     }
 
@@ -1056,7 +1056,7 @@ export class Collection<M extends Model = Model> {
         value = model[key as string] as unknown as string | number
       }
 
-      total += isString(value) ? parseFloat(value) : value
+      total += (isString(value) ? parseFloat(value) : value) || 0
     }
 
     return parseFloat(total.toPrecision(12))
@@ -1146,7 +1146,7 @@ export class Collection<M extends Model = Model> {
     const id = Model.getIdFromRecord(record)
 
     // If we don't have an ID, we can't compare the model, so just add the model to the collection
-    if (isNull(id)) {
+    if (isUndefined(id)) {
       return this.add(record)
     }
 
