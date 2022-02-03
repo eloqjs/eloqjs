@@ -1056,7 +1056,7 @@ export class Collection<M extends Model = Model> {
         value = model[key as string] as unknown as string | number
       }
 
-      total += isString(value) ? parseFloat(value) : value
+      total += (isString(value) ? parseFloat(value) : value) || 0
     }
 
     return parseFloat(total.toPrecision(12))
