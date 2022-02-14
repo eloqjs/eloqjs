@@ -38,11 +38,6 @@ export type ModelReference<T> = Readonly<Omit<T, keyof Model>>
 
 export interface ModelOptions {
   /**
-   * Whether this model should fill the given attributes on instantiate.
-   */
-  fill?: boolean
-
-  /**
    * Whether this model should fill relationships on instantiate.
    */
   relations?: boolean
@@ -191,9 +186,7 @@ export class Model {
       this.$registerCollection(collection as Collection<this>)
     }
 
-    const fill = this.$getOption('fill') ?? true
-
-    fill && this.$fill(attributes)
+    this.$fill(attributes)
   }
 
   /**
