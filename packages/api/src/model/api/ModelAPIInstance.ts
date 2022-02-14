@@ -89,7 +89,7 @@ export class ModelAPIInstance<M extends Model = Model> {
       'Cannot attach a related model to a parent that has no ID.'
     ])
 
-    const record = relationship.$serialize({
+    const record = relationship.$getAttributes({
       isRequest: true
     })
 
