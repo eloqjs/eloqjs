@@ -18,10 +18,30 @@ describe('Unit – Model - Serialization', () => {
 
     const user = new User({ id: 1, name: 'John Doe' })
 
-    const json = user.$toJson()
+    const json = user.$serialize()
 
     expect(json).not.toBeInstanceOf(User)
-    expect(json).toEqual({ id: 1, name: 'John Doe' })
+    expect(json).toEqual({
+      entity: 'users',
+      options: {
+        relations: true,
+        overwriteIdentifier: false,
+        patch: false,
+        saveUnchanged: true
+      },
+      attributes: {
+        data: {
+          id: 1,
+          name: 'John Doe'
+        },
+        reference: {
+          id: 1,
+          name: 'John Doe'
+        },
+        changes: {}
+      },
+      relationships: {}
+    })
   })
 
   it('can serialize nested fields into json', () => {
@@ -89,22 +109,97 @@ describe('Unit – Model - Serialization', () => {
       ]
     })
 
-    const json = user.$toJson()
-
-    const expected = {
-      id: 1,
-      phone: { id: 2, user_id: 1 },
-      posts: [
-        { id: 3, user_id: 1 },
-        { id: 4, user_id: 1 }
-      ]
-    }
+    const json = user.$serialize()
 
     expect(json).not.toBeInstanceOf(User)
-    expect(json.phone).not.toBeInstanceOf(Phone)
-    expect(json.posts[0]).not.toBeInstanceOf(Post)
-    expect(json.posts[1]).not.toBeInstanceOf(Post)
-    expect(json).toEqual(expected)
+    expect(json.relationships.phone).not.toBeInstanceOf(Phone)
+    expect(json.relationships.posts[0]).not.toBeInstanceOf(Post)
+    expect(json.relationships.posts[1]).not.toBeInstanceOf(Post)
+    expect(json).toEqual({
+      entity: 'users',
+      options: {
+        relations: true,
+        overwriteIdentifier: false,
+        patch: false,
+        saveUnchanged: true
+      },
+      attributes: {
+        data: {
+          id: 1
+        },
+        reference: {
+          id: 1
+        },
+        changes: {}
+      },
+      relationships: {
+        phone: {
+          entity: 'phones',
+          options: {
+            relations: true,
+            overwriteIdentifier: false,
+            patch: false,
+            saveUnchanged: true
+          },
+          attributes: {
+            data: {
+              id: 2,
+              user_id: 1
+            },
+            reference: {
+              id: 2,
+              user_id: 1
+            },
+            changes: {}
+          },
+          relationships: {}
+        },
+        posts: [
+          {
+            entity: 'posts',
+            options: {
+              relations: true,
+              overwriteIdentifier: false,
+              patch: false,
+              saveUnchanged: true
+            },
+            attributes: {
+              data: {
+                id: 3,
+                user_id: 1
+              },
+              reference: {
+                id: 3,
+                user_id: 1
+              },
+              changes: {}
+            },
+            relationships: {}
+          },
+          {
+            entity: 'posts',
+            options: {
+              relations: true,
+              overwriteIdentifier: false,
+              patch: false,
+              saveUnchanged: true
+            },
+            attributes: {
+              data: {
+                id: 4,
+                user_id: 1
+              },
+              reference: {
+                id: 4,
+                user_id: 1
+              },
+              changes: {}
+            },
+            relationships: {}
+          }
+        ]
+      }
+    })
   })
 
   it('can serialize empty relation into json', () => {
@@ -144,12 +239,28 @@ describe('Unit – Model - Serialization', () => {
 
     const user = new User({ id: 1 })
 
-    const json = user.$toJson()
-
-    const expected = { id: 1, phone: null }
+    const json = user.$serialize()
 
     expect(json).not.toBeInstanceOf(User)
-    expect(json).toEqual(expected)
+    expect(json).toEqual({
+      entity: 'users',
+      options: {
+        relations: true,
+        overwriteIdentifier: false,
+        patch: false,
+        saveUnchanged: true
+      },
+      attributes: {
+        data: {
+          id: 1
+        },
+        reference: {
+          id: 1
+        },
+        changes: {}
+      },
+      relationships: {}
+    })
   })
 
   it('can serialize the array field', () => {
@@ -169,9 +280,29 @@ describe('Unit – Model - Serialization', () => {
 
     const user = new User({ id: 1, array: [1, 2] })
 
-    const json = user.$toJson()
+    const json = user.$serialize()
 
     expect(json).not.toBeInstanceOf(User)
-    expect(json).toEqual({ id: 1, array: [1, 2] })
+    expect(json).toEqual({
+      entity: 'users',
+      options: {
+        relations: true,
+        overwriteIdentifier: false,
+        patch: false,
+        saveUnchanged: true
+      },
+      attributes: {
+        data: {
+          id: 1,
+          array: [1, 2]
+        },
+        reference: {
+          id: 1,
+          array: [1, 2]
+        },
+        changes: {}
+      },
+      relationships: {}
+    })
   })
 })
