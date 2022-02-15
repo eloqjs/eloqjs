@@ -1,7 +1,8 @@
 import BaseModel from '../../dummy/models/BaseModel'
+import User from '../../feature/collections/dummy/models/User'
 
 describe('Unit – Model - Serialization', () => {
-  it('can serialize own fields into json', () => {
+  it('can serialize own fields', () => {
     class User extends BaseModel {
       static entity = 'users'
 
@@ -44,7 +45,7 @@ describe('Unit – Model - Serialization', () => {
     })
   })
 
-  it('can serialize nested fields into json', () => {
+  it('can serialize relationships', () => {
     class User extends BaseModel {
       static entity = 'users'
 
@@ -202,7 +203,7 @@ describe('Unit – Model - Serialization', () => {
     })
   })
 
-  it('can serialize empty relation into json', () => {
+  it('can serialize empty relationships', () => {
     class User extends BaseModel {
       static entity = 'users'
 
@@ -263,46 +264,36 @@ describe('Unit – Model - Serialization', () => {
     })
   })
 
-  it('can serialize the array field', () => {
-    class User extends BaseModel {
-      static entity = 'users'
-
-      static fields() {
-        return {
-          id: {
-            type: Number,
-            nullable: true
-          },
-          array: Array
-        }
-      }
-    }
-
-    const user = new User({ id: 1, array: [1, 2] })
-
-    const json = user.$serialize()
-
-    expect(json).not.toBeInstanceOf(User)
-    expect(json).toEqual({
-      entity: 'users',
-      options: {
-        relations: true,
-        overwriteIdentifier: false,
-        patch: false,
-        saveUnchanged: true
-      },
-      attributes: {
-        data: {
-          id: 1,
-          array: [1, 2]
-        },
-        reference: {
-          id: 1,
-          array: [1, 2]
-        },
-        changes: {}
-      },
-      relationships: {}
+  it('should serialize options', () => {
+    const user = new User({}, [], {
+      foo: true
     })
+    const serializedModel = user.$serialize()
+
+    expect(serializedModel.options.foo).toBe(user.$getOption('foo'))
+  })
+
+  it('should serialize references', () => {
+    const user = new User({ id: 1 })
+
+    user.id = 2
+
+    const serializedModel = user.$serialize()
+
+    expect(serializedModel.attributes.data.id).toBe(user.id)
+    expect(serializedModel.attributes.reference.id).toBe(user.$.id)
+  })
+
+  it('should serialize changes', () => {
+    const user = new User({ id: 1 })
+
+    user.id = 2
+
+    user.$syncChanges()
+    user.$syncReference()
+
+    const clone = user.$clone()
+
+    expect(clone.$getChanges()).toEqual(user.$getChanges())
   })
 })
