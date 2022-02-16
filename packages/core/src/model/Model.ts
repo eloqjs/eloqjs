@@ -68,7 +68,7 @@ export interface ModelOptions {
   [key: string]: unknown
 }
 
-export interface GetAttributesOptions {
+export interface GetModelAttributesOptions {
   /**
    * Whether the relationships should be serialized.
    */
@@ -85,7 +85,7 @@ export interface GetAttributesOptions {
   shouldPatch?: boolean
 }
 
-export interface CloneOptions {
+export interface CloneModelOptions {
   /**
    * Whether it should clone deeply. This will clone relationships too.
    */
@@ -1062,7 +1062,7 @@ export class Model {
   /**
    * Get all the current attributes on the model. This method is mainly used when saving a model.
    */
-  public $getAttributes(options: GetAttributesOptions = {}): Element {
+  public $getAttributes(options: GetModelAttributesOptions = {}): Element {
     options = {
       relations: true,
       isRequest: false,
@@ -1111,7 +1111,7 @@ export class Model {
     return this.$serialize()
   }
 
-  public $clone(options: CloneOptions = {}): this {
+  public $clone(options: CloneModelOptions = {}): this {
     // Merge options with defaults
     options = {
       deep: false,
