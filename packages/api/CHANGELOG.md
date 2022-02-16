@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.0.1-alpha.10](https://github.com/eloqjs/eloqjs/compare/v0.0.1-alpha.9...v0.0.1-alpha.10) (2022-02-16)
+
+
+### Features
+
+* **model:** improve model serialization ([e9dd334](https://github.com/eloqjs/eloqjs/commit/e9dd33424d2decd1d5ebcb116cc1987717b8f0bd))
+
+
+
+
+
 ## [0.0.1-alpha.9](https://github.com/eloqjs/eloqjs/compare/v0.0.1-alpha.8...v0.0.1-alpha.9) (2022-02-03)
 
 

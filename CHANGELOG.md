@@ -3,6 +3,29 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.0.1-alpha.10](https://github.com/eloqjs/eloqjs/compare/v0.0.1-alpha.9...v0.0.1-alpha.10) (2022-02-16)
+
+
+### Bug Fixes
+
+* **core-model:** override options from deserialized data ([0ba6139](https://github.com/eloqjs/eloqjs/commit/0ba61392d67e33c03ecf09a707995f9b468c5c24))
+* **core-model:** remove `fill` option ([d220a52](https://github.com/eloqjs/eloqjs/commit/d220a52a5bce25a44742e4fe05eb36e6159869a0))
+* **core-model:** rename interfaces ([1989e4e](https://github.com/eloqjs/eloqjs/commit/1989e4e9b81248a09268820a9a11b0409badf87d))
+* **core-model:** rename SerializeOptions to SerializeModelOptions ([a1544af](https://github.com/eloqjs/eloqjs/commit/a1544afa37502843bfa62143d50912f18741cb6a))
+* **core-model:** throw error if no data to deserialize ([5ca30f8](https://github.com/eloqjs/eloqjs/commit/5ca30f876891f12168395bf893d9a14089813c90))
+
+
+### Features
+
+* **core-collection:** add serialize and deserialize methods ([7fe9a77](https://github.com/eloqjs/eloqjs/commit/7fe9a777832c0d017b03d571db9205dc41e25856))
+* **core-collection:** improve clone method ([7e41c84](https://github.com/eloqjs/eloqjs/commit/7e41c84616d6dc7bf8f1a58b4eed72bc588e7e9e))
+* **core-model:** improve clone method ([0d5e723](https://github.com/eloqjs/eloqjs/commit/0d5e7230557963e3d115e836531845b49dc93eec))
+* **model:** improve model serialization ([e9dd334](https://github.com/eloqjs/eloqjs/commit/e9dd33424d2decd1d5ebcb116cc1987717b8f0bd))
+
+
+
+
+
 ## [0.0.1-alpha.9](https://github.com/eloqjs/eloqjs/compare/v0.0.1-alpha.8...v0.0.1-alpha.9) (2022-02-03)
 
 
