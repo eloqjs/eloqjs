@@ -3,6 +3,23 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.0.1-alpha.11](https://github.com/eloqjs/eloqjs/compare/v0.0.1-alpha.10...v0.0.1-alpha.11) (2022-02-16)
+
+
+### Bug Fixes
+
+* **core-model:** deserialize HasMany using collection `deserialize` ([663d911](https://github.com/eloqjs/eloqjs/commit/663d911ce22e9dfe794abad706403fe0b2b4b923))
+* **core-model:** isDirty was not working properly with dirty relations ([74bf3e5](https://github.com/eloqjs/eloqjs/commit/74bf3e57b82fdfc6651f20a86c66c6cb46486b5a))
+
+
+### Features
+
+* **core-model:** deprecate `$toJson` method ([ebc0c96](https://github.com/eloqjs/eloqjs/commit/ebc0c9619a17f12b4e3df478932313cdbf0caa58))
+
+
+
+
+
 ## [0.0.1-alpha.10](https://github.com/eloqjs/eloqjs/compare/v0.0.1-alpha.9...v0.0.1-alpha.10) (2022-02-16)
 
 
