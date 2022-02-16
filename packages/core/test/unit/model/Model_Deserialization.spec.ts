@@ -153,50 +153,55 @@ describe('Unit – Model - Deserialization', () => {
           },
           relationships: {}
         },
-        posts: [
-          {
-            entity: 'posts',
-            options: {
-              relations: true,
-              overwriteIdentifier: false,
-              patch: false,
-              saveUnchanged: true
-            },
-            attributes: {
-              data: {
-                id: 3,
-                user_id: 1
-              },
-              reference: {
-                id: 3,
-                user_id: 1
-              },
-              changes: {}
-            },
-            relationships: {}
+        posts: {
+          options: {
+            model: Post
           },
-          {
-            entity: 'posts',
-            options: {
-              relations: true,
-              overwriteIdentifier: false,
-              patch: false,
-              saveUnchanged: true
-            },
-            attributes: {
-              data: {
-                id: 4,
-                user_id: 1
+          models: [
+            {
+              entity: 'posts',
+              options: {
+                relations: true,
+                overwriteIdentifier: false,
+                patch: false,
+                saveUnchanged: true
               },
-              reference: {
-                id: 4,
-                user_id: 1
+              attributes: {
+                data: {
+                  id: 3,
+                  user_id: 1
+                },
+                reference: {
+                  id: 3,
+                  user_id: 1
+                },
+                changes: {}
               },
-              changes: {}
+              relationships: {}
             },
-            relationships: {}
-          }
-        ]
+            {
+              entity: 'posts',
+              options: {
+                relations: true,
+                overwriteIdentifier: false,
+                patch: false,
+                saveUnchanged: true
+              },
+              attributes: {
+                data: {
+                  id: 4,
+                  user_id: 1
+                },
+                reference: {
+                  id: 4,
+                  user_id: 1
+                },
+                changes: {}
+              },
+              relationships: {}
+            }
+          ]
+        }
       }
     })
   })
@@ -291,5 +296,121 @@ describe('Unit – Model - Deserialization', () => {
     const clone = new User(user.$serialize())
 
     expect(clone.$getChanges()).toEqual(clone.$getChanges())
+  })
+
+  it('should replace models in HasMany relationships', () => {
+    class User extends BaseModel {
+      static entity = 'users'
+
+      static fields() {
+        return {
+          id: {
+            type: Number,
+            nullable: true
+          },
+          posts: {
+            type: Post,
+            relation: 'HasMany'
+          }
+        }
+      }
+    }
+
+    class Post extends BaseModel {
+      static entity = 'posts'
+
+      static fields() {
+        return {
+          id: {
+            type: Number,
+            nullable: true
+          },
+          user_id: {
+            type: Number,
+            nullable: true
+          }
+        }
+      }
+    }
+
+    const user1 = new User({
+      id: 1,
+      posts: [
+        { id: 3, user_id: 1 },
+        { id: 4, user_id: 1 }
+      ]
+    })
+    const user2 = new User({ id: 1, posts: [{ id: 5, user_id: 1 }] })
+    user2.$deserialize(user1.$serialize())
+
+    expect(user2.$serialize()).toEqual({
+      entity: 'users',
+      options: {
+        relations: true,
+        overwriteIdentifier: false,
+        patch: false,
+        saveUnchanged: true
+      },
+      attributes: {
+        data: {
+          id: 1
+        },
+        reference: {
+          id: 1
+        },
+        changes: {}
+      },
+      relationships: {
+        posts: {
+          options: {
+            model: Post
+          },
+          models: [
+            {
+              entity: 'posts',
+              options: {
+                relations: true,
+                overwriteIdentifier: false,
+                patch: false,
+                saveUnchanged: true
+              },
+              attributes: {
+                data: {
+                  id: 3,
+                  user_id: 1
+                },
+                reference: {
+                  id: 3,
+                  user_id: 1
+                },
+                changes: {}
+              },
+              relationships: {}
+            },
+            {
+              entity: 'posts',
+              options: {
+                relations: true,
+                overwriteIdentifier: false,
+                patch: false,
+                saveUnchanged: true
+              },
+              attributes: {
+                data: {
+                  id: 4,
+                  user_id: 1
+                },
+                reference: {
+                  id: 4,
+                  user_id: 1
+                },
+                changes: {}
+              },
+              relationships: {}
+            }
+          ]
+        }
+      }
+    })
   })
 })
