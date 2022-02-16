@@ -1167,10 +1167,21 @@ export class Model {
    * Determine if the model or any of the given attribute(s) have been modified.
    */
   public $isDirty(attributes?: string | string[]): boolean {
-    return (
-      this._attributes.isDirty(attributes) ||
-      this._relationships.isDirty(attributes)
-    )
+    attributes = forceArray(attributes || [])
+
+    if (isEmpty(attributes)) {
+      return this._attributes.isDirty() || this._relationships.isDirty()
+    }
+
+    return attributes.some((attribute) => {
+      const field = this.$getField(attribute)
+
+      if (field.relation) {
+        return this._relationships.isDirty(attribute)
+      } else {
+        return this._attributes.isDirty(attribute)
+      }
+    })
   }
 
   /**
