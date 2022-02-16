@@ -1,6 +1,6 @@
 import defu from 'defu'
 
-import { Collection } from '../collection/Collection'
+import { Collection, SerializedCollection } from '../collection/Collection'
 import * as Relations from '../relations'
 import { RelationEnum } from '../relations/RelationEnum'
 import { AttrMap } from '../support/AttrMap'
@@ -1045,11 +1045,7 @@ export class Model {
         // then deserialize each one of them.
         case RelationEnum.HAS_MANY: {
           const collection = relation.data as Collection
-          const models = (value as Serialize.SerializedModel[]).map(
-            (serializedModel) => new relation.model(serializedModel)
-          )
-
-          collection.add(models)
+          collection.deserialize(value as SerializedCollection)
 
           break
         }
