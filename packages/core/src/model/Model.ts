@@ -214,6 +214,9 @@ export class Model {
     if (isSerializedModel(attributes)) {
       this.$fill()
       this.$deserialize(attributes)
+
+      // Override options from deserialized data
+      this.$setOptions(options)
     } else {
       this.$fill(attributes)
     }
