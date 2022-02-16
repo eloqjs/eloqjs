@@ -1,4 +1,4 @@
-import { Collection } from '../collection/Collection'
+import { Collection, SerializedCollection } from '../collection/Collection'
 import { isArray, isCollection, isNull, isPlainObject } from '../support/Utils'
 import { Element, Item } from '../types/Data'
 import { Model, ModelOptions } from './Model'
@@ -18,7 +18,7 @@ export interface SerializedModel {
     reference: Record<string, any>
     changes: Record<string, any>
   }
-  relationships: Record<string, SerializedModel | SerializedModel[]>
+  relationships: Record<string, SerializedModel | SerializedCollection>
 }
 
 export const defaultOptions: Required<SerializeModelOptions> = {
@@ -69,13 +69,13 @@ export function object(o: Record<string, unknown>): Record<string, unknown> {
  */
 export function relation(
   relation: Item | Collection
-): SerializedModel | SerializedModel[] | null {
+): SerializedModel | SerializedCollection | null {
   if (isNull(relation)) {
     return null
   }
 
   if (isCollection(relation)) {
-    return relation.models.map((model) => model.$serialize())
+    return relation.serialize()
   }
 
   return relation.$serialize()

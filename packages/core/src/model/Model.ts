@@ -1,6 +1,6 @@
 import defu from 'defu'
 
-import { Collection } from '../collection/Collection'
+import { Collection, SerializedCollection } from '../collection/Collection'
 import * as Relations from '../relations'
 import { RelationEnum } from '../relations/RelationEnum'
 import { AttrMap } from '../support/AttrMap'
@@ -1045,11 +1045,7 @@ export class Model {
         // then deserialize each one of them.
         case RelationEnum.HAS_MANY: {
           const collection = relation.data as Collection
-          const models = (value as Serialize.SerializedModel[]).map(
-            (serializedModel) => new relation.model(serializedModel)
-          )
-
-          collection.add(models)
+          collection.deserialize(value as SerializedCollection)
 
           break
         }
@@ -1102,13 +1098,6 @@ export class Model {
     }
 
     return result
-  }
-
-  /**
-   * Serialize this model as POJO.
-   */
-  public $toJson(): Serialize.SerializedModel {
-    return this.$serialize()
   }
 
   public $clone(options: CloneModelOptions = {}): this {
@@ -1178,10 +1167,21 @@ export class Model {
    * Determine if the model or any of the given attribute(s) have been modified.
    */
   public $isDirty(attributes?: string | string[]): boolean {
-    return (
-      this._attributes.isDirty(attributes) ||
-      this._relationships.isDirty(attributes)
-    )
+    attributes = forceArray(attributes || [])
+
+    if (isEmpty(attributes)) {
+      return this._attributes.isDirty() || this._relationships.isDirty()
+    }
+
+    return attributes.some((attribute) => {
+      const field = this.$getField(attribute)
+
+      if (field.relation) {
+        return this._relationships.isDirty(attribute)
+      } else {
+        return this._attributes.isDirty(attribute)
+      }
+    })
   }
 
   /**
@@ -1445,7 +1445,7 @@ export class Model {
    * Serialize this model as POJO.
    */
   protected toJSON(): Serialize.SerializedModel {
-    return this.$toJson()
+    return this.$serialize()
   }
 
   /**

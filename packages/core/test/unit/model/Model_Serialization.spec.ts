@@ -155,50 +155,55 @@ describe('Unit – Model - Serialization', () => {
           },
           relationships: {}
         },
-        posts: [
-          {
-            entity: 'posts',
-            options: {
-              relations: true,
-              overwriteIdentifier: false,
-              patch: false,
-              saveUnchanged: true
-            },
-            attributes: {
-              data: {
-                id: 3,
-                user_id: 1
-              },
-              reference: {
-                id: 3,
-                user_id: 1
-              },
-              changes: {}
-            },
-            relationships: {}
+        posts: {
+          options: {
+            model: Post
           },
-          {
-            entity: 'posts',
-            options: {
-              relations: true,
-              overwriteIdentifier: false,
-              patch: false,
-              saveUnchanged: true
-            },
-            attributes: {
-              data: {
-                id: 4,
-                user_id: 1
+          models: [
+            {
+              entity: 'posts',
+              options: {
+                relations: true,
+                overwriteIdentifier: false,
+                patch: false,
+                saveUnchanged: true
               },
-              reference: {
-                id: 4,
-                user_id: 1
+              attributes: {
+                data: {
+                  id: 3,
+                  user_id: 1
+                },
+                reference: {
+                  id: 3,
+                  user_id: 1
+                },
+                changes: {}
               },
-              changes: {}
+              relationships: {}
             },
-            relationships: {}
-          }
-        ]
+            {
+              entity: 'posts',
+              options: {
+                relations: true,
+                overwriteIdentifier: false,
+                patch: false,
+                saveUnchanged: true
+              },
+              attributes: {
+                data: {
+                  id: 4,
+                  user_id: 1
+                },
+                reference: {
+                  id: 4,
+                  user_id: 1
+                },
+                changes: {}
+              },
+              relationships: {}
+            }
+          ]
+        }
       }
     })
   })
