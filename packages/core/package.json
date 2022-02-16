@@ -38,7 +38,7 @@
     "watch": "yarn run compile --watch"
   },
   "dependencies": {
-    "type-fest": "^2.5.2"
+    "defu": "^5.0.1"
   },
   "publishConfig": {
     "access": "public"

@@ -1,7 +1,7 @@
 import { Collection, Element, Model } from '@eloqjs/core'
 
 export function assertModel<M extends Model>(model: M, record: Element): void {
-  expect(model.$toJson()).toEqual(record)
+  expect(model.$getAttributes()).toEqual(record)
 }
 
 export function assertCollection<M extends Model>(
@@ -14,7 +14,7 @@ export function assertCollection<M extends Model>(
     if (record instanceof Model) {
       expect(model).toEqual(record)
     } else {
-      expect(model.$toJson()).toEqual(record)
+      expect(model.$getAttributes()).toEqual(record)
     }
   })
 }

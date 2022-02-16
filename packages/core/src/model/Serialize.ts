@@ -1,30 +1,28 @@
 import { Collection } from '../collection/Collection'
 import { isArray, isCollection, isNull, isPlainObject } from '../support/Utils'
 import { Element, Item } from '../types/Data'
-import { Model } from './Model'
+import { Model, ModelOptions } from './Model'
 
-export interface SerializeOptions {
+export interface SerializeModelOptions {
   /**
    * Whether the relationships should be serialized.
-   * If set to `false`, only ID's will be included.
    */
   relations?: boolean
-
-  /**
-   * Whether the serialization is for a request.
-   */
-  isRequest?: boolean
-
-  /**
-   * Whether the request is a PATCH request.
-   */
-  shouldPatch?: boolean
 }
 
-export const defaultOptions: Required<SerializeOptions> = {
-  relations: true,
-  isRequest: false,
-  shouldPatch: false
+export interface SerializedModel {
+  entity: string
+  options: ModelOptions
+  attributes: {
+    data: Record<string, any>
+    reference: Record<string, any>
+    changes: Record<string, any>
+  }
+  relationships: Record<string, SerializedModel | SerializedModel[]>
+}
+
+export const defaultOptions: Required<SerializeModelOptions> = {
+  relations: true
 }
 
 /**
@@ -70,6 +68,30 @@ export function object(o: Record<string, unknown>): Record<string, unknown> {
  * Serialize given relation into json.
  */
 export function relation(
+  relation: Item | Collection
+): SerializedModel | SerializedModel[] | null {
+  if (isNull(relation)) {
+    return null
+  }
+
+  if (isCollection(relation)) {
+    return relation.models.map((model) => model.$serialize())
+  }
+
+  return relation.$serialize()
+}
+
+/**
+ * Serialize given relation into empty json.
+ */
+export function emptyRelation(relation: Item | Collection): [] | null {
+  return isCollection(relation) ? [] : null
+}
+
+/**
+ * Get the attributes of the given relation.
+ */
+export function getRelationAttributes(
   relation: Item | Collection,
   isRequest: boolean = false
 ): Element | Element[] | null {
@@ -84,7 +106,7 @@ export function relation(
       }
     }
 
-    return model.$toJson()
+    return model.$getAttributes()
   }
 
   if (isCollection(relation)) {
@@ -94,9 +116,14 @@ export function relation(
   return resolve(relation)
 }
 
-/**
- * Serialize given relation into empty json.
- */
-export function emptyRelation(relation: Item | Collection): [] | null {
-  return isCollection(relation) ? [] : null
+export function isSerializedModel(
+  serializedModel: any
+): serializedModel is SerializedModel {
+  return (
+    !!serializedModel &&
+    !!serializedModel.entity &&
+    !!serializedModel.options &&
+    !!serializedModel.attributes &&
+    !!serializedModel.relationships
+  )
 }

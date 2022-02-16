@@ -29,6 +29,7 @@ import * as Contracts from './Contracts'
 import { Field } from './field/Field'
 import { mutateHasOne } from './field/utils/relation'
 import * as Serialize from './Serialize'
+import { isSerializedModel, SerializedModel } from './Serialize'
 
 export type ModelFields = Record<string, Field>
 export type ModelSchemas = Record<string, ModelFields>
@@ -37,11 +38,6 @@ export type ModelRegistry = Record<string, () => Field>
 export type ModelReference<T> = Readonly<Omit<T, keyof Model>>
 
 export interface ModelOptions {
-  /**
-   * Whether this model should fill the given attributes on instantiate.
-   */
-  fill?: boolean
-
   /**
    * Whether this model should fill relationships on instantiate.
    */
@@ -70,6 +66,30 @@ export interface ModelOptions {
    * Allow custom options.
    */
   [key: string]: unknown
+}
+
+export interface GetModelAttributesOptions {
+  /**
+   * Whether the relationships should be serialized.
+   */
+  relations?: boolean
+
+  /**
+   * Whether the serialization is for a request.
+   */
+  isRequest?: boolean
+
+  /**
+   * Whether the request is a PATCH request.
+   */
+  shouldPatch?: boolean
+}
+
+export interface CloneModelOptions {
+  /**
+   * Whether it should clone deeply. This will clone relationships too.
+   */
+  deep?: boolean
 }
 
 export class Model {
@@ -178,7 +198,7 @@ export class Model {
    * Create a new model instance.
    */
   public constructor(
-    attributes?: Element,
+    attributes?: Element | SerializedModel,
     collection: Collection | Collection[] | null = null,
     options: ModelOptions = {}
   ) {
@@ -191,9 +211,15 @@ export class Model {
       this.$registerCollection(collection as Collection<this>)
     }
 
-    const fill = this.$getOption('fill') ?? true
+    if (isSerializedModel(attributes)) {
+      this.$fill()
+      this.$deserialize(attributes)
 
-    fill && this.$fill(attributes)
+      // Override options from deserialized data
+      this.$setOptions(options)
+    } else {
+      this.$fill(attributes)
+    }
   }
 
   /**
@@ -481,7 +507,6 @@ export class Model {
    */
   private static _getDefaultOptions(): ModelOptions {
     return {
-      fill: true,
       relations: true,
       overwriteIdentifier: false,
       patch: false,
@@ -619,9 +644,9 @@ export class Model {
    * @returns The value that was set.
    */
   public $set<T = any>(attribute: string | Element, value?: T): T | undefined {
-    // If the given attributes is a model, then serialize it.
+    // If the given attributes is a model, then get its attributes.
     if (isModel(attribute)) {
-      attribute = attribute.$toJson()
+      attribute = attribute.$getAttributes()
     }
 
     // Allow batch set of multiple attributes at once, ie. $set({...});
@@ -682,7 +707,9 @@ export class Model {
           let _value: unknown = value
 
           if (_value instanceof Relations.Relation) {
-            _value = (_value.data as Collection).map((model) => model.$toJson())
+            _value = (_value.data as Collection).map((model) =>
+              model.$getAttributes()
+            )
           }
 
           collection.set(_value as Element | Element[])
@@ -789,9 +816,9 @@ export class Model {
     attributes: Element | string | number | null | undefined = undefined,
     options: ModelOptions = {}
   ): void {
-    // If the given attributes is a model, then serialize it.
+    // If the given attributes is a model, then get its attributes.
     if (isModel(attributes)) {
-      attributes = attributes.$toJson()
+      attributes = attributes.$getAttributes()
     }
 
     // No content means we don't want to update the model at all.
@@ -918,9 +945,128 @@ export class Model {
   /**
    * Serialize given model POJO.
    */
-  public $serialize(options: Serialize.SerializeOptions = {}): Element {
-    const _option = {
+  public $serialize(
+    options: Serialize.SerializeModelOptions = {}
+  ): Serialize.SerializedModel {
+    options = {
       ...Serialize.defaultOptions,
+      ...options
+    }
+    const serializedModel: Serialize.SerializedModel = {
+      entity: this.$entity,
+      options: this.$getOptions(),
+      attributes: {
+        data: {},
+        reference: {},
+        changes: this._attributes.getChanges()
+      },
+      relationships: {}
+    }
+
+    const fields = this.$fields()
+
+    for (const key in fields) {
+      const field = fields[key]
+
+      if (!field.relation) {
+        const value = this._attributes.get(key)
+        const reference = this._attributes.$get(key)
+
+        serializedModel.attributes.data[key] = Serialize.value(value)
+        serializedModel.attributes.reference[key] = Serialize.value(reference)
+      } else if (options.relations) {
+        const relation = this._relationships.get(key).data
+        const value = Serialize.relation(relation)
+
+        if (isNull(value)) {
+          continue
+        }
+
+        serializedModel.relationships[key] = value
+      }
+    }
+
+    return serializedModel
+  }
+
+  /**
+   * Deserialize given data.
+   */
+  public $deserialize(serializedModel: Serialize.SerializedModel): this {
+    assert(!!serializedModel, ['No data to deserialize'])
+
+    // Read options
+    this.$setOptions(serializedModel.options)
+
+    // Read attributes
+    for (const [attribute, value] of Object.entries(
+      serializedModel.attributes.data
+    )) {
+      this._attributes.set(attribute, value)
+    }
+
+    // Read attributes references
+    for (const [attribute, value] of Object.entries(
+      serializedModel.attributes.reference
+    )) {
+      this._attributes.$set(attribute, value)
+    }
+
+    // Read attributes changes
+    for (const [attribute, value] of Object.entries(
+      serializedModel.attributes.changes
+    )) {
+      this._attributes.setChange(attribute, value)
+    }
+
+    // Read relationships
+    for (const [attribute, value] of Object.entries(
+      serializedModel.relationships
+    )) {
+      const field = this.$getField(attribute)
+      const relation = this._relationships.get(attribute)
+
+      switch (field.relation) {
+        // It's the "Has One" relation, so we access the model and deserialize.
+        case RelationEnum.HAS_ONE: {
+          let model = relation.data as Item
+
+          if (isNull(model)) {
+            model = relation.data = new relation.model(
+              value as Serialize.SerializedModel
+            )
+          } else {
+            model.$deserialize(value as Serialize.SerializedModel)
+          }
+
+          break
+        }
+        // It's the "Has Many" relation, so we access the collection and loop through its models,
+        // then deserialize each one of them.
+        case RelationEnum.HAS_MANY: {
+          const collection = relation.data as Collection
+          const models = (value as Serialize.SerializedModel[]).map(
+            (serializedModel) => new relation.model(serializedModel)
+          )
+
+          collection.add(models)
+
+          break
+        }
+      }
+    }
+
+    return this
+  }
+
+  /**
+   * Get all the current attributes on the model. This method is mainly used when saving a model.
+   */
+  public $getAttributes(options: GetModelAttributesOptions = {}): Element {
+    options = {
+      relations: true,
+      isRequest: false,
+      shouldPatch: false,
       ...options
     }
 
@@ -930,23 +1076,23 @@ export class Model {
     for (const key in fields) {
       const field = fields[key]
 
-      // Exclude read-only attributes for requests.
-      if (field.readOnly && _option.isRequest) {
+      // Exclude read-only attributes.
+      if (field.readOnly && options.isRequest) {
         continue
       }
 
       if (field.relation) {
-        if (_option.shouldPatch && this._relationships.isClean(key)) {
+        if (options.shouldPatch && this._relationships.isClean(key)) {
           continue
         }
 
         const value = this._relationships.get(key).data
 
-        result[key] = _option.relations
-          ? Serialize.relation(value, _option.isRequest)
+        result[key] = options.relations
+          ? Serialize.getRelationAttributes(value, options.isRequest)
           : Serialize.emptyRelation(value)
       } else {
-        if (_option.shouldPatch && this._attributes.isClean(key)) {
+        if (options.shouldPatch && this._attributes.isClean(key)) {
           continue
         }
 
@@ -959,25 +1105,43 @@ export class Model {
   }
 
   /**
-   * Get all of the current attributes on the model. This method is mainly used when saving a model.
-   */
-  public $getAttributes(): Element {
-    return this.$serialize({ relations: false })
-  }
-
-  /**
    * Serialize this model as POJO.
    */
-  public $toJson(options: Serialize.SerializeOptions = {}): Element {
-    return this.$serialize(options)
+  public $toJson(): Serialize.SerializedModel {
+    return this.$serialize()
   }
 
-  public $clone(): this {
+  public $clone(options: CloneModelOptions = {}): this {
+    // Merge options with defaults
+    options = {
+      deep: false,
+      ...options
+    }
+
+    // Create clone instance
     const clone = new (this.$constructor())() as this
 
-    // Clone options
-    const options = this.$getOptions()
-    clone.$setOptions(options)
+    // Serialize current model instance. If the `deep` option is enabled, we should serialize relationships as well.
+    // Then the clone deserialize the data.
+    clone.$deserialize(this.$serialize({ relations: options.deep }))
+
+    // If the `deep` option is disabled,
+    // the instances of the clone relationships should be the same as the original model.
+    if (!options.deep) {
+      // Loop through fields
+      for (const [attribute, field] of Object.entries(this.$fields())) {
+        // If the field is not a relationship, skip
+        if (!field.relation) {
+          continue
+        }
+
+        // Get the model instance of the relationship
+        const value = this._relationships.get(attribute)
+
+        // Set the relationship
+        clone._relationships.set(attribute, value)
+      }
+    }
 
     // Clone collections register
     clone.$registerCollection(this.$collections)
@@ -987,22 +1151,6 @@ export class Model {
       for (const hook of this._localHooks[on]) {
         clone.$on(on, hook.callback)
       }
-    }
-
-    // Clone current attributes
-    for (const [attribute, value] of Object.entries(this._getAttributes())) {
-      clone._setAttribute(attribute, value)
-    }
-
-    // Clone references
-    // Must be cloned after attributes
-    for (const [attribute, value] of Object.entries(this._getReferences())) {
-      clone._setReference(attribute, value)
-    }
-
-    // Clone changes
-    for (const [attribute, value] of Object.entries(this.$getChanges())) {
-      clone._setChange(attribute, value)
     }
 
     return clone
@@ -1296,7 +1444,7 @@ export class Model {
   /**
    * Serialize this model as POJO.
    */
-  protected toJSON(): Element {
+  protected toJSON(): Serialize.SerializedModel {
     return this.$toJson()
   }
 
@@ -1410,22 +1558,6 @@ export class Model {
   }
 
   /**
-   * Force set a reference in `{@link _attributes}` or {@link _relationships}, based on field type.
-   */
-  private _setReference(attribute: string, value: any): any {
-    const field = this.$getField(attribute)
-
-    // Set the attribute based on field type.
-    if (field.relation) {
-      this._relationships.$set(attribute, value)
-    } else {
-      this._attributes.$set(attribute, value)
-    }
-
-    return value
-  }
-
-  /**
    * Get an attribute's reference from {@link _attributes} or {@link _relationships}, based on field type.
    *
    * @returns The unmutated value of attribute's reference.
@@ -1457,22 +1589,6 @@ export class Model {
     }
 
     return references
-  }
-
-  /**
-   * Force set a change in `{@link _attributes}` or {@link _relationships}, based on field type.
-   */
-  private _setChange(attribute: string, value: any): any {
-    const field = this.$getField(attribute)
-
-    // Set the attribute based on field type.
-    if (field.relation) {
-      this._relationships.setChange(attribute, value)
-    } else {
-      this._attributes.setChange(attribute, value)
-    }
-
-    return value
   }
 
   /**

@@ -1,5 +1,4 @@
-import { Collection } from '@eloqjs/core'
-
+import { Collection } from '../../../src'
 import { assertCollection } from '../../Helpers'
 import User from './dummy/models/User'
 
