@@ -946,7 +946,7 @@ export class Model {
    * Serialize given model POJO.
    */
   public $serialize(
-    options: Serialize.SerializeOptions = {}
+    options: Serialize.SerializeModelOptions = {}
   ): Serialize.SerializedModel {
     options = {
       ...Serialize.defaultOptions,

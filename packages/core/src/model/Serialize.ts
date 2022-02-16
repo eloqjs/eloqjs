@@ -3,7 +3,7 @@ import { isArray, isCollection, isNull, isPlainObject } from '../support/Utils'
 import { Element, Item } from '../types/Data'
 import { Model, ModelOptions } from './Model'
 
-export interface SerializeOptions {
+export interface SerializeModelOptions {
   /**
    * Whether the relationships should be serialized.
    */
@@ -21,7 +21,7 @@ export interface SerializedModel {
   relationships: Record<string, SerializedModel | SerializedModel[]>
 }
 
-export const defaultOptions: Required<SerializeOptions> = {
+export const defaultOptions: Required<SerializeModelOptions> = {
   relations: true
 }
 
