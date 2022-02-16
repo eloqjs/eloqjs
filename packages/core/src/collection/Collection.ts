@@ -40,6 +40,19 @@ export interface SerializedCollection {
   models: SerializedModel[]
 }
 
+export interface CloneCollectionOptions {
+  /**
+   * Whether it should clone deeply. This will clone models.
+   */
+  deep?: boolean
+
+  /**
+   * Level 1 clone models.
+   * Level 2 deep clone models.
+   */
+  deepLevel?: 1 | 2
+}
+
 export class Collection<M extends Model = Model> {
   protected static model: typeof Model
 
@@ -274,11 +287,30 @@ export class Collection<M extends Model = Model> {
   }
 
   /**
-   * Creates a copy of this collection. Model references are preserved so
+   * Creates a copy of this collection. Model references are preserved by default so
    * changes to the models inside the clone will also affect the subject.
+   *
+   * If the `deep` option is enabled, all models of this collection will be cloned as well.
+   * Model references will be lost.
+   *
+   * If `deepLevel` is set to `2`, models relationships will be cloned as well.
    */
-  public clone(): this {
-    return this._createCollection(this.models)
+  public clone(options: CloneCollectionOptions = {}): this {
+    options = {
+      deep: false,
+      deepLevel: 1,
+      ...options
+    }
+
+    let models = this.models
+
+    if (options.deep) {
+      models = this.models.map((model) =>
+        model.$clone({ deep: (options.deepLevel as 1 | 2) >= 2 })
+      )
+    }
+
+    return this._createCollection(models)
   }
 
   /**
@@ -1433,11 +1465,11 @@ export class Collection<M extends Model = Model> {
    * Creates a new instance of the collection.
    */
   private _createCollection(
-    models: (M | Element)[] = [],
+    models: (M | Element)[] | SerializedCollection = [],
     options: Partial<CollectionOptions> = {}
   ): this {
     return new (this.constructor as typeof Collection)(models, {
-      ...this._options,
+      ...this.getOptions(),
       ...options
     }) as this
   }
