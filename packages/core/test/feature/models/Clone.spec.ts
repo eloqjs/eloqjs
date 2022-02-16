@@ -176,4 +176,108 @@ describe('Feature – Models – Clone', () => {
     expect(clone.phone.data).toBe(user.phone.data)
     expect(clone.posts.data).toBe(user.posts.data)
   })
+
+  it('should clone deeply', () => {
+    class User extends BaseModel {
+      static entity = 'users'
+
+      id!: number
+      name!: string
+      phone!: Relations.HasOne<Phone>
+      posts!: Relations.HasMany<Post>
+
+      static fields() {
+        return {
+          id: {
+            type: Number,
+            nullable: true
+          },
+          name: String,
+          phone: {
+            type: Phone,
+            relation: 'HasOne'
+          },
+          posts: {
+            type: Post,
+            relation: 'HasMany'
+          }
+        }
+      }
+    }
+
+    class Phone extends BaseModel {
+      static entity = 'phones'
+
+      id!: number
+      user_id!: number
+      number!: number
+
+      static fields() {
+        return {
+          id: {
+            type: Number,
+            nullable: true
+          },
+          user_id: {
+            type: Number,
+            nullable: true
+          },
+          number: {
+            type: Number,
+            default: 0
+          }
+        }
+      }
+    }
+
+    class Post extends BaseModel {
+      static entity = 'posts'
+
+      static primaryKey = 'slug'
+
+      id!: number
+      user_id!: number
+      title!: string
+
+      static fields() {
+        return {
+          id: {
+            type: Number,
+            nullable: true
+          },
+          user_id: {
+            type: Number,
+            nullable: true
+          },
+          slug: String,
+          title: String
+        }
+      }
+    }
+
+    const user = new User({
+      id: 1,
+      name: 'John Doe',
+      phone: { id: 1, user_id: 1, number: 123456789 },
+      posts: [
+        {
+          id: 1,
+          user_id: 1,
+          slug: 'my-awesome-post',
+          title: 'My awesome post!'
+        },
+        { id: 2, user_id: 1, slug: 'my-super-post', title: 'My super post!' }
+      ]
+    })
+    const clone = user.$clone({ deep: true })
+
+    expect(clone.phone.data).not.toBe(user.phone.data)
+    expect(clone.posts.data).not.toBe(user.posts.data)
+    expect(clone.phone.data!.$serialize()).toEqual(
+      user.phone.data!.$serialize()
+    )
+    expect(clone.posts.data.models.map((model) => model.$serialize())).toEqual(
+      user.posts.data.models.map((model) => model.$serialize())
+    )
+  })
 })
