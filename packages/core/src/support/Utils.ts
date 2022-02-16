@@ -1,4 +1,4 @@
-import { Collection } from '../collection/Collection'
+import { Collection, SerializedCollection } from '../collection/Collection'
 import { Model } from '../model/Model'
 
 export type Wrapped<T> = { data: T }
@@ -256,4 +256,14 @@ function getTag(value: unknown): string {
 export function capitalize(value: string): string {
   if (typeof value !== 'string') return ''
   return value.charAt(0).toUpperCase() + value.slice(1)
+}
+
+export function isSerializedCollection(
+  serializedCollection: any
+): serializedCollection is SerializedCollection {
+  return (
+    !!serializedCollection &&
+    !!serializedCollection.options &&
+    !!serializedCollection.models
+  )
 }

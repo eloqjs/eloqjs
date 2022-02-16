@@ -1,4 +1,5 @@
 import { Model, ModelOptions, ModelReference } from '../model/Model'
+import { SerializedModel } from '../model/Serialize'
 import { Uid as UidGenerator } from '../support/Uid'
 import {
   assert,
@@ -13,6 +14,7 @@ import {
   isNumber,
   isObject,
   isPlainObject,
+  isSerializedCollection,
   isString,
   isUndefined,
   resolveValue,
@@ -23,7 +25,19 @@ import { sortGreaterOrLessThan, sortNullish } from './Sort'
 import { compareValues, Operator } from './Where'
 
 export interface CollectionOptions {
-  model: typeof Model
+  model?: typeof Model
+}
+
+export interface SerializeCollectionOptions {
+  /**
+   * Whether the relationships should be serialized.
+   */
+  relations?: boolean
+}
+
+export interface SerializedCollection {
+  options: CollectionOptions
+  models: SerializedModel[]
 }
 
 export class Collection<M extends Model = Model> {
@@ -36,19 +50,22 @@ export class Collection<M extends Model = Model> {
    */
   public readonly $uid!: string
 
-  private readonly _options: Partial<CollectionOptions>
+  private readonly _options: CollectionOptions = {}
 
   private readonly _registry: Record<string, boolean> = {}
 
   public constructor(
-    models: (M | Element)[] = [],
-    options: Partial<CollectionOptions> = {}
+    models: (M | Element)[] | SerializedCollection = [],
+    options: CollectionOptions = {}
   ) {
-    this._options = options
+    this._boot(options)
 
-    this._boot()
+    if (isSerializedCollection(models)) {
+      this.deserialize(models)
 
-    if (models) {
+      // Override options from deserialized data
+      this.setOptions(options)
+    } else if (models) {
       this.add(models)
     }
   }
@@ -110,6 +127,47 @@ export class Collection<M extends Model = Model> {
           done: index >= this.models.length
         }
       }
+    }
+  }
+
+  /**
+   * Get a collection's option.
+   */
+  public getOption<K extends keyof CollectionOptions>(
+    key: K,
+    fallback?: ValueOf<CollectionOptions, K>
+  ): ValueOf<CollectionOptions, K> {
+    return this._options[key] ?? fallback
+  }
+
+  /**
+   * Get the collection options.
+   */
+  public getOptions(): CollectionOptions {
+    return this._options
+  }
+
+  /**
+   * Set a collection's option.
+   */
+  public setOption<K extends keyof CollectionOptions>(
+    key: K,
+    value: ValueOf<CollectionOptions, K>
+  ) {
+    this._options[key] = value
+  }
+
+  /**
+   * Set the collection options.
+   */
+  public setOptions(options: CollectionOptions) {
+    options = {
+      ...this._options,
+      ...options
+    }
+
+    for (const key in options) {
+      this.setOption(key as keyof CollectionOptions, options[key])
     }
   }
 
@@ -242,6 +300,18 @@ export class Collection<M extends Model = Model> {
       result[key] = group[key].length
       return result
     }, {} as Record<string, number>)
+  }
+
+  /**
+   * Deserialize given data.
+   */
+  public deserialize(serializedCollection: SerializedCollection): this {
+    assert(!!serializedCollection, ['No data to deserialize'])
+
+    this.setOptions(serializedCollection.options)
+    this.replace(serializedCollection.models)
+
+    return this
   }
 
   /**
@@ -849,6 +919,27 @@ export class Collection<M extends Model = Model> {
   }
 
   /**
+   * Serialize given collection POJO.
+   */
+  public serialize(
+    options: SerializeCollectionOptions = {}
+  ): SerializedCollection {
+    options = {
+      relations: true,
+      ...options
+    }
+
+    return {
+      options: this._options,
+      models: this.map((model) =>
+        model.$serialize({
+          relations: options.relations
+        })
+      )
+    }
+  }
+
+  /**
    * Fill a {@link Model} of this {@link Collection} by the model's ID.
    *
    * If an ID is not provided, a new model will be added to this collection.
@@ -1089,8 +1180,8 @@ export class Collection<M extends Model = Model> {
    * @returns A native representation of this collection that will
    * determine the contents of JSON.stringify(collection).
    */
-  public toJSON(): Model[] {
-    return this.models
+  public toJSON(): SerializedCollection {
+    return this.serialize()
   }
 
   /**
@@ -1361,8 +1452,9 @@ export class Collection<M extends Model = Model> {
   /**
    * Bootstrap this collection.
    */
-  private _boot(): void {
+  private _boot(options: CollectionOptions): void {
     this._generateUid()
+    this.setOptions(options)
   }
 
   /**
