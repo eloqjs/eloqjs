@@ -1104,13 +1104,6 @@ export class Model {
     return result
   }
 
-  /**
-   * Serialize this model as POJO.
-   */
-  public $toJson(): Serialize.SerializedModel {
-    return this.$serialize()
-  }
-
   public $clone(options: CloneModelOptions = {}): this {
     // Merge options with defaults
     options = {
@@ -1445,7 +1438,7 @@ export class Model {
    * Serialize this model as POJO.
    */
   protected toJSON(): Serialize.SerializedModel {
-    return this.$toJson()
+    return this.$serialize()
   }
 
   /**
