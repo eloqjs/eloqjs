@@ -85,6 +85,13 @@ export interface GetAttributesOptions {
   shouldPatch?: boolean
 }
 
+export interface CloneOptions {
+  /**
+   * Whether it should clone deeply. This will clone relationships too.
+   */
+  deep?: boolean
+}
+
 export class Model {
   /**
    * The name to be used for the model.
@@ -1096,12 +1103,37 @@ export class Model {
     return this.$serialize()
   }
 
-  public $clone(): this {
+  public $clone(options: CloneOptions = {}): this {
+    // Merge options with defaults
+    options = {
+      deep: false,
+      ...options
+    }
+
+    // Create clone instance
     const clone = new (this.$constructor())() as this
 
-    // Clone options
-    const options = this.$getOptions()
-    clone.$setOptions(options)
+    // Serialize current model instance. If the `deep` option is enabled, we should serialize relationships as well.
+    // Then the clone deserialize the data.
+    clone.$deserialize(this.$serialize({ relations: options.deep }))
+
+    // If the `deep` option is disabled,
+    // the instances of the clone relationships should be the same as the original model.
+    if (!options.deep) {
+      // Loop through fields
+      for (const [attribute, field] of Object.entries(this.$fields())) {
+        // If the field is not a relationship, skip
+        if (!field.relation) {
+          continue
+        }
+
+        // Get the model instance of the relationship
+        const value = this._relationships.get(attribute)
+
+        // Set the relationship
+        clone._relationships.set(attribute, value)
+      }
+    }
 
     // Clone collections register
     clone.$registerCollection(this.$collections)
@@ -1111,22 +1143,6 @@ export class Model {
       for (const hook of this._localHooks[on]) {
         clone.$on(on, hook.callback)
       }
-    }
-
-    // Clone current attributes
-    for (const [attribute, value] of Object.entries(this._getAttributes())) {
-      clone._setAttribute(attribute, value)
-    }
-
-    // Clone references
-    // Must be cloned after attributes
-    for (const [attribute, value] of Object.entries(this._getReferences())) {
-      clone._setReference(attribute, value)
-    }
-
-    // Clone changes
-    for (const [attribute, value] of Object.entries(this.$getChanges())) {
-      clone._setChange(attribute, value)
     }
 
     return clone
@@ -1534,22 +1550,6 @@ export class Model {
   }
 
   /**
-   * Force set a reference in `{@link _attributes}` or {@link _relationships}, based on field type.
-   */
-  private _setReference(attribute: string, value: any): any {
-    const field = this.$getField(attribute)
-
-    // Set the attribute based on field type.
-    if (field.relation) {
-      this._relationships.$set(attribute, value)
-    } else {
-      this._attributes.$set(attribute, value)
-    }
-
-    return value
-  }
-
-  /**
    * Get an attribute's reference from {@link _attributes} or {@link _relationships}, based on field type.
    *
    * @returns The unmutated value of attribute's reference.
@@ -1581,22 +1581,6 @@ export class Model {
     }
 
     return references
-  }
-
-  /**
-   * Force set a change in `{@link _attributes}` or {@link _relationships}, based on field type.
-   */
-  private _setChange(attribute: string, value: any): any {
-    const field = this.$getField(attribute)
-
-    // Set the attribute based on field type.
-    if (field.relation) {
-      this._relationships.setChange(attribute, value)
-    } else {
-      this._attributes.setChange(attribute, value)
-    }
-
-    return value
   }
 
   /**
