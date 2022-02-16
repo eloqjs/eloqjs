@@ -986,7 +986,12 @@ export class Model {
     return serializedModel
   }
 
+  /**
+   * Deserialize given data.
+   */
   public $deserialize(serializedModel: Serialize.SerializedModel): this {
+    assert(!!serializedModel, ['No data to deserialize'])
+
     // Read options
     this.$setOptions(serializedModel.options)
 
