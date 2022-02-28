@@ -31,7 +31,7 @@
     "clean": "rimraf -rf ./dist",
     "compile": "siroc build",
     "coverage": "jest --collect-coverage",
-    "lint": "eslint --ext .ts,.js,.json .",
+    "lint": "eslint --ext .ts,.js .",
     "lint:fix": "yarn lint --fix",
     "test": "jest",
     "test:watch": "jest --watch",
