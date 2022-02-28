@@ -32,6 +32,6 @@ describe('Feature – Collections – Implode', () => {
     ])
 
     const implodeManufacturer = collection.implode('price', '-')
-    expect(implodeManufacturer).toEqual('600-900-')
+    expect(implodeManufacturer).toBe('600-900-')
   })
 })

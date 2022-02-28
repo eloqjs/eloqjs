@@ -12,6 +12,7 @@ describe('Feature – Attributes – Uid', () => {
     expect(true).toBeTruthy()
   })
 
+  // eslint-disable-next-line jest/no-commented-out-tests
   /* describe('without default value', () => {
     class User extends BaseModel {
       static entity = 'users'
