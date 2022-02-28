@@ -65,7 +65,7 @@ jobs:
 
       - name: Install Dependencies
         if: steps.cache-modules.outputs.cache-hit != 'true'
-        run: yarn lerna bootstrap
+        run: yarn install && yarn lerna bootstrap
 
       - name: Lint
         run: yarn lint
