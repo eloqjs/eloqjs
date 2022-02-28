@@ -54,7 +54,6 @@ jobs:
         uses: actions/setup-node@v2
         with:
           node-version: ${{ matrix.node-version }}
-          registry-url: 'https://registry.npmjs.org'
 
       - name: Cache node_modules
         id: cache-modules
@@ -118,6 +117,6 @@ jobs:
           git config user.name "${{ github.actor }}"
           git config user.email "${{ github.actor}}@users.noreply.github.com"
 
-          yarn lerna publish --canary --preid dev --pre-dist-tag dev --exact --no-git-tag-version --yes
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          npm set "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}"
+
+          yarn lerna publish --canary --preid dev --pre-dist-tag dev --exact --no-git-tag-version --no-verify-access --yes
