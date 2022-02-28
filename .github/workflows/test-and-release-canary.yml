@@ -96,11 +96,11 @@ jobs:
         uses: actions/cache@v2
         with:
           path: node_modules
-          key: 12.x-${{ runner.OS }}-build-${{ hashFiles('yarn.lock') }}
+          key: 16.x-${{ runner.OS }}-build-${{ hashFiles('yarn.lock') }}
 
       - name: Install Dependencies
         if: steps.cache-modules.outputs.cache-hit != 'true'
-        run: yarn lerna bootstrap
+        run: yarn install && yarn lerna bootstrap
 
       - name: Build
         run: yarn build
