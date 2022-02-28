@@ -10,6 +10,7 @@
     "build": "lerna run build",
     "watch": "lerna run watch --stream --no-sort",
     "publish": "lerna publish",
+    "lint": "lerna run lint --no-bail",
     "test": "lerna run test",
     "coverage": "lerna run coverage"
   },
