@@ -23,6 +23,9 @@ import {
 import { resolveValidator } from './utils/validator'
 
 export class Field {
+  // Allow custom properties
+  [key: string]: unknown
+
   public model: typeof Model
   public key: string
   public type: any
@@ -92,6 +95,13 @@ export class Field {
     this.readOnly = resolveReadOnly({
       readOnly: field.readOnly
     })
+
+    // Allow custom properties
+    for (const key in field) {
+      if (!(key in this)) {
+        this[key] = field[key]
+      }
+    }
   }
 
   public validate(value: any): true {
