@@ -9,10 +9,10 @@
     "clean": "lerna run clean",
     "build": "lerna run build",
     "watch": "lerna run watch --stream --no-sort",
-    "publish": "lerna publish",
     "lint": "lerna run lint --no-bail",
     "test": "lerna run test",
-    "coverage": "lerna run coverage"
+    "coverage": "lerna run coverage",
+    "release:canary": "lerna publish --canary --preid dev --pre-dist-tag dev --exact --force-publish='*' --no-push --no-git-tag-version --no-changelog --no-verify-access --yes"
   },
   "devDependencies": {
     "@types/jest": "^27.0.2",
