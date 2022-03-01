@@ -54,6 +54,7 @@ jobs:
         uses: actions/setup-node@v2
         with:
           node-version: ${{ matrix.node-version }}
+          registry-url: https://registry.npmjs.org/
 
       - name: Cache node_modules
         id: cache-modules
@@ -93,9 +94,22 @@ jobs:
           # pulls all commits (needed for lerna / semantic release to correctly version)
           fetch-depth: "0"
 
-        # pulls all tags (needed for lerna / semantic release to correctly version)
-        - name: Pull Tags
-          run: git fetch --depth=1 origin +refs/tags/*:refs/tags/*
+      # pulls all tags (needed for lerna / semantic release to correctly version)
+      - name: Pull Tags
+        run: git fetch --depth=1 origin +refs/tags/*:refs/tags/*
+
+      - name: Git Identity
+        run: |
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+          git remote set-url origin https://x-access-token:${GITHUB_TOKEN}@github.com/$GITHUB_REPOSITORY
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: NPM Registry
+        run: |
+          npm config set registry https://registry.npmjs.org/
+          npm config set "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}"
 
       - name: Cache node_modules
         id: cache-modules
@@ -120,11 +134,7 @@ jobs:
       #     directory: ./coverage
 
       - name: Release Canary
-        run: |
-          git config user.name "${{ github.actor }}"
-          git config user.email "${{ github.actor}}@users.noreply.github.com"
-
-          npm config set registry https://registry.npmjs.org/
-          npm config set "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}"
-
-          yarn lerna publish --canary --preid dev --pre-dist-tag dev --exact --no-git-tag-version --no-verify-access --yes
+        run: yarn lerna publish --canary --preid dev --pre-dist-tag dev --exact --no-git-tag-version --no-verify-access --yes
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
