@@ -1,6 +1,6 @@
 {
   "name": "@eloqjs/core",
-  "version": "0.0.0",
+  "version": "0.0.1-dev.411+f8c3e93",
   "keywords": [
     "eloqjs",
     "eloquent",
@@ -42,5 +42,6 @@
   },
   "publishConfig": {
     "access": "public"
-  }
+  },
+  "gitHead": "f8c3e937e1f20e6b6200fcb20b87d0b3e0afef36"
 }
