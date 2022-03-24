@@ -2,6 +2,8 @@
  * Model
  */
 export type {
+  CloneModelOptions,
+  GetModelAttributesOptions,
   ModelFields,
   ModelOptions,
   ModelReference,
@@ -10,11 +12,17 @@ export type {
   ModelSchemas
 } from './model/Model'
 export { Model } from './model/Model'
+export type { SerializedModel, SerializeModelOptions } from './model/Serialize'
 
 /**
  * Collection
  */
-export type { CollectionOptions } from './collection/Collection'
+export type {
+  CloneCollectionOptions,
+  CollectionOptions,
+  SerializeCollectionOptions,
+  SerializedCollection
+} from './collection/Collection'
 export { Collection } from './collection/Collection'
 
 /**
