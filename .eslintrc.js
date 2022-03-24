@@ -22,14 +22,7 @@ module.exports = {
     ecmaVersion: 12,
     sourceType: 'module'
   },
-  plugins: [
-    'prettier',
-    '@typescript-eslint',
-    'import',
-    'simple-import-sort',
-    'jest',
-    'jest-formatting'
-  ],
+  plugins: ['prettier', '@typescript-eslint', 'import', 'simple-import-sort', 'jest', 'jest-formatting'],
   settings: {
     'import/parsers': {
       '@typescript-eslint/parser': ['.ts', '.tsx']
@@ -42,6 +35,8 @@ module.exports = {
   },
   ignorePatterns: ['dist'],
   rules: {
+    'max-len': ['error', { code: 140 }],
+
     'prettier/prettier': 'error',
 
     'simple-import-sort/imports': 'warn',
