@@ -13,24 +13,15 @@ export class AxiosHttpClientPromise implements HttpClientPromise {
     this._axiosPromise = axiosPromise
   }
 
-  public then<U>(
-    onFulfilled?: (value: HttpClientResponse) => Thenable<U> | U,
-    onRejected?: (error: unknown) => Thenable<U> | U
-  ): Promise<U>
-  public then<U>(
-    onFulfilled?: (value: HttpClientResponse) => Thenable<U> | U,
-    onRejected?: (error: unknown) => void
-  ): Promise<U> {
+  public then<U>(onFulfilled?: (value: HttpClientResponse) => Thenable<U> | U, onRejected?: (error: unknown) => Thenable<U> | U): Promise<U>
+  public then<U>(onFulfilled?: (value: HttpClientResponse) => Thenable<U> | U, onRejected?: (error: unknown) => void): Promise<U> {
     const wrappedOnFulfilled = !isUndefined(onFulfilled)
-      ? (axiosResponse: AxiosResponse<unknown>) =>
-          onFulfilled(new AxiosHttpClientResponse(axiosResponse))
+      ? (axiosResponse: AxiosResponse<unknown>) => onFulfilled(new AxiosHttpClientResponse(axiosResponse))
       : undefined
     return <Promise<U>>this._axiosPromise.then(wrappedOnFulfilled, onRejected)
   }
 
-  public catch<U>(
-    onRejected?: (error: unknown) => Thenable<U> | U
-  ): Promise<U> {
+  public catch<U>(onRejected?: (error: unknown) => Thenable<U> | U): Promise<U> {
     return <Promise<U>>this._axiosPromise.catch(onRejected)
   }
 }

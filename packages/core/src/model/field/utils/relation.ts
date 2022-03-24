@@ -1,13 +1,7 @@
 import { Collection } from '../../../collection/Collection'
 import { Relation } from '../../../relations'
 import { RelationEnum } from '../../../relations/RelationEnum'
-import {
-  capitalize,
-  isArray,
-  isCollection,
-  isModel,
-  isModelClass
-} from '../../../support/Utils'
+import { capitalize, isArray, isCollection, isModel, isModelClass } from '../../../support/Utils'
 import { Element, Item } from '../../../types/Data'
 import { Model } from '../../Model'
 
@@ -18,32 +12,20 @@ type RelationTypeResolver = {
 }
 
 // TODO: Simplify functions
-export function resolveRelationType({
-  key,
-  type,
-  relation
-}: RelationTypeResolver): RelationEnum | undefined {
+export function resolveRelationType({ key, type, relation }: RelationTypeResolver): RelationEnum | undefined {
   const relations = Object.values(RelationEnum)
 
   if (isModelClass(type) && !relations.includes(relation)) {
     const expected = relations.join(', ')
     const gotten = capitalize(typeof relation)
 
-    throw new Error(
-      `Invalid relation for field ${key}: Expected ${expected}, got ${gotten}.`
-    )
+    throw new Error(`Invalid relation for field ${key}: Expected ${expected}, got ${gotten}.`)
   }
 
   return relation
 }
 
-export function resolveRelation(
-  parent: Model,
-  related: typeof Model,
-  relation: RelationEnum,
-  key: string,
-  value: any
-): Relation {
+export function resolveRelation(parent: Model, related: typeof Model, relation: RelationEnum, key: string, value: any): Relation {
   switch (relation) {
     case RelationEnum.HAS_ONE: {
       const data = mutateHasOne(value, related)
@@ -59,17 +41,12 @@ export function resolveRelation(
       const relations = Object.values(RelationEnum)
       const expected = relations.join(' | ')
 
-      throw new Error(
-        `Invalid relation for field ${key}: Expected "${expected}", got "${relation}".`
-      )
+      throw new Error(`Invalid relation for field ${key}: Expected "${expected}", got "${relation}".`)
     }
   }
 }
 
-export function mutateHasOne(
-  record: Model | Element,
-  related: typeof Model
-): Item {
+export function mutateHasOne(record: Model | Element, related: typeof Model): Item {
   if (isModel(record)) {
     return record
   }
@@ -77,10 +54,7 @@ export function mutateHasOne(
   return record ? new related(record) : null
 }
 
-export function mutateHasMany(
-  records: Collection | Element[],
-  related: typeof Model
-): Collection {
+export function mutateHasMany(records: Collection | Element[], related: typeof Model): Collection {
   if (isCollection(records)) {
     return records
   }

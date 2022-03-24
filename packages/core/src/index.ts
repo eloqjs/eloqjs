@@ -17,12 +17,7 @@ export type { SerializedModel, SerializeModelOptions } from './model/Serialize'
 /**
  * Collection
  */
-export type {
-  CloneCollectionOptions,
-  CollectionOptions,
-  SerializeCollectionOptions,
-  SerializedCollection
-} from './collection/Collection'
+export type { CloneCollectionOptions, CollectionOptions, SerializeCollectionOptions, SerializedCollection } from './collection/Collection'
 export { Collection } from './collection/Collection'
 
 /**
@@ -38,12 +33,7 @@ export type { Element, Instance, Item } from './types/Data'
 /**
  * Plugin
  */
-export type {
-  Plugin,
-  PluginComponents,
-  PluginOptions,
-  use
-} from './plugins/use'
+export type { Plugin, PluginComponents, PluginOptions, use } from './plugins/use'
 
 /**
  * ELOQJS (Default)

@@ -2,16 +2,7 @@ import { Model } from '@eloqjs/core'
 
 import { assert, isModel, isNull, isString } from '../support/Utils'
 import { QueryParam } from './QueryParam'
-import {
-  AppendSpec,
-  FieldSpec,
-  FilterSpec,
-  IncludeSpec,
-  LimitSpec,
-  PageSpec,
-  ParamSpec,
-  SortSpec
-} from './specs'
+import { AppendSpec, FieldSpec, FilterSpec, IncludeSpec, LimitSpec, PageSpec, ParamSpec, SortSpec } from './specs'
 
 export class Query {
   public static parameters: {
@@ -48,11 +39,7 @@ export class Query {
 
   private readonly _baseId?: string | number
 
-  public constructor(
-    resource: string,
-    relatedResource?: string,
-    modelId?: string | number
-  ) {
+  public constructor(resource: string, relatedResource?: string, modelId?: string | number) {
     this._resource = resource
     this._relatedResource = relatedResource
     this._baseId = modelId
@@ -96,9 +83,7 @@ export class Query {
   /**
    * Groups the values of specs by parameter.
    */
-  private static _groupByParameter(
-    specs: (FieldSpec | FilterSpec | ParamSpec)[]
-  ): Map<string, string> {
+  private static _groupByParameter(specs: (FieldSpec | FilterSpec | ParamSpec)[]): Map<string, string> {
     const dictionary = new Map()
 
     for (const spec of specs) {
@@ -115,9 +100,7 @@ export class Query {
     return dictionary
   }
 
-  private static _mapValues(
-    specs: (AppendSpec | IncludeSpec | SortSpec)[]
-  ): string {
+  private static _mapValues(specs: (AppendSpec | IncludeSpec | SortSpec)[]): string {
     return specs.map((spec) => spec.getValue()).join(',')
   }
 
@@ -213,9 +196,7 @@ export class Query {
           break
         }
         default:
-          assert(false, [
-            'Arguments of custom() must be either strings or instances of Model.'
-          ])
+          assert(false, ['Arguments of custom() must be either strings or instances of Model.'])
       }
 
       if (!slash.length) {
@@ -232,9 +213,7 @@ export class Query {
     if (!this._baseId) {
       relationToFind = this._relatedResource ? '/' + this._relatedResource : ''
     } else {
-      relationToFind = this._relatedResource
-        ? '/' + this._baseId + '/' + this._relatedResource
-        : ''
+      relationToFind = this._relatedResource ? '/' + this._baseId + '/' + this._relatedResource : ''
     }
 
     const idToFind = this.idToFind ? '/' + this.idToFind : ''
@@ -296,15 +275,11 @@ export class Query {
 
   protected addPaginationParameters(searchParams: QueryParam[]): void {
     if (this.page) {
-      searchParams.push(
-        new QueryParam(PageSpec.parameter, this.page.getValue())
-      )
+      searchParams.push(new QueryParam(PageSpec.parameter, this.page.getValue()))
     }
 
     if (this.limit) {
-      searchParams.push(
-        new QueryParam(LimitSpec.parameter, this.limit.getValue())
-      )
+      searchParams.push(new QueryParam(LimitSpec.parameter, this.limit.getValue()))
     }
   }
 
@@ -319,9 +294,7 @@ export class Query {
     this.addPaginationParameters(searchParams)
     this.addOptionsParameters(searchParams)
 
-    const encodedParams = searchParams
-      .map((searchParam) => searchParam.encode())
-      .join('&')
+    const encodedParams = searchParams.map((searchParam) => searchParam.encode()).join('&')
 
     return encodedParams ? '?' + encodedParams : ''
   }

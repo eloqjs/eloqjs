@@ -1,12 +1,7 @@
 import BaseModel from '../../dummy/models/BaseModel'
 
 describe('Feature – Attributes – String', () => {
-  const data = [
-    { id: 1 },
-    { id: 2, str: 'value' },
-    { id: 3, str: 1 },
-    { id: 4, str: true }
-  ]
+  const data = [{ id: 1 }, { id: 2, str: 'value' }, { id: 3, str: 1 }, { id: 4, str: true }]
 
   it('should cast the value to `String`', async () => {
     class User extends BaseModel {

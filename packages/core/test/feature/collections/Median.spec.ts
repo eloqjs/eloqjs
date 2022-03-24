@@ -15,15 +15,7 @@ describe('Feature – Collections – Median', () => {
       model: Product
     })
 
-    collection2.add([
-      { price: 1 },
-      { price: 3 },
-      { price: 3 },
-      { price: 6 },
-      { price: 7 },
-      { price: 8 },
-      { price: 9 }
-    ])
+    collection2.add([{ price: 1 }, { price: 3 }, { price: 3 }, { price: 6 }, { price: 7 }, { price: 8 }, { price: 9 }])
 
     expect(collection2.median('price')).toBe(6)
   })

@@ -1,19 +1,10 @@
 import { Model } from '@eloqjs/core'
 import defu from 'defu'
 
-import {
-  HttpClient,
-  HttpClientPromise,
-  HttpClientResponse
-} from '../httpclient'
+import { HttpClient, HttpClientPromise, HttpClientResponse } from '../httpclient'
 import { HttpClientOptions } from '../httpclient/HttpClientOptions'
 import { assert, isFunction } from '../support/Utils'
-import {
-  OnRequestCallback,
-  OnRequestFailureCallback,
-  onRequestFinishCallback,
-  OnRequestSuccessCallback
-} from './RequestCallback'
+import { OnRequestCallback, OnRequestFailureCallback, onRequestFinishCallback, OnRequestSuccessCallback } from './RequestCallback'
 import { RequestMethod } from './RequestMethod'
 import { RequestOperation } from './RequestOperation'
 import { RequestOptions } from './RequestOptions'
@@ -122,14 +113,8 @@ export class Request<M extends typeof Model = typeof Model> {
     })
   }
 
-  private _resolveRequest({
-    url,
-    method,
-    data
-  }: RequestOptions): HttpClientPromise {
-    assert(!!url && !!method, [
-      'The request is missing the URL and the METHOD.'
-    ])
+  private _resolveRequest({ url, method, data }: RequestOptions): HttpClientPromise {
+    assert(!!url && !!method, ['The request is missing the URL and the METHOD.'])
 
     let promise: HttpClientPromise
 

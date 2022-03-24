@@ -29,10 +29,7 @@ export function unwrap<T>(data: T | { data: T }): T {
 /**
  * Resolves the value from the given model.
  */
-export function resolveValue<T = unknown, M extends Model = Model>(
-  model: M,
-  predicate: string | ((model: M) => T)
-): T {
+export function resolveValue<T = unknown, M extends Model = Model>(model: M, predicate: string | ((model: M) => T)): T {
   if (isFunction(predicate)) {
     return predicate(model)
   }
@@ -52,10 +49,7 @@ export function forceArray<T>(data: T | T[]): T[] {
 /**
  * Asserts that the condition is truthy, throwing immediately if not.
  */
-export function assert(
-  condition: boolean,
-  message: string[]
-): asserts condition {
+export function assert(condition: boolean, message: string[]): asserts condition {
   if (!condition) {
     throw new Error(['[ELOQJS]'].concat(message).join(' '))
   }
@@ -82,9 +76,7 @@ export function isObject(value: unknown): value is Record<string, unknown> {
  *
  * Based on [Lodash#isPlainObject]{@link https://github.com/lodash/lodash/blob/master/isPlainObject.js} (MIT)
  */
-export function isPlainObject(
-  value: unknown
-): value is Record<string, unknown> {
+export function isPlainObject(value: unknown): value is Record<string, unknown> {
   if (!isObject(value) || getTag(value) != '[object Object]') {
     return false
   }
@@ -182,9 +174,7 @@ export function isEmptyString(value: string): boolean {
 /**
  * Determines whether the given array or object is empty.
  */
-export function isEmpty(
-  collection: unknown[] | Record<string, unknown>
-): boolean {
+export function isEmpty(collection: unknown[] | Record<string, unknown>): boolean {
   return size(collection) === 0
 }
 
@@ -196,18 +186,12 @@ export function isEqual(a: unknown, b: unknown): boolean {
     return false
   }
 
-  if (
-    (isArray(a) || isPlainObject(a)) &&
-    (isArray(b) || isPlainObject(b)) &&
-    size(a) !== size(b)
-  ) {
+  if ((isArray(a) || isPlainObject(a)) && (isArray(b) || isPlainObject(b)) && size(a) !== size(b)) {
     return false
   }
 
   if (isArray(a) && isArray(b)) {
-    return a.every(
-      (val, index) => JSON.stringify(val) === JSON.stringify(b[index])
-    )
+    return a.every((val, index) => JSON.stringify(val) === JSON.stringify(b[index]))
   }
 
   return JSON.stringify(a) === JSON.stringify(b)
@@ -218,9 +202,7 @@ export function isEqual(a: unknown, b: unknown): boolean {
  * or the number of own enumerable string keyed properties for objects.
  */
 export function size(collection: unknown[] | Record<string, unknown>): number {
-  return isArray(collection)
-    ? collection.length
-    : Object.keys(collection).length
+  return isArray(collection) ? collection.length : Object.keys(collection).length
 }
 
 /**
@@ -229,10 +211,7 @@ export function size(collection: unknown[] | Record<string, unknown>): number {
  * @param value The value to be cloned.
  * @param reviver If a function, this prescribes how the value originally produced by parsing is transformed, before being returned.
  */
-export function clone(
-  value: unknown,
-  reviver?: ((key: string, value: any) => any) | undefined
-) {
+export function clone(value: unknown, reviver?: ((key: string, value: any) => any) | undefined) {
   return JSON.parse(JSON.stringify(value), reviver)
 }
 
@@ -258,12 +237,6 @@ export function capitalize(value: string): string {
   return value.charAt(0).toUpperCase() + value.slice(1)
 }
 
-export function isSerializedCollection(
-  serializedCollection: any
-): serializedCollection is SerializedCollection {
-  return (
-    !!serializedCollection &&
-    !!serializedCollection.options &&
-    !!serializedCollection.models
-  )
+export function isSerializedCollection(serializedCollection: any): serializedCollection is SerializedCollection {
+  return !!serializedCollection && !!serializedCollection.options && !!serializedCollection.models
 }

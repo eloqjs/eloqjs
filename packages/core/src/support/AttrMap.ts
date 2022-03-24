@@ -1,16 +1,6 @@
 import { Relation } from '../relations'
 import { Map } from './Map'
-import {
-  clone,
-  forceArray,
-  isArray,
-  isCollection,
-  isEmpty,
-  isEqual,
-  isModel,
-  isPlainObject,
-  isString
-} from './Utils'
+import { clone, forceArray, isArray, isCollection, isEmpty, isEqual, isModel, isPlainObject, isString } from './Utils'
 
 export class AttrMap<T> extends Map<T> {
   protected reference: Record<string, T> = {}
@@ -42,9 +32,7 @@ export class AttrMap<T> extends Map<T> {
       return
     }
 
-    attributes = forceArray(attributes).filter((attribute) =>
-      Object.keys(this.data).includes(attribute)
-    )
+    attributes = forceArray(attributes).filter((attribute) => Object.keys(this.data).includes(attribute))
 
     for (const attribute of attributes) {
       this.reference[attribute] = this.data[attribute]
@@ -67,9 +55,7 @@ export class AttrMap<T> extends Map<T> {
       return
     }
 
-    attributes = forceArray(attributes).filter((attribute) =>
-      Object.keys(this.data).includes(attribute)
-    )
+    attributes = forceArray(attributes).filter((attribute) => Object.keys(this.data).includes(attribute))
 
     for (const attribute of attributes) {
       this.data[attribute] = this.reference[attribute]
@@ -106,10 +92,7 @@ export class AttrMap<T> extends Map<T> {
     for (const key in this.data) {
       const reference = this.$get(key)
       const value = this.get(key)
-      const isDirty =
-        value instanceof Relation
-          ? this._isRelationDirty(value)
-          : !isEqual(value, reference)
+      const isDirty = value instanceof Relation ? this._isRelationDirty(value) : !isEqual(value, reference)
 
       if (isDirty) {
         dirty[key] = this.get(key)
@@ -140,13 +123,8 @@ export class AttrMap<T> extends Map<T> {
   /**
    * Determine if any of the given attributes were changed.
    */
-  protected hasChanges(
-    changes: Record<string, T>,
-    attributes: string[] = []
-  ): boolean {
-    attributes = attributes.filter((attribute) =>
-      Object.keys(this.data).includes(attribute)
-    )
+  protected hasChanges(changes: Record<string, T>, attributes: string[] = []): boolean {
+    attributes = attributes.filter((attribute) => Object.keys(this.data).includes(attribute))
 
     // If no specific attributes were provided, we will just see if the dirty array
     // already contains any attributes. If it does we will just return that this

@@ -2,11 +2,7 @@ import { Collection } from '../collection/Collection'
 import { Model } from '../model/Model'
 import { Item } from '../types/Data'
 
-export class Relation<
-  M extends Model = Model,
-  D extends Item<M> | Collection<M> = Item<M> | Collection<M>,
-  S extends boolean = boolean
-> {
+export class Relation<M extends Model = Model, D extends Item<M> | Collection<M> = Item<M> | Collection<M>, S extends boolean = boolean> {
   public data: D
 
   public model: typeof Model
@@ -21,13 +17,7 @@ export class Relation<
    */
   public forceSingular: boolean
 
-  public constructor(
-    model: typeof Model,
-    belongsToModel: Model,
-    data: D,
-    key: string,
-    forceSingular: S
-  ) {
+  public constructor(model: typeof Model, belongsToModel: Model, data: D, key: string, forceSingular: S) {
     this.model = model
     this.belongsToModel = belongsToModel
     this.data = data

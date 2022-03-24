@@ -26,9 +26,7 @@ export class QueryParam {
    * Encodes the query parameter.
    */
   public encode(): string {
-    return (
-      QueryParam._encodeURI(this.name) + '=' + QueryParam._encodeURI(this.value)
-    )
+    return QueryParam._encodeURI(this.name) + '=' + QueryParam._encodeURI(this.value)
   }
 
   private static _encodeURI(str: string): string {

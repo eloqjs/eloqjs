@@ -1,13 +1,5 @@
 import { RelationEnum } from '../../../relations/RelationEnum'
-import {
-  capitalize,
-  isArray,
-  isCollection,
-  isModelClass,
-  isNull,
-  isNullish,
-  isPlainObject
-} from '../../../support/Utils'
+import { capitalize, isArray, isCollection, isModelClass, isNull, isNullish, isPlainObject } from '../../../support/Utils'
 
 type TypeResolver = {
   key: string
@@ -22,11 +14,7 @@ export function resolveType({ key, type }: TypeResolver): any {
   return type
 }
 
-export function validateType(
-  value: any,
-  type: any,
-  relation?: RelationEnum
-): boolean {
+export function validateType(value: any, type: any, relation?: RelationEnum): boolean {
   if (isNullish(value)) {
     return false
   }

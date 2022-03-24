@@ -200,12 +200,8 @@ describe('Feature – Collections – Clone', () => {
       expect(clone).not.toBe(user)
       expect(clone.phone.data).not.toBe(user.phone.data)
       expect(clone.posts.data).not.toBe(user.posts.data)
-      expect(clone.phone.data!.$serialize()).toEqual(
-        user.phone.data!.$serialize()
-      )
-      expect(
-        clone.posts.data.models.map((model) => model.$serialize())
-      ).toEqual(user.posts.data.models.map((model) => model.$serialize()))
+      expect(clone.phone.data!.$serialize()).toEqual(user.phone.data!.$serialize())
+      expect(clone.posts.data.models.map((model) => model.$serialize())).toEqual(user.posts.data.models.map((model) => model.$serialize()))
       expect(clone.$serialize()).toEqual(user.$serialize())
     })
   })

@@ -174,9 +174,7 @@ export class Model {
   /**
    * The collections of the record.
    */
-  private readonly _collections: Map<Collection<this>> = new Map<
-    Collection<this>
-  >()
+  private readonly _collections: Map<Collection<this>> = new Map<Collection<this>>()
 
   /**
    * The unmutated attributes of the record.
@@ -186,8 +184,7 @@ export class Model {
   /**
    * The unmutated relationships of the record.
    */
-  private readonly _relationships: AttrMap<Relations.Relation> =
-    new AttrMap<Relations.Relation>()
+  private readonly _relationships: AttrMap<Relations.Relation> = new AttrMap<Relations.Relation>()
 
   /**
    * The options of the record.
@@ -331,14 +328,9 @@ export class Model {
    * not present, or it is invalid primary key value, which is other than
    * `string` or `number`, it's going to return `null`.
    */
-  public static getIdFromRecord<M extends typeof Model>(
-    this: M,
-    record: InstanceType<M> | Element
-  ): string | number | undefined {
+  public static getIdFromRecord<M extends typeof Model>(this: M, record: InstanceType<M> | Element): string | number | undefined {
     // Get the primary key value from attributes.
-    const value = isModel(record)
-      ? record._attributes.get(this.primaryKey)
-      : record[this.primaryKey]
+    const value = isModel(record) ? record._attributes.get(this.primaryKey) : record[this.primaryKey]
 
     return this.getIdFromValue(value)
   }
@@ -371,10 +363,7 @@ export class Model {
   /**
    * Determines whether the record has an ID.
    */
-  public static hasId<M extends typeof Model>(
-    this: M,
-    record: InstanceType<M> | Element
-  ): boolean {
+  public static hasId<M extends typeof Model>(this: M, record: InstanceType<M> | Element): boolean {
     return this.isValidId(this.getIdFromRecord(record))
   }
 
@@ -401,9 +390,7 @@ export class Model {
    * Determines whether the model has the given relationship.
    */
   public static hasRelation(relationship: typeof Model): boolean {
-    return Object.values(this.getFields()).some(
-      (field) => field.relation && field.type === relationship
-    )
+    return Object.values(this.getFields()).some((field) => field.relation && field.type === relationship)
   }
 
   /**
@@ -461,9 +448,7 @@ export class Model {
     for (const key in registry) {
       const attribute = registry[key]
 
-      this._schemas[this.entity][key] = isFunction(attribute)
-        ? attribute()
-        : attribute
+      this._schemas[this.entity][key] = isFunction(attribute) ? attribute() : attribute
     }
   }
 
@@ -494,9 +479,7 @@ export class Model {
    * Get global hook of the given name as array by stripping id key and keep
    * only hook functions.
    */
-  private static _getGlobalHookAsArray(
-    on: string
-  ): Contracts.HookableClosure[] {
+  private static _getGlobalHookAsArray(on: string): Contracts.HookableClosure[] {
     const hooks = this._globalHooks[on]
 
     return hooks ? hooks.map((h) => h.callback.bind(this)) : []
@@ -529,9 +512,7 @@ export class Model {
    *
    * @param collection
    */
-  public $registerCollection(
-    collection: Collection<this> | Collection<this>[]
-  ): void {
+  public $registerCollection(collection: Collection<this> | Collection<this>[]): void {
     if (isArray(collection)) {
       for (const c of collection) {
         this.$registerCollection(c)
@@ -540,9 +521,7 @@ export class Model {
       return
     }
 
-    assert(!isNullish(collection) && !isUndefined(collection.$uid), [
-      'Collection is not valid.'
-    ])
+    assert(!isNullish(collection) && !isUndefined(collection.$uid), ['Collection is not valid.'])
 
     this._collections.set(collection.$uid, collection)
   }
@@ -555,9 +534,7 @@ export class Model {
    *
    * @param collection
    */
-  public $unregisterCollection(
-    collection: Collection<this> | Collection<this>[]
-  ): void {
+  public $unregisterCollection(collection: Collection<this> | Collection<this>[]): void {
     if (isArray(collection)) {
       for (const c of collection) {
         this.$unregisterCollection(c)
@@ -566,9 +543,7 @@ export class Model {
       return
     }
 
-    assert(!isNullish(collection) && !isUndefined(collection.$uid), [
-      'Collection is not valid.'
-    ])
+    assert(!isNullish(collection) && !isUndefined(collection.$uid), ['Collection is not valid.'])
 
     this._collections.delete(collection.$uid)
   }
@@ -598,23 +573,15 @@ export class Model {
   /**
    * Set a model's option.
    */
-  public $setOption<K extends keyof ModelOptions>(
-    key: K,
-    value: ValueOf<ModelOptions, K>
-  ): void {
+  public $setOption<K extends keyof ModelOptions>(key: K, value: ValueOf<ModelOptions, K>): void {
     return this._options.set(key as string, value)
   }
 
   /**
    * Get a model's option.
    */
-  public $getOption<K extends keyof ModelOptions>(
-    key: K,
-    fallback?: ValueOf<ModelOptions, K>
-  ): ValueOf<ModelOptions, K> {
-    return (
-      (this._options.get(key as string) as ValueOf<ModelOptions, K>) ?? fallback
-    )
+  public $getOption<K extends keyof ModelOptions>(key: K, fallback?: ValueOf<ModelOptions, K>): ValueOf<ModelOptions, K> {
+    return (this._options.get(key as string) as ValueOf<ModelOptions, K>) ?? fallback
   }
 
   /**
@@ -630,9 +597,7 @@ export class Model {
   public $getField(attribute: string): Field {
     const fields = this.$fields()
 
-    assert(attribute in fields, [
-      `You must define the attribute "${attribute}" in fields().`
-    ])
+    assert(attribute in fields, [`You must define the attribute "${attribute}" in fields().`])
 
     return fields[attribute]
   }
@@ -707,9 +672,7 @@ export class Model {
           let _value: unknown = value
 
           if (_value instanceof Relations.Relation) {
-            _value = (_value.data as Collection).map((model) =>
-              model.$getAttributes()
-            )
+            _value = (_value.data as Collection).map((model) => model.$getAttributes())
           }
 
           collection.set(_value as Element | Element[])
@@ -783,8 +746,7 @@ export class Model {
    */
   public $fill(attributes: Element = {}, options: ModelOptions = {}): void {
     const fields = this.$fields()
-    const fillRelation =
-      options.relations ?? this.$getOption('relations') ?? true
+    const fillRelation = options.relations ?? this.$getOption('relations') ?? true
 
     for (const key in fields) {
       const field = fields[key]
@@ -812,10 +774,7 @@ export class Model {
   /**
    * Update this model by the given attributes.
    */
-  public $update(
-    attributes: Element | string | number | null | undefined = undefined,
-    options: ModelOptions = {}
-  ): void {
+  public $update(attributes: Element | string | number | null | undefined = undefined, options: ModelOptions = {}): void {
     // If the given attributes is a model, then get its attributes.
     if (isModel(attributes)) {
       attributes = attributes.$getAttributes()
@@ -935,9 +894,7 @@ export class Model {
         this[this.$primaryKey] = id
         this.$syncReference()
       } else {
-        assert(true, [
-          'Expected an empty response, object, or valid identifier.'
-        ])
+        assert(true, ['Expected an empty response, object, or valid identifier.'])
       }
     }
   }
@@ -945,9 +902,7 @@ export class Model {
   /**
    * Serialize given model POJO.
    */
-  public $serialize(
-    options: Serialize.SerializeModelOptions = {}
-  ): Serialize.SerializedModel {
+  public $serialize(options: Serialize.SerializeModelOptions = {}): Serialize.SerializedModel {
     options = {
       ...Serialize.defaultOptions,
       ...options
@@ -999,30 +954,22 @@ export class Model {
     this.$setOptions(serializedModel.options)
 
     // Read attributes
-    for (const [attribute, value] of Object.entries(
-      serializedModel.attributes.data
-    )) {
+    for (const [attribute, value] of Object.entries(serializedModel.attributes.data)) {
       this._attributes.set(attribute, value)
     }
 
     // Read attributes references
-    for (const [attribute, value] of Object.entries(
-      serializedModel.attributes.reference
-    )) {
+    for (const [attribute, value] of Object.entries(serializedModel.attributes.reference)) {
       this._attributes.$set(attribute, value)
     }
 
     // Read attributes changes
-    for (const [attribute, value] of Object.entries(
-      serializedModel.attributes.changes
-    )) {
+    for (const [attribute, value] of Object.entries(serializedModel.attributes.changes)) {
       this._attributes.setChange(attribute, value)
     }
 
     // Read relationships
-    for (const [attribute, value] of Object.entries(
-      serializedModel.relationships
-    )) {
+    for (const [attribute, value] of Object.entries(serializedModel.relationships)) {
       const field = this.$getField(attribute)
       const relation = this._relationships.get(attribute)
 
@@ -1032,9 +979,7 @@ export class Model {
           let model = relation.data as Item
 
           if (isNull(model)) {
-            model = relation.data = new relation.model(
-              value as Serialize.SerializedModel
-            )
+            model = relation.data = new relation.model(value as Serialize.SerializedModel)
           } else {
             model.$deserialize(value as Serialize.SerializedModel)
           }
@@ -1084,9 +1029,7 @@ export class Model {
 
         const value = this._relationships.get(key).data
 
-        result[key] = options.relations
-          ? Serialize.getRelationAttributes(value, options.isRequest)
-          : Serialize.emptyRelation(value)
+        result[key] = options.relations ? Serialize.getRelationAttributes(value, options.isRequest) : Serialize.emptyRelation(value)
       } else {
         if (options.shouldPatch && this._attributes.isClean(key)) {
           continue
@@ -1195,10 +1138,7 @@ export class Model {
    * Determine if the model or any of the given attribute(s) have been modified.
    */
   public $wasChanged(attributes?: string | string[]): boolean {
-    return (
-      this._attributes.wasChanged(attributes) ||
-      this._relationships.wasChanged(attributes)
-    )
+    return this._attributes.wasChanged(attributes) || this._relationships.wasChanged(attributes)
   }
 
   public $getDirty(): Record<string, any> {
@@ -1257,9 +1197,7 @@ export class Model {
 
     // Emit syncReference event
     this.$emit('syncReference', {
-      attributes: attributes
-        ? forceArray(attributes)
-        : Object.keys(this.$fields()),
+      attributes: attributes ? forceArray(attributes) : Object.keys(this.$fields()),
       before,
       after
     })
@@ -1356,9 +1294,7 @@ export class Model {
 
     // Emit reset event
     this.$emit('reset', {
-      attributes: attributes
-        ? forceArray(attributes)
-        : Object.keys(this.$fields()),
+      attributes: attributes ? forceArray(attributes) : Object.keys(this.$fields()),
       before,
       after
     })
@@ -1499,8 +1435,7 @@ export class Model {
     Object.defineProperty(this.$, attribute, {
       get: (): any => this.$saved(attribute),
 
-      set: (): void =>
-        assert(false, ["The saved state of a property can't be overridden."])
+      set: (): void => assert(false, ["The saved state of a property can't be overridden."])
     })
   }
 

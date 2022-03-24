@@ -1,11 +1,5 @@
 import { RelationEnum } from '../../relations/RelationEnum'
-import {
-  isNull,
-  isNullish,
-  isPlainObject,
-  isString,
-  isUndefined
-} from '../../support/Utils'
+import { isNull, isNullish, isPlainObject, isString, isUndefined } from '../../support/Utils'
 import { Model } from '../Model'
 import { resolveCast } from './utils/cast'
 import { getDefaultValue, resolveDefault } from './utils/default'
@@ -14,12 +8,7 @@ import { resolveNullable } from './utils/nullable'
 import { resolveReadOnly } from './utils/readonly'
 import { resolveRelation, resolveRelationType } from './utils/relation'
 import { resolveRequired } from './utils/required'
-import {
-  getExpectedName,
-  getGottenName,
-  resolveType,
-  validateType
-} from './utils/type'
+import { getExpectedName, getGottenName, resolveType, validateType } from './utils/type'
 import { resolveValidator } from './utils/validator'
 
 export class Field {
@@ -114,22 +103,15 @@ export class Field {
       return true
     }
 
-    if (
-      !validateType(value, this.type, this.relation) &&
-      !(isNull(value) && this.nullable)
-    ) {
+    if (!validateType(value, this.type, this.relation) && !(isNull(value) && this.nullable)) {
       const expectedName = getExpectedName(this.type, this.relation)
       const gottenName = getGottenName(value)
 
-      throw new Error(
-        `Invalid field: type check failed for field "${this.key}". Expected ${expectedName}, got ${gottenName}.`
-      )
+      throw new Error(`Invalid field: type check failed for field "${this.key}". Expected ${expectedName}, got ${gottenName}.`)
     }
 
     if (!this.validator(value)) {
-      throw new Error(
-        `Invalid field: custom validator check failed for field "${this.key}".`
-      )
+      throw new Error(`Invalid field: custom validator check failed for field "${this.key}".`)
     }
 
     return true

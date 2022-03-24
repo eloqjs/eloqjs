@@ -18,23 +18,11 @@ export interface HttpClient {
 
   head(url: string, config?: HttpClientOptions): HttpClientPromise
 
-  post(
-    url: string,
-    data?: unknown,
-    config?: HttpClientOptions
-  ): HttpClientPromise
+  post(url: string, data?: unknown, config?: HttpClientOptions): HttpClientPromise
 
-  put(
-    url: string,
-    data?: unknown,
-    config?: HttpClientOptions
-  ): HttpClientPromise
+  put(url: string, data?: unknown, config?: HttpClientOptions): HttpClientPromise
 
-  patch(
-    url: string,
-    data?: unknown,
-    config?: HttpClientOptions
-  ): HttpClientPromise
+  patch(url: string, data?: unknown, config?: HttpClientOptions): HttpClientPromise
 
   getImplementingClient(): unknown
 }

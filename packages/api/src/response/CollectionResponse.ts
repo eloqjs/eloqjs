@@ -4,17 +4,10 @@ import { HttpClientResponse } from '../httpclient/HttpClientResponse'
 import { assert, isArray, isNull } from '../support/Utils'
 import { Response } from './Response'
 
-export class CollectionResponse<
-  M extends Model = Model,
-  C extends Collection<M> = Collection<M>
-> extends Response {
+export class CollectionResponse<M extends Model = Model, C extends Collection<M> = Collection<M>> extends Response {
   public readonly data: C
 
-  public constructor(
-    httpClientResponse: HttpClientResponse | null,
-    model: typeof Model,
-    collection?: C
-  ) {
+  public constructor(httpClientResponse: HttpClientResponse | null, model: typeof Model, collection?: C) {
     super(httpClientResponse, model)
 
     this.data = this._resolveCollection(collection)

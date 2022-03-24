@@ -85,21 +85,15 @@ export class ModelAPIInstance<M extends Model = Model> {
 
     const selfId = this.model.$id
 
-    assert(!isUndefined(selfId), [
-      'Cannot attach a related model to a parent that has no ID.'
-    ])
+    assert(!isUndefined(selfId), ['Cannot attach a related model to a parent that has no ID.'])
 
     const record = relationship.$getAttributes({
       isRequest: true
     })
 
-    assert(!isEmpty(record), [
-      'Cannot create a new record, because no data was provided.'
-    ])
+    assert(!isEmpty(record), ['Cannot create a new record, because no data was provided.'])
 
-    return this._operation(relationship).create(
-      `${this.model.$resource}/${selfId}/${relationship.$resource}`
-    )
+    return this._operation(relationship).create(`${this.model.$resource}/${selfId}/${relationship.$resource}`)
   }
 
   /**
@@ -110,19 +104,13 @@ export class ModelAPIInstance<M extends Model = Model> {
 
     const selfId = this.model.$id
 
-    assert(!isUndefined(selfId), [
-      'Cannot detach a related model from a parent that has no ID.'
-    ])
+    assert(!isUndefined(selfId), ['Cannot detach a related model from a parent that has no ID.'])
 
     const relationId = relationship.$id
 
-    assert(!isUndefined(relationId), [
-      'Cannot detach a related model with no ID.'
-    ])
+    assert(!isUndefined(relationId), ['Cannot detach a related model with no ID.'])
 
-    return this._operation(relationship).delete(
-      `${this.model.$resource}/${selfId}/${relationship.$resource}/${relationId}`
-    )
+    return this._operation(relationship).delete(`${this.model.$resource}/${selfId}/${relationship.$resource}/${relationId}`)
   }
 
   /**
@@ -133,20 +121,14 @@ export class ModelAPIInstance<M extends Model = Model> {
 
     const selfId = this.model.$id
 
-    assert(!isUndefined(selfId), [
-      'Cannot sync a related model to a parent that has no ID.'
-    ])
+    assert(!isUndefined(selfId), ['Cannot sync a related model to a parent that has no ID.'])
 
     // Get ID before serialize, otherwise the ID may not be available.
     const relationId = relationship.$id
 
-    assert(!isUndefined(relationId), [
-      'Cannot sync a related model with no ID.'
-    ])
+    assert(!isUndefined(relationId), ['Cannot sync a related model with no ID.'])
 
-    return this._operation(relationship).update(
-      `${this.model.$resource}/${selfId}/${relationship.$resource}/${relationId}`
-    )
+    return this._operation(relationship).update(`${this.model.$resource}/${selfId}/${relationship.$resource}/${relationId}`)
   }
 
   /**
@@ -172,9 +154,7 @@ export class ModelAPIInstance<M extends Model = Model> {
   }
 
   private _api(): ModelAPIStatic {
-    return new ModelAPIStatic(this.model.$constructor()).config(
-      this._getConfig()
-    )
+    return new ModelAPIStatic(this.model.$constructor()).config(this._getConfig())
   }
 
   private _hasRelation<R extends Model>(relationship: R): void {

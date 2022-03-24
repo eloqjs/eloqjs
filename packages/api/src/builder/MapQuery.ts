@@ -1,18 +1,10 @@
 import { isPlainObject } from '../support/Utils'
 
 export function isUnallowedValue(value: unknown): boolean {
-  return (
-    value === undefined ||
-    value instanceof RegExp ||
-    typeof value === 'function'
-  )
+  return value === undefined || value instanceof RegExp || typeof value === 'function'
 }
 
-export function mapQuery(
-  obj: Record<string, any>,
-  path: string[] = [],
-  map: Map<string[], any> = new Map()
-): Map<string[], any> {
+export function mapQuery(obj: Record<string, any>, path: string[] = [], map: Map<string[], any> = new Map()): Map<string[], any> {
   if (!isPlainObject(obj)) {
     if (path.length === 0) {
       throw new Error('The filter query must be an object.')

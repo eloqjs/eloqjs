@@ -45,10 +45,7 @@ export class Relation<
    * @param {string | string[]} attribute - The attribute being tested.
    * @param {string} value - The value the attribute should be equal.
    */
-  public where(
-    attribute: string | string[],
-    value: FilterValue
-  ): RelationAPI<M, D, S> {
+  public where(attribute: string | string[], value: FilterValue): RelationAPI<M, D, S> {
     return this.api().where(attribute, value)
   }
 
@@ -58,10 +55,7 @@ export class Relation<
    * @param {string | string[]} attribute - The attribute being tested.
    * @param {string} values - The values the attribute should be equal.
    */
-  public whereIn(
-    attribute: string | string[],
-    values: FilterValue[]
-  ): RelationAPI<M, D, S> {
+  public whereIn(attribute: string | string[], values: FilterValue[]): RelationAPI<M, D, S> {
     return this.api().whereIn(attribute, values)
   }
 
@@ -95,10 +89,7 @@ export class Relation<
    * @param {string} attribute - The attribute to sort by.
    * @param {string} [direction] - The direction to sort in.
    */
-  public orderBy(
-    attribute: string,
-    direction?: 'asc' | 'desc'
-  ): RelationAPI<M, D, S> {
+  public orderBy(attribute: string, direction?: 'asc' | 'desc'): RelationAPI<M, D, S> {
     return this.api().orderBy(attribute, direction)
   }
 
@@ -108,10 +99,7 @@ export class Relation<
    * @param {string} parameter - The name of the parameter, e.g. 'bar' in "http://foo.com?bar=baz"
    * @param {string} value - The value of the parameter, e.g. 'baz' in "http://foo.com?bar=baz"
    */
-  public option(
-    parameter: string,
-    value: ParamValue | ParamValue[]
-  ): RelationAPI<M, D, S> {
+  public option(parameter: string, value: ParamValue | ParamValue[]): RelationAPI<M, D, S> {
     return this.api().option(parameter, value)
   }
 

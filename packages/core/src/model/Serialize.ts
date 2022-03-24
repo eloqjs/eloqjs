@@ -67,9 +67,7 @@ export function object(o: Record<string, unknown>): Record<string, unknown> {
 /**
  * Serialize given relation into json.
  */
-export function relation(
-  relation: Item | Collection
-): SerializedModel | SerializedCollection | null {
+export function relation(relation: Item | Collection): SerializedModel | SerializedCollection | null {
   if (isNull(relation)) {
     return null
   }
@@ -91,10 +89,7 @@ export function emptyRelation(relation: Item | Collection): [] | null {
 /**
  * Get the attributes of the given relation.
  */
-export function getRelationAttributes(
-  relation: Item | Collection,
-  isRequest: boolean = false
-): Element | Element[] | null {
+export function getRelationAttributes(relation: Item | Collection, isRequest: boolean = false): Element | Element[] | null {
   if (isNull(relation)) {
     return null
   }
@@ -116,9 +111,7 @@ export function getRelationAttributes(
   return resolve(relation)
 }
 
-export function isSerializedModel(
-  serializedModel: any
-): serializedModel is SerializedModel {
+export function isSerializedModel(serializedModel: any): serializedModel is SerializedModel {
   return (
     !!serializedModel &&
     !!serializedModel.entity &&

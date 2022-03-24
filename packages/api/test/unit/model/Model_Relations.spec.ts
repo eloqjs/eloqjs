@@ -45,8 +45,7 @@ describe('Unit - Model – Relations', () => {
       }
     }
 
-    const error =
-      '[ELOQJS] The User model does not have a relationship with the Post model.'
+    const error = '[ELOQJS] The User model does not have a relationship with the Post model.'
 
     const user = new User({ id: 1, name: 'John Doe' })
     const post = new Post({

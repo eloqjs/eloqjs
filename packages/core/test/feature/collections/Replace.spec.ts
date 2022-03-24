@@ -90,9 +90,7 @@ describe('Feature – Collections – Replace', () => {
 
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
-    expect(() => collection.replace(null)).toThrow(
-      'Expected a model, plain object, or array of either.'
-    )
+    expect(() => collection.replace(null)).toThrow('Expected a model, plain object, or array of either.')
   })
 
   it('should thrown an error if replacing with undefined', () => {
@@ -106,9 +104,7 @@ describe('Feature – Collections – Replace', () => {
 
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
-    expect(() => collection.replace(undefined)).toThrow(
-      'Expected a model, plain object, or array of either.'
-    )
+    expect(() => collection.replace(undefined)).toThrow('Expected a model, plain object, or array of either.')
   })
 
   it('should thrown an error if replacing with non-array or non-object', () => {
@@ -122,8 +118,6 @@ describe('Feature – Collections – Replace', () => {
 
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
-    expect(() => collection.replace(5)).toThrow(
-      'Expected a model, plain object, or array of either.'
-    )
+    expect(() => collection.replace(5)).toThrow('Expected a model, plain object, or array of either.')
   })
 })

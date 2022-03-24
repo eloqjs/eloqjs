@@ -13,8 +13,7 @@ export class AxiosHttpClient implements HttpClient {
     if (isNullish(axiosInstance)) {
       axiosInstance = axios.create()
       axiosInstance.defaults.headers['Accept'] = 'application/vnd.api+json'
-      axiosInstance.defaults.headers['Content-type'] =
-        'application/vnd.api+json'
+      axiosInstance.defaults.headers['Content-type'] = 'application/vnd.api+json'
     }
 
     this._axiosInstance = axiosInstance
@@ -44,34 +43,16 @@ export class AxiosHttpClient implements HttpClient {
     return new AxiosHttpClientPromise(this._axiosInstance.head(url, config))
   }
 
-  public post(
-    url: string,
-    data?: unknown,
-    config?: HttpClientOptions
-  ): HttpClientPromise {
-    return new AxiosHttpClientPromise(
-      this._axiosInstance.post(url, data, config)
-    )
+  public post(url: string, data?: unknown, config?: HttpClientOptions): HttpClientPromise {
+    return new AxiosHttpClientPromise(this._axiosInstance.post(url, data, config))
   }
 
-  public put(
-    url: string,
-    data?: unknown,
-    config?: HttpClientOptions
-  ): HttpClientPromise {
-    return new AxiosHttpClientPromise(
-      this._axiosInstance.put(url, data, config)
-    )
+  public put(url: string, data?: unknown, config?: HttpClientOptions): HttpClientPromise {
+    return new AxiosHttpClientPromise(this._axiosInstance.put(url, data, config))
   }
 
-  public patch(
-    url: string,
-    data?: unknown,
-    config?: HttpClientOptions
-  ): HttpClientPromise {
-    return new AxiosHttpClientPromise(
-      this._axiosInstance.patch(url, data, config)
-    )
+  public patch(url: string, data?: unknown, config?: HttpClientOptions): HttpClientPromise {
+    return new AxiosHttpClientPromise(this._axiosInstance.patch(url, data, config))
   }
 
   public getImplementingClient(): AxiosInstance {

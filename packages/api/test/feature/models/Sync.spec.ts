@@ -9,18 +9,16 @@ describe('Feature – Models – Sync', () => {
     const expected = { ...Data.Post }
     expected.title = 'Updated Title'
 
-    axiosMock
-      .onPut(`http://localhost/users/1/posts/${Data.Post.slug}`)
-      .reply((config) => {
-        const data = JSON.parse(config.data)
-        const user = {
-          id: Data.Post.user.id
-        }
+    axiosMock.onPut(`http://localhost/users/1/posts/${Data.Post.slug}`).reply((config) => {
+      const data = JSON.parse(config.data)
+      const user = {
+        id: Data.Post.user.id
+      }
 
-        expect(data).toEqual({ ...expected, user })
+      expect(data).toEqual({ ...expected, user })
 
-        return [200, expected]
-      })
+      return [200, expected]
+    })
 
     const post = new Post(Data.Post)
 
@@ -36,15 +34,13 @@ describe('Feature – Models – Sync', () => {
     const expected = { ...Data.Post }
     expected.title = 'Updated Title'
 
-    axiosMock
-      .onPatch(`http://localhost/users/1/posts/${Data.Post.slug}`)
-      .reply((config) => {
-        const data = JSON.parse(config.data)
+    axiosMock.onPatch(`http://localhost/users/1/posts/${Data.Post.slug}`).reply((config) => {
+      const data = JSON.parse(config.data)
 
-        expect(data).toEqual({ title: expected.title })
+      expect(data).toEqual({ title: expected.title })
 
-        return [200, expected]
-      })
+      return [200, expected]
+    })
 
     const post = new Post(Data.Post, null, { patch: true })
 
@@ -60,18 +56,16 @@ describe('Feature – Models – Sync', () => {
     const expected = { ...Data.Post }
     expected.title = 'Updated Title'
 
-    axiosMock
-      .onPut(`http://localhost/users/1/posts/${Data.Post.slug}`)
-      .reply((config) => {
-        const data = JSON.parse(config.data)
-        const user = {
-          id: Data.Post.user.id
-        }
+    axiosMock.onPut(`http://localhost/users/1/posts/${Data.Post.slug}`).reply((config) => {
+      const data = JSON.parse(config.data)
+      const user = {
+        id: Data.Post.user.id
+      }
 
-        expect(data).toEqual({ ...expected, user })
+      expect(data).toEqual({ ...expected, user })
 
-        return [200, expected]
-      })
+      return [200, expected]
+    })
 
     const post = new Post(Data.Post)
 
@@ -87,15 +81,13 @@ describe('Feature – Models – Sync', () => {
     const expected = { ...Data.Post }
     expected.title = 'Updated Title'
 
-    axiosMock
-      .onPatch(`http://localhost/users/1/posts/${Data.Post.slug}`)
-      .reply((config) => {
-        const data = JSON.parse(config.data)
+    axiosMock.onPatch(`http://localhost/users/1/posts/${Data.Post.slug}`).reply((config) => {
+      const data = JSON.parse(config.data)
 
-        expect(data).toEqual({ title: expected.title })
+      expect(data).toEqual({ title: expected.title })
 
-        return [200, expected]
-      })
+      return [200, expected]
+    })
 
     const post = new Post(Data.Post, null, { patch: true })
 
@@ -114,9 +106,7 @@ describe('Feature – Models – Sync', () => {
       })
     }
 
-    expect(error).toThrow(
-      '[ELOQJS] Cannot sync a related model to a parent that has no ID.'
-    )
+    expect(error).toThrow('[ELOQJS] Cannot sync a related model to a parent that has no ID.')
   })
 
   it('should throw an error when relationship do not have an ID', () => {

@@ -2,14 +2,7 @@ import { Collection, Model } from '@eloqjs/core'
 
 import { HttpClientOptions } from '../httpclient/HttpClientOptions'
 import { Query } from '../query/Query'
-import {
-  AppendSpec,
-  FieldSpec,
-  IncludeSpec,
-  LimitSpec,
-  PageSpec,
-  SortSpec
-} from '../query/specs'
+import { AppendSpec, FieldSpec, IncludeSpec, LimitSpec, PageSpec, SortSpec } from '../query/specs'
 import { FilterSpec, FilterValue } from '../query/specs/FilterSpec'
 import { ParamSpec, ParamValue } from '../query/specs/ParamSpec'
 import { Request } from '../request/Request'
@@ -19,15 +12,7 @@ import { CollectionPromise } from '../response/CollectionPromise'
 import { CollectionResponse } from '../response/CollectionResponse'
 import { RecordPromise } from '../response/RecordPromise'
 import { RecordResponse } from '../response/RecordResponse'
-import {
-  assert,
-  forceArray,
-  isArray,
-  isObject,
-  isPlainObject,
-  isString,
-  isUndefined
-} from '../support/Utils'
+import { assert, forceArray, isArray, isObject, isPlainObject, isString, isUndefined } from '../support/Utils'
 import { isUnallowedValue, mapQuery } from './MapQuery'
 import { SortDirection } from './SortDirection'
 
@@ -44,17 +29,10 @@ export class Builder<M extends Model = Model, S extends boolean = false> {
    */
   private readonly _forceSingular: boolean
 
-  public constructor(
-    model: typeof Model,
-    belongsToModel?: typeof Model,
-    belongsToModelId?: string | number,
-    forceSingular?: boolean
-  ) {
+  public constructor(model: typeof Model, belongsToModel?: typeof Model, belongsToModelId?: string | number, forceSingular?: boolean) {
     this.model = model
 
-    const resource = belongsToModel
-      ? belongsToModel.getResource()
-      : model.getResource()
+    const resource = belongsToModel ? belongsToModel.getResource() : model.getResource()
     const relatedResource = belongsToModel ? model.getResource() : undefined
 
     this._query = new Query(resource, relatedResource, belongsToModelId)
@@ -65,12 +43,8 @@ export class Builder<M extends Model = Model, S extends boolean = false> {
   /**
    * Get a collection of records.
    */
-  public get<C extends Collection<M>>(
-    collection?: C
-  ): S extends true ? RecordPromise<M> : CollectionPromise<M, C>
-  public get<C extends Collection<M>>(
-    collection?: C
-  ): RecordPromise<M> | CollectionPromise<M, C> {
+  public get<C extends Collection<M>>(collection?: C): S extends true ? RecordPromise<M> : CollectionPromise<M, C>
+  public get<C extends Collection<M>>(collection?: C): RecordPromise<M> | CollectionPromise<M, C> {
     if (this._forceSingular) {
       return this.first()
     }
@@ -89,11 +63,7 @@ export class Builder<M extends Model = Model, S extends boolean = false> {
           })
         },
         (response) => {
-          pluralResponse = new CollectionResponse(
-            response,
-            this.model,
-            collection
-          )
+          pluralResponse = new CollectionResponse(response, this.model, collection)
         }
       )
       .then(() => pluralResponse)
@@ -150,10 +120,7 @@ export class Builder<M extends Model = Model, S extends boolean = false> {
   /**
    * @internal
    */
-  public where(
-    attribute: string | string[] | Record<string, any>,
-    value?: FilterValue
-  ): this
+  public where(attribute: string | string[] | Record<string, any>, value?: FilterValue): this
 
   /**
    * Add a basic "where" clause to the query.
@@ -161,17 +128,10 @@ export class Builder<M extends Model = Model, S extends boolean = false> {
    * @param {string | string[]} attribute - The attribute being tested.
    * @param {string} value - The value the attribute should be equal.
    */
-  public where(
-    attribute: string | string[] | Record<string, any>,
-    value?: FilterValue
-  ): this {
-    assert(!isUndefined(attribute), [
-      'The `attribute` and `value` of `where` are required.'
-    ])
+  public where(attribute: string | string[] | Record<string, any>, value?: FilterValue): this {
+    assert(!isUndefined(attribute), ['The `attribute` and `value` of `where` are required.'])
 
-    assert(!isArray(value) && !isObject(value), [
-      'The `value` of `where` must be primitive.'
-    ])
+    assert(!isArray(value) && !isObject(value), ['The `value` of `where` must be primitive.'])
 
     if (isPlainObject(attribute)) {
       for (const [attr, val] of mapQuery(attribute)) {
@@ -204,10 +164,7 @@ export class Builder<M extends Model = Model, S extends boolean = false> {
   /**
    * @internal
    */
-  public whereIn(
-    attribute: string | string[] | Record<string, any>,
-    values?: FilterValue[]
-  ): this
+  public whereIn(attribute: string | string[] | Record<string, any>, values?: FilterValue[]): this
 
   /**
    * Add a "where in" clause to the query.
@@ -215,17 +172,10 @@ export class Builder<M extends Model = Model, S extends boolean = false> {
    * @param {string | string[]} attribute - The attribute being tested.
    * @param {string} values - The values the attribute should be equal.
    */
-  public whereIn(
-    attribute: string | string[] | Record<string, any>,
-    values?: FilterValue[]
-  ): this {
-    assert(!isUndefined(attribute), [
-      'The `attribute` and `values` of `whereIn` are required.'
-    ])
+  public whereIn(attribute: string | string[] | Record<string, any>, values?: FilterValue[]): this {
+    assert(!isUndefined(attribute), ['The `attribute` and `values` of `whereIn` are required.'])
 
-    assert(isUndefined(values) || isArray(values), [
-      'The `value` of `whereIn` must be an array of primitives.'
-    ])
+    assert(isUndefined(values) || isArray(values), ['The `value` of `whereIn` must be an array of primitives.'])
 
     if (isPlainObject(attribute)) {
       for (const [attr, val] of mapQuery(attribute)) {
@@ -284,15 +234,10 @@ export class Builder<M extends Model = Model, S extends boolean = false> {
   /**
    * Specify the fields that should be included in the returned object graph.
    */
-  public select(
-    field: string | string[] | Record<string, string | string[]>
-  ): this {
+  public select(field: string | string[] | Record<string, string | string[]>): this {
     assert(!isUndefined(field), ['The `field` of `select` is required.'])
 
-    const addFields = (
-      fields: string | string[],
-      key: string = this.model.entity
-    ): void => {
+    const addFields = (fields: string | string[], key: string = this.model.entity): void => {
       fields = forceArray(fields)
 
       for (const field of fields) {
@@ -335,15 +280,9 @@ export class Builder<M extends Model = Model, S extends boolean = false> {
   /**
    * @internal
    */
-  public orderBy(
-    attribute: string | string[] | Record<string, 'asc' | 'desc'>,
-    direction?: 'asc' | 'desc'
-  ): this
+  public orderBy(attribute: string | string[] | Record<string, 'asc' | 'desc'>, direction?: 'asc' | 'desc'): this
 
-  public orderBy(
-    attribute: string | string[] | Record<string, 'asc' | 'desc'>,
-    direction?: 'asc' | 'desc'
-  ): this {
+  public orderBy(attribute: string | string[] | Record<string, 'asc' | 'desc'>, direction?: 'asc' | 'desc'): this {
     const addSort = (attributes: string | string[], dir?: boolean) => {
       attributes = forceArray(attributes)
 
@@ -388,27 +327,15 @@ export class Builder<M extends Model = Model, S extends boolean = false> {
    * @param {string} parameter - The name of the parameter, e.g. 'bar' in "http://foo.com?bar=baz"
    * @param {ParamValue | ParamValue[]} value - The value of the parameter, e.g. 'baz' in "http://foo.com?bar=baz"
    */
-  public params(
-    parameter: string | string[],
-    value: ParamValue | ParamValue[]
-  ): this
+  public params(parameter: string | string[], value: ParamValue | ParamValue[]): this
 
   /**
    * @internal
    */
-  public params(
-    parameter: string | string[] | Record<string, any>,
-    value?: ParamValue | ParamValue[]
-  ): this
+  public params(parameter: string | string[] | Record<string, any>, value?: ParamValue | ParamValue[]): this
 
-  public params(
-    parameter: string | string[] | Record<string, any>,
-    value?: ParamValue | ParamValue[]
-  ): this {
-    const addParam = (
-      param: string | string[],
-      values: ParamValue | ParamValue[]
-    ) => {
+  public params(parameter: string | string[] | Record<string, any>, value?: ParamValue | ParamValue[]): this {
+    const addParam = (param: string | string[], values: ParamValue | ParamValue[]) => {
       values = forceArray(values)
 
       for (const val of values) {
@@ -439,9 +366,7 @@ export class Builder<M extends Model = Model, S extends boolean = false> {
    * @param {number} page - The number of the page.
    */
   public page(page: number): this {
-    assert(Number.isInteger(page), [
-      'The `value` of `page` must be an integer.'
-    ])
+    assert(Number.isInteger(page), ['The `value` of `page` must be an integer.'])
 
     this._query.setPage(new PageSpec(page))
 
@@ -454,9 +379,7 @@ export class Builder<M extends Model = Model, S extends boolean = false> {
    * @param {number} limit - The limit of records.
    */
   public limit(limit: number): this {
-    assert(Number.isInteger(limit), [
-      'The `value` of `limit` must be an integer.'
-    ])
+    assert(Number.isInteger(limit), ['The `value` of `limit` must be an integer.'])
 
     this._query.setLimit(new LimitSpec(limit))
 
@@ -469,9 +392,7 @@ export class Builder<M extends Model = Model, S extends boolean = false> {
    * @param {...(string|Model)} resources - The resources to be built into a custom endpoint.
    */
   public custom(...resources: (string | Model)[]): this {
-    assert(resources.length !== 0, [
-      'The `custom()` method takes a minimum of one argument.'
-    ])
+    assert(resources.length !== 0, ['The `custom()` method takes a minimum of one argument.'])
 
     this._query.setResource(resources)
 

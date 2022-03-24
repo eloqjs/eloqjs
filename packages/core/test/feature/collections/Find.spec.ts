@@ -33,14 +33,10 @@ describe('Feature – Collections – Find', () => {
   it('should throw an error when an invalid predicate type was provided', () => {
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
-    expect(() => collection.find(true)).toThrow(
-      'Invalid type of `predicate` on `find`.'
-    )
+    expect(() => collection.find(true)).toThrow('Invalid type of `predicate` on `find`.')
 
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
-    expect(() => collection.find({})).toThrow(
-      'Invalid type of `predicate` on `find`.'
-    )
+    expect(() => collection.find({})).toThrow('Invalid type of `predicate` on `find`.')
   })
 })

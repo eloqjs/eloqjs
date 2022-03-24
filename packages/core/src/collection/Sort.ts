@@ -5,10 +5,7 @@
  * @param {string|number|null|undefined} valueB
  * @returns {number}
  */
-export function sortNullish(
-  valueA: string | number | null | undefined,
-  valueB: string | number | null | undefined
-): number {
+export function sortNullish(valueA: string | number | null | undefined, valueB: string | number | null | undefined): number {
   if (valueA === null || valueA === undefined) {
     return 1
   }
@@ -26,10 +23,7 @@ export function sortNullish(
  * @param {string|number} valueB
  * @returns {number}
  */
-export function sortGreaterOrLessThan(
-  valueA: string | number,
-  valueB: string | number
-): number {
+export function sortGreaterOrLessThan(valueA: string | number, valueB: string | number): number {
   if (valueA < valueB) {
     return -1
   }

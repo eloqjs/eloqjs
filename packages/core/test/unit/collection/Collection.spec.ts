@@ -59,8 +59,6 @@ describe('Unit – Collection', () => {
     }
     const collection = new Collection<User>()
 
-    expect(() => collection.add(user)).toThrow(
-      '[ELOQJS] Model type is not defined.'
-    )
+    expect(() => collection.add(user)).toThrow('[ELOQJS] Model type is not defined.')
   })
 })

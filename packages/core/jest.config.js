@@ -15,10 +15,6 @@ module.exports = {
   setupFilesAfterEnv: ['<rootDir>/test/setup.ts'],
   coverageDirectory: 'coverage',
   coverageReporters: ['json', 'lcov', 'text-summary', 'clover'],
-  collectCoverageFrom: [
-    '<rootDir>/src/**/*.ts',
-    '!<rootDir>/src/support/Utils.ts',
-    '!<rootDir>/src/index.ts'
-  ],
+  collectCoverageFrom: ['<rootDir>/src/**/*.ts', '!<rootDir>/src/support/Utils.ts', '!<rootDir>/src/index.ts'],
   clearMocks: true
 }
