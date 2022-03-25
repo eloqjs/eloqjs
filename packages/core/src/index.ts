@@ -2,6 +2,23 @@
  * Model
  */
 export type {
+  DefaultFactory,
+  ExtractModelFields,
+  ExtractModelFieldsTypes,
+  FieldConstructor,
+  FieldMethod,
+  FieldOptions,
+  FieldType,
+  InferFieldType,
+  InferNullableField,
+  ModelAttributes,
+  ModelField,
+  ModelFields,
+  ModelInput,
+  ModelKeys,
+  ModelProperties
+} from './model/FieldTypes'
+export type {
   CloneModelOptions,
   Fields,
   GetModelAttributesOptions,

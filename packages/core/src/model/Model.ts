@@ -28,6 +28,7 @@ import { Mutators } from './Contracts'
 import * as Contracts from './Contracts'
 import { Field } from './field/Field'
 import { mutateHasOne } from './field/utils/relation'
+import { ModelAttributes, ModelInput, ModelKeys } from './FieldTypes'
 import * as Serialize from './Serialize'
 import { isSerializedModel, SerializedModel } from './Serialize'
 
@@ -92,7 +93,15 @@ export interface CloneModelOptions {
   deep?: boolean
 }
 
-export class Model {
+interface Model {
+  /**
+   * Property used to map the model type.
+   * This is intended for type usage and should not be used as value.
+   */
+  readonly $modelType: typeof Model
+}
+
+class Model {
   /**
    * The name to be used for the model.
    */
@@ -195,7 +204,7 @@ export class Model {
    * Create a new model instance.
    */
   public constructor(
-    attributes?: Element | SerializedModel,
+    attributes?: ModelInput<typeof Model> | SerializedModel | Element,
     collection: Collection | Collection[] | null = null,
     options: ModelOptions = {}
   ) {
@@ -215,7 +224,7 @@ export class Model {
       // Override options from deserialized data
       this.$setOptions(options)
     } else {
-      this.$fill(attributes)
+      this.$fill(attributes as ModelInput<typeof Model>)
     }
   }
 
@@ -500,8 +509,8 @@ export class Model {
   /**
    * Get the constructor of this model.
    */
-  public $constructor(): typeof Model {
-    return this.constructor as typeof Model
+  public $constructor(): this['$modelType'] {
+    return this.constructor as this['$modelType']
   }
 
   /**
@@ -608,7 +617,18 @@ export class Model {
    *
    * @returns The value that was set.
    */
-  public $set<T = any>(attribute: string | Element, value?: T): T | undefined {
+  public $set<K extends ModelKeys<this['$modelType']>, T extends ModelInput<this['$modelType']>[K]>(
+    attribute: K,
+    value: Exclude<ModelInput<this['$modelType']>[K], undefined> extends Model | ModelInput<typeof Model>
+      ? Exclude<ModelInput<this['$modelType']>[K], undefined>
+      : Exclude<ModelInput<this['$modelType']>[K], undefined> extends (infer U)[]
+      ? Exclude<U, undefined> extends Model | ModelInput<typeof Model>
+        ? Exclude<U, undefined>[]
+        : U[]
+      : T
+  ): T
+  public $set(record: ModelInput<this['$modelType']> | this): void
+  public $set<T = any>(attribute: string | Element, value?: T): T | void {
     // If the given attributes is a model, then get its attributes.
     if (isModel(attribute)) {
       attribute = attribute.$getAttributes()
@@ -707,6 +727,10 @@ export class Model {
    *
    * @returns The value of the attribute or `fallback` if not found.
    */
+  public $get<K extends ModelKeys<this['$modelType']>, F = never>(
+    attribute: K,
+    fallback?: F
+  ): ValueOf<ModelInput<this['$modelType']>, K> | F
   public $get(attribute: string, fallback?: unknown): any {
     let value = this._getAttribute(attribute)
 
@@ -729,6 +753,10 @@ export class Model {
    *
    * @returns The value of the attribute's reference or `fallback` if not found.
    */
+  public $saved<K extends ModelKeys<this['$modelType']>, F = never>(
+    attribute: K,
+    fallback?: F
+  ): ValueOf<ModelInput<this['$modelType']>, K> | F
   public $saved(attribute: string, fallback?: unknown): any {
     let value = this._getReference(attribute)
 
@@ -744,6 +772,7 @@ export class Model {
    * Fill this model by the given attributes. Missing fields will be populated
    * by the attributes default value.
    */
+  public $fill(attributes?: ModelInput<this['$modelType']>, options?: ModelOptions): void
   public $fill(attributes: Element = {}, options: ModelOptions = {}): void {
     const fields = this.$fields()
     const fillRelation = options.relations ?? this.$getOption('relations') ?? true
@@ -752,7 +781,7 @@ export class Model {
       const field = fields[key]
       let value = attributes[key]
 
-      // Some times we might not want to fill relationships
+      // Sometimes we might not want to fill relationships
       if (field.relation && !fillRelation) {
         continue
       }
@@ -774,10 +803,15 @@ export class Model {
   /**
    * Update this model by the given attributes.
    */
-  public $update(attributes: Element | string | number | null | undefined = undefined, options: ModelOptions = {}): void {
+  public $update(attributes?: string | number | null, options?: ModelOptions): void
+  public $update(attributes: ModelInput<this['$modelType']> | this, options?: ModelOptions): void
+  public $update(
+    attributes: this | ModelInput<this['$modelType']> | string | number | null | undefined = undefined,
+    options: ModelOptions = {}
+  ): void {
     // If the given attributes is a model, then get its attributes.
     if (isModel(attributes)) {
-      attributes = attributes.$getAttributes()
+      attributes = attributes.$getAttributes() as ModelInput<this['$modelType']>
     }
 
     // No content means we don't want to update the model at all.
@@ -839,7 +873,7 @@ export class Model {
                 attribute = attribute.data
               }
 
-              for (const record of attribute) {
+              for (const record of attribute as Element[] | Collection) {
                 // Get the ID from model or record
                 const id = this.$constructor().getIdFromRecord(record)
 
@@ -1003,16 +1037,18 @@ export class Model {
   /**
    * Get all the current attributes on the model. This method is mainly used when saving a model.
    */
-  public $getAttributes(options: GetModelAttributesOptions = {}): Element {
+  public $getAttributes<T extends GetModelAttributesOptions, R extends boolean = T['relations'] extends false ? false : true>(
+    options?: T
+  ): ModelAttributes<this['$modelType'], R> {
     options = {
       relations: true,
       isRequest: false,
       shouldPatch: false,
-      ...options
-    }
+      ...(options || {})
+    } as T
 
     const fields = this.$fields()
-    const result: Element = {}
+    const result = {}
 
     for (const key in fields) {
       const field = fields[key]
@@ -1040,7 +1076,7 @@ export class Model {
       }
     }
 
-    return result
+    return result as ModelAttributes<this['$modelType'], R>
   }
 
   public $clone(options: CloneModelOptions = {}): this {
@@ -1109,7 +1145,7 @@ export class Model {
   /**
    * Determine if the model or any of the given attribute(s) have been modified.
    */
-  public $isDirty(attributes?: string | string[]): boolean {
+  public $isDirty<K extends ModelKeys<this['$modelType']>>(attributes?: K | K[]): boolean {
     attributes = forceArray(attributes || [])
 
     if (isEmpty(attributes)) {
@@ -1130,32 +1166,32 @@ export class Model {
   /**
    * Determine if the model and all the given attribute(s) have remained the same.
    */
-  public $isClean(attributes?: string | string[]): boolean {
+  public $isClean<K extends ModelKeys<this['$modelType']>>(attributes?: K | K[]): boolean {
     return !this.$isDirty(attributes)
   }
 
   /**
    * Determine if the model or any of the given attribute(s) have been modified.
    */
-  public $wasChanged(attributes?: string | string[]): boolean {
+  public $wasChanged<K extends ModelKeys<this['$modelType']>>(attributes?: K | K[]): boolean {
     return this._attributes.wasChanged(attributes) || this._relationships.wasChanged(attributes)
   }
 
-  public $getDirty(): Record<string, any> {
-    return { ...this._attributes.getDirty(), ...this._relationships.getDirty() }
+  public $getDirty(): ModelInput<this['$modelType']> {
+    return { ...this._attributes.getDirty(), ...this._relationships.getDirty() } as ModelInput<this['$modelType']>
   }
 
-  public $getChanges(): Record<string, any> {
+  public $getChanges(): ModelInput<this['$modelType']> {
     return {
       ...this._attributes.getChanges(),
       ...this._relationships.getChanges()
-    }
+    } as ModelInput<this['$modelType']>
   }
 
   /**
    * Sync the reference attributes with the current.
    */
-  public $syncReference(attributes?: string | string[]): this {
+  public $syncReference<K extends ModelKeys<this['$modelType']>>(attributes?: K | K[]): this {
     // A copy of the saved state before the attributes were synced.
     const before = this._getReferences()
 
@@ -1281,7 +1317,7 @@ export class Model {
    *
    * It's also possible to pass an array of attributes to reset.
    */
-  public $reset(attributes?: string | string[]): void {
+  public $reset<K extends ModelKeys<this['$modelType']>>(attributes?: K | K[]): void {
     // A copy of the active state before the attributes were reset.
     const before = this._getAttributes()
 
@@ -1421,7 +1457,7 @@ export class Model {
     // model directly while also keeping the model attributes in sync.
     Object.defineProperty(this, attribute, {
       get: (): any => this.$get(attribute),
-      set: <T>(value: T): T | undefined => this.$set(attribute, value)
+      set: (value: never): unknown => this.$set(attribute, value)
     })
   }
 
@@ -1552,3 +1588,5 @@ export class Model {
     return { model: this, entity: this.$entity }
   }
 }
+
+export { Model }
