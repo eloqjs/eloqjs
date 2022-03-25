@@ -28,7 +28,7 @@ import { Mutators } from './Contracts'
 import * as Contracts from './Contracts'
 import { Field } from './field/Field'
 import { mutateHasOne } from './field/utils/relation'
-import { ModelAttributes, ModelInput, ModelKeys } from './FieldTypes'
+import { ModelAttributes, ModelInput, ModelKeys, ModelProperties } from './FieldTypes'
 import * as Serialize from './Serialize'
 import { isSerializedModel, SerializedModel } from './Serialize'
 
@@ -168,7 +168,7 @@ class Model {
   /**
    * The saved state of attributes.
    */
-  public readonly $: ModelReference<this> = {} as ModelReference<this>
+  public readonly $: ModelProperties<this['$modelType']> = {} as ModelProperties<this['$modelType']>
 
   /**
    * The local hook registries.
@@ -730,7 +730,7 @@ class Model {
   public $get<K extends ModelKeys<this['$modelType']>, F = never>(
     attribute: K,
     fallback?: F
-  ): ValueOf<ModelInput<this['$modelType']>, K> | F
+  ): ValueOf<ModelProperties<this['$modelType']>, K> | F
   public $get(attribute: string, fallback?: unknown): any {
     let value = this._getAttribute(attribute)
 
@@ -756,7 +756,7 @@ class Model {
   public $saved<K extends ModelKeys<this['$modelType']>, F = never>(
     attribute: K,
     fallback?: F
-  ): ValueOf<ModelInput<this['$modelType']>, K> | F
+  ): ValueOf<ModelProperties<this['$modelType']>, K> | F
   public $saved(attribute: string, fallback?: unknown): any {
     let value = this._getReference(attribute)
 
