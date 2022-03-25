@@ -805,6 +805,7 @@ class Model {
    */
   public $update(attributes?: string | number | null, options?: ModelOptions): void
   public $update(attributes: ModelInput<this['$modelType']> | this, options?: ModelOptions): void
+  public $update(attributes?: this | ModelInput<this['$modelType']> | string | number | null, options?: ModelOptions): void
   public $update(
     attributes: this | ModelInput<this['$modelType']> | string | number | null | undefined = undefined,
     options: ModelOptions = {}
