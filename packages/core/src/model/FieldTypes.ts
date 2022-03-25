@@ -71,43 +71,37 @@ export type ExtractModelFieldsTypes<T extends typeof Model, O = ExtractModelFiel
 }
 
 export type ModelInput<T extends typeof Model, O = ExtractModelFieldsTypes<T>> = {
-  [K in keyof O]?:
-    | (O[K] extends typeof Model
-        ? InstanceType<O[K]> | ModelInput<O[K]> | null
-        : O[K] extends (infer U)[]
-        ? U extends typeof Model
-          ? (InstanceType<U> | ModelInput<U>)[]
-          : DeepPartial<U[]>
-        : DeepPartial<O[K]>)
-    | InferNullableField<O[K]>
+  [K in keyof O]?: O[K] extends typeof Model
+    ? InstanceType<O[K]> | ModelInput<O[K]> | null
+    : O[K] extends (infer U)[]
+    ? U extends typeof Model
+      ? (InstanceType<U> | ModelInput<U>)[]
+      : DeepPartial<U[]>
+    : DeepPartial<O[K]>
 }
 
 export type ModelProperties<T extends typeof Model, O = ExtractModelFieldsTypes<T>> = {
-  [K in keyof O]:
-    | (O[K] extends typeof Model
-        ? Relations.HasOne<InstanceType<O[K]>>
-        : O[K] extends (infer U)[]
-        ? U extends typeof Model
-          ? Relations.HasMany<InstanceType<U>>
-          : O[K]
-        : O[K])
-    | InferNullableField<O[K]>
+  [K in keyof O]: O[K] extends typeof Model
+    ? Relations.HasOne<InstanceType<O[K]>>
+    : O[K] extends (infer U)[]
+    ? U extends typeof Model
+      ? Relations.HasMany<InstanceType<U>>
+      : O[K]
+    : O[K]
 }
 
-export type ModelKeys<T extends typeof Model> = keyof ModelInput<T>
+export type ModelKeys<T extends typeof Model> = keyof ModelAttributes<T>
 
 export type ModelAttributes<T extends typeof Model, R extends boolean = true, O = ExtractModelFieldsTypes<T>> = {
-  [K in keyof O]:
-    | (O[K] extends typeof Model
-        ? R extends true
-          ? InstanceType<O[K]> | ModelAttributes<O[K]> | null
-          : never
-        : O[K] extends (infer U)[]
-        ? U extends typeof Model
-          ? R extends true
-            ? (InstanceType<U> | ModelAttributes<U> | null)[]
-            : never
-          : U[]
-        : O[K])
-    | InferNullableField<O[K]>
+  [K in keyof O]: O[K] extends typeof Model
+    ? R extends true
+      ? InstanceType<O[K]> | ModelAttributes<O[K]> | null
+      : never
+    : O[K] extends (infer U)[]
+    ? U extends typeof Model
+      ? R extends true
+        ? (InstanceType<U> | ModelAttributes<U>)[]
+        : never
+      : U[]
+    : O[K]
 }
