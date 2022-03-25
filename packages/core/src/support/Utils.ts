@@ -1,9 +1,6 @@
 import { Collection, SerializedCollection } from '../collection/Collection'
 import { Model } from '../model/Model'
 
-export type Wrapped<T> = { data: T }
-export type ValueOf<T, V extends keyof T = keyof T> = T[V]
-
 /**
  * Variadic helper function.
  *
@@ -209,7 +206,8 @@ export function size(collection: unknown[] | Record<string, unknown>): number {
  * Clone the given value by stringifying and parsing it.
  *
  * @param value The value to be cloned.
- * @param reviver If a function, this prescribes how the value originally produced by parsing is transformed, before being returned.
+ * @param reviver If a function, this prescribes how the value originally produced by parsing is transformed, before
+ *   being returned.
  */
 export function clone(value: unknown, reviver?: ((key: string, value: any) => any) | undefined) {
   return JSON.parse(JSON.stringify(value), reviver)

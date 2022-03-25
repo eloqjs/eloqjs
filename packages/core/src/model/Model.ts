@@ -20,10 +20,10 @@ import {
   isObject,
   isPlainObject,
   isString,
-  isUndefined,
-  ValueOf
+  isUndefined
 } from '../support/Utils'
 import { Element, Item } from '../types/Data'
+import { ValueOf } from '../types/Utilities'
 import { Mutators } from './Contracts'
 import * as Contracts from './Contracts'
 import { Field } from './field/Field'
@@ -31,8 +31,8 @@ import { mutateHasOne } from './field/utils/relation'
 import * as Serialize from './Serialize'
 import { isSerializedModel, SerializedModel } from './Serialize'
 
-export type ModelFields = Record<string, Field>
-export type ModelSchemas = Record<string, ModelFields>
+export type Fields = Record<string, Field>
+export type ModelSchemas = Record<string, Fields>
 export type ModelRegistries = Record<string, ModelRegistry>
 export type ModelRegistry = Record<string, () => Field>
 export type ModelReference<T> = Readonly<Omit<T, keyof Model>>
@@ -310,7 +310,7 @@ export class Model {
   /**
    * Get the {@link Model} schema definition from the {@link _schemas}.
    */
-  public static getFields(): ModelFields {
+  public static getFields(): Fields {
     this._boot()
 
     return this._schemas[this.entity]
@@ -587,7 +587,7 @@ export class Model {
   /**
    * Get the model fields for this model.
    */
-  public $fields(): ModelFields {
+  public $fields(): Fields {
     return this.$constructor().getFields()
   }
 

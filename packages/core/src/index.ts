@@ -3,8 +3,8 @@
  */
 export type {
   CloneModelOptions,
+  Fields,
   GetModelAttributesOptions,
-  ModelFields,
   ModelOptions,
   ModelReference,
   ModelRegistries,

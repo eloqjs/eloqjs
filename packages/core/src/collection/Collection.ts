@@ -17,10 +17,10 @@ import {
   isSerializedCollection,
   isString,
   isUndefined,
-  resolveValue,
-  ValueOf
+  resolveValue
 } from '../support/Utils'
 import { Element, Item } from '../types/Data'
+import { ValueOf } from '../types/Utilities'
 import { sortGreaterOrLessThan, sortNullish } from './Sort'
 import { compareValues, Operator } from './Where'
 
@@ -954,7 +954,7 @@ export class Collection<M extends Model = Model> {
     assert(isModel(model), ['Expected a model, plain object, or array of either.'])
 
     // Fill the model found in the collection by the given attributes.
-    model.$set(record, options)
+    model.$set(record)
 
     return model
   }
