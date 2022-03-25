@@ -680,7 +680,7 @@ class Model {
           if (isNull(model)) {
             previous.data = mutateHasOne(value as Element, previous.model)
           } else {
-            model.$set(value as Element)
+            model.$set((value || {}) as Element)
           }
 
           break
