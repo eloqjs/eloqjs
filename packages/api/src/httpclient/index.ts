@@ -1,8 +1,4 @@
-export {
-  AxiosHttpClient,
-  AxiosHttpClientPromise,
-  AxiosHttpClientResponse
-} from './axios'
+export { AxiosHttpClient, AxiosHttpClientPromise, AxiosHttpClientResponse } from './axios'
 export type { HttpClient } from './HttpClient'
 export type { HttpClientOptions } from './HttpClientOptions'
 export type { HttpClientPromise } from './HttpClientPromise'

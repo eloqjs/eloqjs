@@ -56,11 +56,7 @@ declare module '@eloqjs/core' {
   }
 
   namespace Relations {
-    interface Relation<
-      M extends Model = Model,
-      D extends Item<M> | Collection<M> = Item<M> | Collection<M>,
-      S extends boolean = boolean
-    > {
+    interface Relation<M extends Model = Model, D extends Item<M> | Collection<M> = Item<M> | Collection<M>, S extends boolean = boolean> {
       api(): RelationAPI<M, D, S>
     }
 

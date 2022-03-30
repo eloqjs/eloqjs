@@ -25,13 +25,9 @@ describe('Feature – Collections – Implode', () => {
       model: Product
     })
 
-    collection.add([
-      { name: 'Chair', price: 600 },
-      { name: 'Desk', price: 900 },
-      { name: 'Lamp' }
-    ])
+    collection.add([{ name: 'Chair', price: 600 }, { name: 'Desk', price: 900 }, { name: 'Lamp' }])
 
     const implodeManufacturer = collection.implode('price', '-')
-    expect(implodeManufacturer).toEqual('600-900-')
+    expect(implodeManufacturer).toBe('600-900-')
   })
 })

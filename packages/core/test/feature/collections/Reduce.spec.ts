@@ -68,6 +68,6 @@ describe('Feature – Collections – Reduce', () => {
       return (result || 0) + model.id
     }, undefined as number | undefined)
 
-    expect(result).toEqual(6)
+    expect(result).toBe(6)
   })
 })

@@ -172,24 +172,18 @@ describe('Feature – Collections – Remove', () => {
   it('should throw an error if model is null', () => {
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
-    expect(() => new Collection().remove(null)).toThrow(
-      'Expected function, object, array, or model to remove.'
-    )
+    expect(() => new Collection().remove(null)).toThrow('Expected function, object, array, or model to remove.')
   })
 
   it('should throw an error if model is undefined', () => {
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
-    expect(() => new Collection().remove(undefined)).toThrow(
-      'Expected function, object, array, or model to remove.'
-    )
+    expect(() => new Collection().remove(undefined)).toThrow('Expected function, object, array, or model to remove.')
   })
 
   it('should throw an error if model is false', () => {
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
-    expect(() => new Collection().remove(false)).toThrow(
-      'Expected function, object, array, or model to remove.'
-    )
+    expect(() => new Collection().remove(false)).toThrow('Expected function, object, array, or model to remove.')
   })
 })

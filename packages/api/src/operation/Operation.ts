@@ -7,7 +7,7 @@ import { RequestOperation } from '../request/RequestOperation'
 import { DeletePromise } from '../response/DeletePromise'
 import { SavePromise } from '../response/SavePromise'
 import { SaveResponse } from '../response/SaveResponse'
-import { assert, isEmpty, isNull } from '../support/Utils'
+import { assert, isEmpty, isUndefined } from '../support/Utils'
 
 export class Operation<M extends Model = Model> {
   protected model: M
@@ -25,20 +25,16 @@ export class Operation<M extends Model = Model> {
    * If the record doesn't have an ID, a new record will be created, otherwise the record will be updated.
    */
   public save(url?: string): SavePromise<M> {
-    return this.modelType.hasId(this.model)
-      ? this.update(url)
-      : this.create(url)
+    return this.modelType.hasId(this.model) ? this.update(url) : this.create(url)
   }
 
   /**
    * Create a record.
    */
   public create(url?: string): SavePromise<M> {
-    const record = this.model.$serialize({ isRequest: true })
+    const record = this.model.$getAttributes({ isRequest: true })
 
-    assert(!isEmpty(record), [
-      'Cannot create a new record, because no data was provided.'
-    ])
+    assert(!isEmpty(record), ['Cannot create a new record, because no data was provided.'])
 
     let saveResponse: SaveResponse<M>
 
@@ -57,19 +53,12 @@ export class Operation<M extends Model = Model> {
             // Don't save if we're already busy saving this model.
             // This prevents things like accidental double-clicks.
             // Also don't save if some hook return false.
-            if (
-              this.model.$saving ||
-              beforeSave === false ||
-              beforeCreate === false
-            ) {
+            if (this.model.$saving || beforeSave === false || beforeCreate === false) {
               return resolve(RequestOperation.REQUEST_SKIP)
             }
 
             // Don't save if no data has changed, but consider it a success.
-            if (
-              !this.model.$getOption('saveUnchanged') &&
-              this.model.$isClean()
-            ) {
+            if (!this.model.$getOption('saveUnchanged') && this.model.$isClean()) {
               return resolve(RequestOperation.REQUEST_REDUNDANT)
             }
 
@@ -114,9 +103,9 @@ export class Operation<M extends Model = Model> {
   public update(url?: string): SavePromise<M> {
     const id = this.model.$id
 
-    assert(!isNull(id), ['Cannot update a model with no ID.'])
+    assert(!isUndefined(id), ['Cannot update a model with no ID.'])
 
-    const record = this.model.$serialize({
+    const record = this.model.$getAttributes({
       isRequest: true,
       shouldPatch: this.model.$shouldPatch()
     })
@@ -127,9 +116,7 @@ export class Operation<M extends Model = Model> {
       .request(
         {
           url: url || this.modelType.getResource() + '/' + id,
-          method: this.model.$shouldPatch()
-            ? RequestMethod.PATCH
-            : RequestMethod.PUT,
+          method: this.model.$shouldPatch() ? RequestMethod.PATCH : RequestMethod.PUT,
           data: record
         },
         () => {
@@ -140,19 +127,12 @@ export class Operation<M extends Model = Model> {
             // Don't save if we're already busy saving this model.
             // This prevents things like accidental double-clicks.
             // Also don't save if some hook return false.
-            if (
-              this.model.$saving ||
-              beforeSave === false ||
-              beforeUpdate === false
-            ) {
+            if (this.model.$saving || beforeSave === false || beforeUpdate === false) {
               return resolve(RequestOperation.REQUEST_SKIP)
             }
 
             // Don't save if no data has changed, but consider it a success.
-            if (
-              !this.model.$getOption('saveUnchanged') &&
-              this.model.$isClean()
-            ) {
+            if (!this.model.$getOption('saveUnchanged') && this.model.$isClean()) {
               return resolve(RequestOperation.REQUEST_REDUNDANT)
             }
 
@@ -198,7 +178,7 @@ export class Operation<M extends Model = Model> {
     // Get ID before serialize, otherwise the ID may not be available.
     const id = this.model.$id
 
-    assert(!isNull(id), ['Cannot delete a model with no ID.'])
+    assert(!isUndefined(id), ['Cannot delete a model with no ID.'])
 
     return this.requestHandler.request(
       {

@@ -30,13 +30,8 @@ export class ModelAPIStatic<M extends typeof Model = typeof Model> {
   /**
    * Get a collection of records.
    */
-  public all<C extends Collection<InstanceType<M>>>(
-    collection?: C
-  ): CollectionPromise<InstanceType<M>, C> {
-    return this._query().get(collection) as CollectionPromise<
-      InstanceType<M>,
-      C
-    >
+  public all<C extends Collection<InstanceType<M>>>(collection?: C): CollectionPromise<InstanceType<M>, C> {
+    return this._query().get(collection) as CollectionPromise<InstanceType<M>, C>
   }
 
   /**
@@ -66,23 +61,14 @@ export class ModelAPIStatic<M extends typeof Model = typeof Model> {
    * @param {string | string[]} attribute - The attribute being tested.
    * @param {string} value - The value the attribute should be equal.
    */
-  public where(
-    attribute: string | string[],
-    value: FilterValue
-  ): Builder<InstanceType<M>>
+  public where(attribute: string | string[], value: FilterValue): Builder<InstanceType<M>>
 
   /**
    * @internal
    */
-  public where(
-    attribute: string | string[] | Record<string, any>,
-    value?: FilterValue
-  ): Builder<InstanceType<M>>
+  public where(attribute: string | string[] | Record<string, any>, value?: FilterValue): Builder<InstanceType<M>>
 
-  public where(
-    attribute: string | string[] | Record<string, any>,
-    value?: FilterValue
-  ): Builder<InstanceType<M>> {
+  public where(attribute: string | string[] | Record<string, any>, value?: FilterValue): Builder<InstanceType<M>> {
     return this._query().where(attribute, value)
   }
 
@@ -99,23 +85,14 @@ export class ModelAPIStatic<M extends typeof Model = typeof Model> {
    * @param {string | string[]} attribute - The attribute being tested.
    * @param {string} values - The values the attribute should be equal.
    */
-  public whereIn(
-    attribute: string | string[],
-    values: FilterValue[]
-  ): Builder<InstanceType<M>>
+  public whereIn(attribute: string | string[], values: FilterValue[]): Builder<InstanceType<M>>
 
   /**
    * @internal
    */
-  public whereIn(
-    attribute: string | string[] | Record<string, any>,
-    values?: FilterValue[]
-  ): Builder<InstanceType<M>>
+  public whereIn(attribute: string | string[] | Record<string, any>, values?: FilterValue[]): Builder<InstanceType<M>>
 
-  public whereIn(
-    attribute: string | string[] | Record<string, any>,
-    values?: FilterValue[]
-  ): Builder<InstanceType<M>> {
+  public whereIn(attribute: string | string[] | Record<string, any>, values?: FilterValue[]): Builder<InstanceType<M>> {
     return this._query().whereIn(attribute, values)
   }
 
@@ -149,9 +126,7 @@ export class ModelAPIStatic<M extends typeof Model = typeof Model> {
   /**
    * Specify the fields that should be included in the returned object graph.
    */
-  public select(
-    field: string | string[] | Record<string, string | string[]>
-  ): Builder<InstanceType<M>> {
+  public select(field: string | string[] | Record<string, string | string[]>): Builder<InstanceType<M>> {
     return this._query().select(field)
   }
 
@@ -160,9 +135,7 @@ export class ModelAPIStatic<M extends typeof Model = typeof Model> {
    *
    * @param {object} query - The query attributes to sort.
    */
-  public orderBy(
-    query: Record<string, 'asc' | 'desc'>
-  ): Builder<InstanceType<M>>
+  public orderBy(query: Record<string, 'asc' | 'desc'>): Builder<InstanceType<M>>
 
   /**
    * Specify an attribute to sort by and the direction to sort in.
@@ -170,23 +143,14 @@ export class ModelAPIStatic<M extends typeof Model = typeof Model> {
    * @param {string | string[]} attribute - The attribute to sort by.
    * @param {string} [direction] - The direction to sort in.
    */
-  public orderBy(
-    attribute: string | string[],
-    direction?: 'asc' | 'desc'
-  ): Builder<InstanceType<M>>
+  public orderBy(attribute: string | string[], direction?: 'asc' | 'desc'): Builder<InstanceType<M>>
 
   /**
    * @internal
    */
-  public orderBy(
-    attribute: string | string[] | Record<string, 'asc' | 'desc'>,
-    direction?: 'asc' | 'desc'
-  ): Builder<InstanceType<M>>
+  public orderBy(attribute: string | string[] | Record<string, 'asc' | 'desc'>, direction?: 'asc' | 'desc'): Builder<InstanceType<M>>
 
-  public orderBy(
-    attribute: string | string[] | Record<string, 'asc' | 'desc'>,
-    direction?: 'asc' | 'desc'
-  ): Builder<InstanceType<M>> {
+  public orderBy(attribute: string | string[] | Record<string, 'asc' | 'desc'>, direction?: 'asc' | 'desc'): Builder<InstanceType<M>> {
     return this._query().orderBy(attribute, direction)
   }
 
@@ -203,23 +167,14 @@ export class ModelAPIStatic<M extends typeof Model = typeof Model> {
    * @param {string} parameter - The name of the parameter, e.g. 'bar' in "http://foo.com?bar=baz"
    * @param {ParamValue | ParamValue[]} value - The value of the parameter, e.g. 'baz' in "http://foo.com?bar=baz"
    */
-  public params(
-    parameter: string | string[],
-    value: ParamValue | ParamValue[]
-  ): Builder<InstanceType<M>>
+  public params(parameter: string | string[], value: ParamValue | ParamValue[]): Builder<InstanceType<M>>
 
   /**
    * @internal
    */
-  public params(
-    parameter: string | string[] | Record<string, any>,
-    value?: ParamValue | ParamValue[]
-  ): Builder<InstanceType<M>>
+  public params(parameter: string | string[] | Record<string, any>, value?: ParamValue | ParamValue[]): Builder<InstanceType<M>>
 
-  public params(
-    parameter: string | string[] | Record<string, any>,
-    value?: ParamValue | ParamValue[]
-  ): Builder<InstanceType<M>> {
+  public params(parameter: string | string[] | Record<string, any>, value?: ParamValue | ParamValue[]): Builder<InstanceType<M>> {
     return this._query().params(parameter, value)
   }
 
@@ -278,9 +233,7 @@ export class ModelAPIStatic<M extends typeof Model = typeof Model> {
   /**
    * Delete a record.
    */
-  public delete(
-    record: InstanceType<M> | Element | string | number
-  ): DeletePromise {
+  public delete(record: InstanceType<M> | Element | string | number): DeletePromise {
     // If an ID was passed, assign it to model's primary key
     if (isString(record) || isNumber(record)) {
       record = { [this.model.primaryKey]: record }
@@ -291,10 +244,7 @@ export class ModelAPIStatic<M extends typeof Model = typeof Model> {
     return this._operation(model).delete()
   }
 
-  private _operation(
-    model: InstanceType<M>,
-    config?: Partial<HttpClientOptions>
-  ): Operation<InstanceType<M>> {
+  private _operation(model: InstanceType<M>, config?: Partial<HttpClientOptions>): Operation<InstanceType<M>> {
     return new Operation(model, config).config(this._getConfig())
   }
 
@@ -314,8 +264,6 @@ export class ModelAPIStatic<M extends typeof Model = typeof Model> {
   }
 
   private _instantiate(record: InstanceType<M> | Element): InstanceType<M> {
-    return isModel(record)
-      ? record
-      : (new this.model(record) as InstanceType<M>)
+    return isModel(record) ? record : (new this.model(record) as InstanceType<M>)
   }
 }

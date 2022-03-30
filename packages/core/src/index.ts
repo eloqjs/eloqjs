@@ -2,7 +2,26 @@
  * Model
  */
 export type {
+  DefaultFactory,
+  ExtractModelFields,
+  ExtractModelFieldsTypes,
+  FieldConstructor,
+  FieldMethod,
+  FieldOptions,
+  FieldType,
+  InferFieldType,
+  InferNullableField,
+  ModelAttributes,
+  ModelField,
   ModelFields,
+  ModelInput,
+  ModelKeys,
+  ModelProperties
+} from './model/FieldTypes'
+export type {
+  CloneModelOptions,
+  Fields,
+  GetModelAttributesOptions,
   ModelOptions,
   ModelReference,
   ModelRegistries,
@@ -10,11 +29,12 @@ export type {
   ModelSchemas
 } from './model/Model'
 export { Model } from './model/Model'
+export type { SerializedModel, SerializeModelOptions } from './model/Serialize'
 
 /**
  * Collection
  */
-export type { CollectionOptions } from './collection/Collection'
+export type { CloneCollectionOptions, CollectionOptions, SerializeCollectionOptions, SerializedCollection } from './collection/Collection'
 export { Collection } from './collection/Collection'
 
 /**
@@ -30,12 +50,7 @@ export type { Element, Instance, Item } from './types/Data'
 /**
  * Plugin
  */
-export type {
-  Plugin,
-  PluginComponents,
-  PluginOptions,
-  use
-} from './plugins/use'
+export type { Plugin, PluginComponents, PluginOptions, use } from './plugins/use'
 
 /**
  * ELOQJS (Default)

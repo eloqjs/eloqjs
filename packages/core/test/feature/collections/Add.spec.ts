@@ -150,8 +150,6 @@ describe('Feature – Collections – Add', () => {
   it('should thrown an error when trying to add a non-object-like model', () => {
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
-    expect(() => new Collection().add(5)).toThrow(
-      'Expected a model, plain object, or array of either.'
-    )
+    expect(() => new Collection().add(5)).toThrow('Expected a model, plain object, or array of either.')
   })
 })

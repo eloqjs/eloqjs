@@ -1,19 +1,10 @@
 import { Model } from '@eloqjs/core'
 import defu from 'defu'
 
-import {
-  HttpClient,
-  HttpClientPromise,
-  HttpClientResponse
-} from '../httpclient'
+import { HttpClient, HttpClientPromise, HttpClientResponse } from '../httpclient'
 import { HttpClientOptions } from '../httpclient/HttpClientOptions'
 import { assert, isFunction } from '../support/Utils'
-import {
-  OnRequestCallback,
-  OnRequestFailureCallback,
-  onRequestFinishCallback,
-  OnRequestSuccessCallback
-} from './RequestCallback'
+import { OnRequestCallback, OnRequestFailureCallback, onRequestFinishCallback, OnRequestSuccessCallback } from './RequestCallback'
 import { RequestMethod } from './RequestMethod'
 import { RequestOperation } from './RequestOperation'
 import { RequestOptions } from './RequestOptions'
@@ -75,63 +66,55 @@ export class Request<M extends typeof Model = typeof Model> {
     onFailure?: OnRequestFailureCallback,
     onFinish?: onRequestFinishCallback
   ): Promise<HttpClientResponse | null> {
-    return new Promise(
-      (resolve, reject): Promise<void> => {
-        return onRequest()
-          .then((status): Promise<void> | void => {
-            switch (status) {
-              case RequestOperation.REQUEST_CONTINUE:
-                break
-              case RequestOperation.REQUEST_SKIP:
-                return
-              case RequestOperation.REQUEST_REDUNDANT: // Skip, but consider it a success.
-                if (isFunction(onSuccess)) {
-                  onSuccess(null)
-                }
+    return new Promise((resolve, reject): Promise<void> => {
+      return onRequest()
+        .then((status): Promise<void> | void => {
+          switch (status) {
+            case RequestOperation.REQUEST_CONTINUE:
+              break
+            case RequestOperation.REQUEST_SKIP:
+              return
+            case RequestOperation.REQUEST_REDUNDANT: // Skip, but consider it a success.
+              if (isFunction(onSuccess)) {
+                onSuccess(null)
+              }
 
-                resolve(null)
-                return
-            }
+              resolve(null)
+              return
+          }
 
-            // Support passing the request configuration as a function, to allow
-            // for deferred resolution of certain values that may have changed
-            // during the call to "onRequest".
-            if (isFunction(config)) {
-              config = config()
-            }
+          // Support passing the request configuration as a function, to allow
+          // for deferred resolution of certain values that may have changed
+          // during the call to "onRequest".
+          if (isFunction(config)) {
+            config = config()
+          }
 
-            // Make the request
-            return this._resolveRequest(config)
-              .then((response): void => {
-                if (isFunction(onSuccess)) {
-                  onSuccess(response)
-                }
+          // Make the request
+          return this._resolveRequest(config)
+            .then((response): void => {
+              if (isFunction(onSuccess)) {
+                onSuccess(response)
+              }
 
-                resolve(response)
-              })
-              .catch((error) => {
-                if (isFunction(onFailure)) {
-                  onFailure(error, error.response)
-                }
+              resolve(response)
+            })
+            .catch((error) => {
+              if (isFunction(onFailure)) {
+                onFailure(error, error.response)
+              }
 
-                reject(error)
-              })
-              .catch(reject) // For errors that occur in `onFailure`.
-              .finally(onFinish)
-          })
-          .catch(reject)
-      }
-    )
+              reject(error)
+            })
+            .catch(reject) // For errors that occur in `onFailure`.
+            .finally(onFinish)
+        })
+        .catch(reject)
+    })
   }
 
-  private _resolveRequest({
-    url,
-    method,
-    data
-  }: RequestOptions): HttpClientPromise {
-    assert(!!url && !!method, [
-      'The request is missing the URL and the METHOD.'
-    ])
+  private _resolveRequest({ url, method, data }: RequestOptions): HttpClientPromise {
+    assert(!!url && !!method, ['The request is missing the URL and the METHOD.'])
 
     let promise: HttpClientPromise
 

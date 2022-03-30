@@ -1,4 +1,5 @@
 import { Model, ModelOptions, ModelReference } from '../model/Model'
+import { SerializedModel } from '../model/Serialize'
 import { Uid as UidGenerator } from '../support/Uid'
 import {
   assert,
@@ -13,17 +14,43 @@ import {
   isNumber,
   isObject,
   isPlainObject,
+  isSerializedCollection,
   isString,
   isUndefined,
-  resolveValue,
-  ValueOf
+  resolveValue
 } from '../support/Utils'
 import { Element, Item } from '../types/Data'
+import { ValueOf } from '../types/Utilities'
 import { sortGreaterOrLessThan, sortNullish } from './Sort'
 import { compareValues, Operator } from './Where'
 
 export interface CollectionOptions {
-  model: typeof Model
+  model?: typeof Model
+}
+
+export interface SerializeCollectionOptions {
+  /**
+   * Whether the relationships should be serialized.
+   */
+  relations?: boolean
+}
+
+export interface SerializedCollection {
+  options: CollectionOptions
+  models: SerializedModel[]
+}
+
+export interface CloneCollectionOptions {
+  /**
+   * Whether it should clone deeply. This will clone models.
+   */
+  deep?: boolean
+
+  /**
+   * Level 1 clone models.
+   * Level 2 deep clone models.
+   */
+  deepLevel?: 1 | 2
 }
 
 export class Collection<M extends Model = Model> {
@@ -36,19 +63,19 @@ export class Collection<M extends Model = Model> {
    */
   public readonly $uid!: string
 
-  private readonly _options: Partial<CollectionOptions>
+  private readonly _options: CollectionOptions = {}
 
   private readonly _registry: Record<string, boolean> = {}
 
-  public constructor(
-    models: (M | Element)[] = [],
-    options: Partial<CollectionOptions> = {}
-  ) {
-    this._options = options
+  public constructor(models: (M | Element)[] | SerializedCollection = [], options: CollectionOptions = {}) {
+    this._boot(options)
 
-    this._boot()
+    if (isSerializedCollection(models)) {
+      this.deserialize(models)
 
-    if (models) {
+      // Override options from deserialized data
+      this.setOptions(options)
+    } else if (models) {
       this.add(models)
     }
   }
@@ -63,26 +90,17 @@ export class Collection<M extends Model = Model> {
   /**
    * Instantiate the given records.
    */
-  private static _createModel<T extends Model>(
-    records: (T | Element)[],
-    modelType?: typeof Model
-  ): T[]
+  private static _createModel<T extends Model>(records: (T | Element)[], modelType?: typeof Model): T[]
 
   /**
    * Instantiate the given records.
    */
-  private static _createModel<T extends Model>(
-    record: T | Element,
-    modelType?: typeof Model
-  ): T
+  private static _createModel<T extends Model>(record: T | Element, modelType?: typeof Model): T
 
   /**
    * Instantiate the given records.
    */
-  private static _createModel<T extends Model>(
-    record: T | Element | (T | Element)[],
-    modelType?: typeof Model
-  ): T | T[] {
+  private static _createModel<T extends Model>(record: T | Element | (T | Element)[], modelType?: typeof Model): T | T[] {
     if (isArray(record)) {
       return record.map((r) => this._createModel(r, modelType))
     }
@@ -110,6 +128,41 @@ export class Collection<M extends Model = Model> {
           done: index >= this.models.length
         }
       }
+    }
+  }
+
+  /**
+   * Get a collection's option.
+   */
+  public getOption<K extends keyof CollectionOptions>(key: K, fallback?: ValueOf<CollectionOptions, K>): ValueOf<CollectionOptions, K> {
+    return this._options[key] ?? fallback
+  }
+
+  /**
+   * Get the collection options.
+   */
+  public getOptions(): CollectionOptions {
+    return this._options
+  }
+
+  /**
+   * Set a collection's option.
+   */
+  public setOption<K extends keyof CollectionOptions>(key: K, value: ValueOf<CollectionOptions, K>) {
+    this._options[key] = value
+  }
+
+  /**
+   * Set the collection options.
+   */
+  public setOptions(options: CollectionOptions) {
+    options = {
+      ...this._options,
+      ...options
+    }
+
+    for (const key in options) {
+      this.setOption(key as keyof CollectionOptions, options[key])
     }
   }
 
@@ -150,9 +203,7 @@ export class Collection<M extends Model = Model> {
    *
    * @returns The added model or array of added models.
    */
-  public add(
-    model: M | Element | (M | Element)[] | Collection
-  ): M | M[] | void {
+  public add(model: M | Element | (M | Element)[] | Collection): M | M[] | void {
     // If given an array, assume an array of models and add them all.
     if (isCollection(model) || isArray(model)) {
       return model.map((m) => this.add(m)).filter((m): m is M => !!m)
@@ -160,15 +211,11 @@ export class Collection<M extends Model = Model> {
 
     // Objects should be converted to model instances first, then added.
     if (isPlainObject(model)) {
-      return this.add(
-        this._constructor()._createModel<M>(model, this._options.model)
-      )
+      return this.add(this._constructor()._createModel<M>(model, this._options.model))
     }
 
     // At this point, `model` should be an instance of Model.
-    assert(isModel(model), [
-      'Expected a model, plain object, or array of either.'
-    ])
+    assert(isModel(model), ['Expected a model, plain object, or array of either.'])
 
     // Make sure we don't add the same model twice.
     if (this._hasModelInRegistry(model)) {
@@ -216,11 +263,28 @@ export class Collection<M extends Model = Model> {
   }
 
   /**
-   * Creates a copy of this collection. Model references are preserved so
+   * Creates a copy of this collection. Model references are preserved by default so
    * changes to the models inside the clone will also affect the subject.
+   *
+   * If the `deep` option is enabled, all models of this collection will be cloned as well.
+   * Model references will be lost.
+   *
+   * If `deepLevel` is set to `2`, models relationships will be cloned as well.
    */
-  public clone(): this {
-    return this._createCollection(this.models)
+  public clone(options: CloneCollectionOptions = {}): this {
+    options = {
+      deep: false,
+      deepLevel: 1,
+      ...options
+    }
+
+    let models = this.models
+
+    if (options.deep) {
+      models = this.models.map((model) => model.$clone({ deep: (options.deepLevel as 1 | 2) >= 2 }))
+    }
+
+    return this._createCollection(models)
   }
 
   /**
@@ -233,9 +297,7 @@ export class Collection<M extends Model = Model> {
   /**
    * Counts the occurrences of values in this collection.
    */
-  public countBy(
-    callback: (model: M, index: number) => string
-  ): Record<string, number> {
+  public countBy(callback: (model: M, index: number) => string): Record<string, number> {
     const group = this.groupBy(callback)
 
     return Object.keys(group).reduce((result, key) => {
@@ -245,11 +307,21 @@ export class Collection<M extends Model = Model> {
   }
 
   /**
+   * Deserialize given data.
+   */
+  public deserialize(serializedCollection: SerializedCollection): this {
+    assert(!!serializedCollection, ['No data to deserialize'])
+
+    this.setOptions(serializedCollection.options)
+    this.replace(serializedCollection.models)
+
+    return this
+  }
+
+  /**
    * Iterates through all models, calling a given callback for each one.
    */
-  public each(
-    callback: (model: M, index: number, array: M[]) => unknown
-  ): boolean {
+  public each(callback: (model: M, index: number, array: M[]) => unknown): boolean {
     return this.models.every((model, index) => {
       return callback(model, index, this.models) !== false
     })
@@ -264,9 +336,7 @@ export class Collection<M extends Model = Model> {
       return this._createCollection(this.models)
     }
 
-    const models = this.models.filter(
-      (model) => model.$id && !keys.includes(model.$id)
-    )
+    const models = this.models.filter((model) => model.$id && !keys.includes(model.$id))
 
     return this._createCollection(models)
   }
@@ -309,9 +379,7 @@ export class Collection<M extends Model = Model> {
    * primary key.
    * If `predicate` is an array of keys, find will return all models which match the keys.
    */
-  public find<T = boolean>(
-    predicate: string | number | (string | number)[] | M | ((model: M) => T)
-  ): Item<M> | Item<M>[] {
+  public find<T = boolean>(predicate: string | number | (string | number)[] | M | ((model: M) => T)): Item<M> | Item<M>[] {
     if (isFunction(predicate)) {
       return this.models.find(predicate) || null
     }
@@ -324,9 +392,7 @@ export class Collection<M extends Model = Model> {
       return predicate.map((id) => this.find(id)).filter((m): m is M => !!m)
     }
 
-    assert(isString(predicate) || isNumber(predicate), [
-      'Invalid type of `predicate` on `find`.'
-    ])
+    assert(isString(predicate) || isNumber(predicate), ['Invalid type of `predicate` on `find`.'])
 
     return this.find((model) => {
       return model.$id === predicate
@@ -358,12 +424,7 @@ export class Collection<M extends Model = Model> {
   /**
    * Groups the models in this collection by a given key.
    */
-  public groupBy(
-    key:
-      | keyof ModelReference<M>
-      | string
-      | ((model: M, index: number) => string)
-  ): Record<string, this> {
+  public groupBy(key: keyof ModelReference<M> | string | ((model: M, index: number) => string)): Record<string, this> {
     const collection: Record<string, this> = {}
 
     this.models.forEach((model, index) => {
@@ -455,9 +516,7 @@ export class Collection<M extends Model = Model> {
    * Returns the maximum value of a given key.
    */
   public max(key: keyof ModelReference<M> | string): number {
-    const values = this.pluck(key).filter(
-      (value) => value !== undefined
-    ) as number[]
+    const values = this.pluck(key).filter((value) => value !== undefined) as number[]
 
     return Math.max(...values)
   }
@@ -467,11 +526,7 @@ export class Collection<M extends Model = Model> {
    */
   public median(key: keyof ModelReference<M> | string): number {
     if (this.count() % 2 === 0) {
-      return (
-        ((this.models[this.count() / 2 - 1][key as string] as number) +
-          (this.models[this.count() / 2][key as string] as number)) /
-        2
-      )
+      return ((this.models[this.count() / 2 - 1][key as string] as number) + (this.models[this.count() / 2][key as string] as number)) / 2
     }
 
     return this.models[Math.floor(this.count() / 2)][key as string] as number
@@ -481,9 +536,7 @@ export class Collection<M extends Model = Model> {
    * Returns the minimum value of a given key.
    */
   public min(key: keyof ModelReference<M> | string): number {
-    const values = this.pluck(key).filter(
-      (value) => value !== undefined
-    ) as number[]
+    const values = this.pluck(key).filter((value) => value !== undefined) as number[]
 
     return Math.min(...values)
   }
@@ -519,15 +572,13 @@ export class Collection<M extends Model = Model> {
       }
     })
 
-    return values
-      .filter((value) => value.count === highestCount)
-      .map((value) => value.key)
+    return values.filter((value) => value.count === highestCount).map((value) => value.key)
   }
 
   /**
    * Returns an array of primary keys.
    */
-  public modelKeys(): (string | number | null)[] {
+  public modelKeys(): (string | number | undefined)[] {
     return this.models.map((model) => model.$id)
   }
 
@@ -535,9 +586,7 @@ export class Collection<M extends Model = Model> {
    * Creates a new collection consisting of every n-th model.
    */
   public nth(step: number, offset?: number): this {
-    const models = this.models
-      .slice(offset)
-      .filter((_model, index) => index % step === 0)
+    const models = this.models.slice(offset).filter((_model, index) => index % step === 0)
 
     return this._createCollection(models)
   }
@@ -550,9 +599,7 @@ export class Collection<M extends Model = Model> {
       return this._createCollection(this.models)
     }
 
-    const models = this.models.filter(
-      (model) => model.$id && keys.includes(model.$id)
-    )
+    const models = this.models.filter((model) => model.$id && keys.includes(model.$id))
 
     return this._createCollection(models)
   }
@@ -562,10 +609,7 @@ export class Collection<M extends Model = Model> {
    * that pass a given truth test from those that do not.
    */
   public partition(callback: (model: M) => boolean): [this, this] {
-    const arrays: [this, this] = [
-      this._createCollection(),
-      this._createCollection()
-    ]
+    const arrays: [this, this] = [this._createCollection(), this._createCollection()]
 
     this.models.forEach((model) => {
       if (callback(model)) {
@@ -591,16 +635,12 @@ export class Collection<M extends Model = Model> {
   /**
    * Returns an array that contains the values for a given key for each model in this collection.
    */
-  public pluck<K extends keyof ModelReference<M>>(
-    key: K | string
-  ): ValueOf<M, K>[] | unknown[]
+  public pluck<K extends keyof ModelReference<M>>(key: K | string): ValueOf<M, K>[] | unknown[]
 
   /**
    * Returns an array that contains the values for a given key for each model in this collection.
    */
-  public pluck<K extends keyof ModelReference<M>>(
-    key: K | string
-  ): ValueOf<M, K>[] | unknown[] {
+  public pluck<K extends keyof ModelReference<M>>(key: K | string): ValueOf<M, K>[] | unknown[] {
     return this.models.map((model) => model[key as K])
   }
 
@@ -647,9 +687,7 @@ export class Collection<M extends Model = Model> {
    *
    * @returns The final value of result, after the last iteration.
    */
-  public reduce(
-    iteratee: (result: M, model: M, index: number, array: M[]) => M
-  ): M
+  public reduce(iteratee: (result: M, model: M, index: number, array: M[]) => M): M
 
   /**
    * Reduces this collection to a value which is the accumulated result of
@@ -665,10 +703,7 @@ export class Collection<M extends Model = Model> {
    *
    * @returns The final value of result, after the last iteration.
    */
-  public reduce(
-    iteratee: (result: M, model: M, index: number, array: M[]) => M,
-    initial: M
-  ): M
+  public reduce(iteratee: (result: M, model: M, index: number, array: M[]) => M, initial: M): M
 
   /**
    * Reduces this collection to a value which is the accumulated result of
@@ -684,10 +719,7 @@ export class Collection<M extends Model = Model> {
    *
    * @returns The final value of result, after the last iteration.
    */
-  public reduce<U = M>(
-    iteratee: (result: U, model: M, index: number, array: M[]) => U,
-    initial: U
-  ): U
+  public reduce<U = M>(iteratee: (result: U, model: M, index: number, array: M[]) => U, initial: U): U
 
   /**
    * Reduces this collection to a value which is the accumulated result of
@@ -703,10 +735,7 @@ export class Collection<M extends Model = Model> {
    *
    * @returns The final value of result, after the last iteration.
    */
-  public reduce<U = M>(
-    iteratee: (result: U | undefined, model: M, index: number, array: M[]) => U,
-    initial?: U
-  ): U | undefined {
+  public reduce<U = M>(iteratee: (result: U | undefined, model: M, index: number, array: M[]) => U, initial?: U): U | undefined {
     // Use the first model as the initial value if an initial was not given.
     if (arguments.length === 1) {
       initial = (this.first() || undefined) as unknown as U | undefined
@@ -737,9 +766,7 @@ export class Collection<M extends Model = Model> {
    *
    * @throws {Error} If the model is an invalid type.
    */
-  public remove(
-    predicate: (model: M, index: number, array: M[]) => boolean
-  ): M[] | undefined
+  public remove(predicate: (model: M, index: number, array: M[]) => boolean): M[] | undefined
 
   /**
    * Remove the given {@link Model} from this {@link Collection}.
@@ -763,13 +790,7 @@ export class Collection<M extends Model = Model> {
    *
    * @throws {Error} If the model is an invalid type.
    */
-  public remove(
-    model:
-      | M
-      | Element
-      | (M | Element)[]
-      | ((model: M, index: number, array: M[]) => boolean)
-  ): M | M[] | undefined {
+  public remove(model: M | Element | (M | Element)[] | ((model: M, index: number, array: M[]) => boolean)): M | M[] | undefined {
     // Support using a predicate to remove all models it returns true for.
     if (isFunction(model)) {
       return this.remove(this.models.filter(model))
@@ -781,16 +802,12 @@ export class Collection<M extends Model = Model> {
 
     // Objects should be used to find the model first, then removed.
     if (isPlainObject(model)) {
-      const m = this.models.find(
-        (m) => m.$id === m.$constructor().getIdFromRecord(model)
-      )
+      const m = this.models.find((m) => m.$id === m.$constructor().getIdFromRecord(model))
       return m ? this.remove(m) : undefined
     }
 
     // At this point, `model` should be an instance of Model.
-    assert(isModel(model), [
-      'Expected function, object, array, or model to remove.'
-    ])
+    assert(isModel(model), ['Expected function, object, array, or model to remove.'])
 
     return this._removeModel(model)
   }
@@ -830,9 +847,7 @@ export class Collection<M extends Model = Model> {
    * @returns The added model or array of added models.
    */
   public replace(models: M | Element | (M | Element)[]): M | M[] {
-    assert(isObject(models) || isArray(models), [
-      'Expected a model, plain object, or array of either.'
-    ])
+    assert(isObject(models) || isArray(models), ['Expected a model, plain object, or array of either.'])
 
     this.clear()
     return this.add(models)
@@ -845,6 +860,25 @@ export class Collection<M extends Model = Model> {
   public reset(attributes?: string | string[]): void {
     for (const model of this.models) {
       model.$reset(attributes)
+    }
+  }
+
+  /**
+   * Serialize given collection POJO.
+   */
+  public serialize(options: SerializeCollectionOptions = {}): SerializedCollection {
+    options = {
+      relations: true,
+      ...options
+    }
+
+    return {
+      options: this._options,
+      models: this.map((model) =>
+        model.$serialize({
+          relations: options.relations
+        })
+      )
     }
   }
 
@@ -894,10 +928,7 @@ export class Collection<M extends Model = Model> {
    *
    * @returns The filled model or array of filled models.
    */
-  public set(
-    record: M | Element | (M | Element)[],
-    options: ModelOptions = {}
-  ): M | M[] | void {
+  public set(record: M | Element | (M | Element)[], options: ModelOptions = {}): M | M[] | void {
     // If given an array, assume an array of models and add them all.
     if (isArray(record)) {
       return record.map((m) => this.set(m, options)).filter((m): m is M => !!m)
@@ -907,7 +938,7 @@ export class Collection<M extends Model = Model> {
     const id = Model.getIdFromRecord(record)
 
     // If we don't have an ID, we can't compare the model, so just add the model to the collection
-    if (isNull(id)) {
+    if (isUndefined(id)) {
       return this.add(record)
     }
 
@@ -920,12 +951,10 @@ export class Collection<M extends Model = Model> {
     }
 
     // At this point, `model` should be an instance of Model.
-    assert(isModel(model), [
-      'Expected a model, plain object, or array of either.'
-    ])
+    assert(isModel(model), ['Expected a model, plain object, or array of either.'])
 
     // Fill the model found in the collection by the given attributes.
-    model.$set(record, options)
+    model.$set(record)
 
     return model
   }
@@ -980,25 +1009,12 @@ export class Collection<M extends Model = Model> {
   /**
    * Sorts this collection's models using a comparator.
    */
-  public sortBy(
-    comparator:
-      | keyof ModelReference<M>
-      | string
-      | ((model: M) => string | number)
-  ): this {
+  public sortBy(comparator: keyof ModelReference<M> | string | ((model: M) => string | number)): this {
     this.models.sort((a, b) => {
-      const valueA = resolveValue(
-        a,
-        comparator as string | ((model: M) => string | number)
-      )
-      const valueB = resolveValue(
-        b,
-        comparator as string | ((model: M) => string | number)
-      )
+      const valueA = resolveValue(a, comparator as string | ((model: M) => string | number))
+      const valueB = resolveValue(b, comparator as string | ((model: M) => string | number))
 
-      return (
-        sortNullish(valueA, valueB) || sortGreaterOrLessThan(valueA, valueB)
-      )
+      return sortNullish(valueA, valueB) || sortGreaterOrLessThan(valueA, valueB)
     })
 
     return this
@@ -1007,12 +1023,7 @@ export class Collection<M extends Model = Model> {
   /**
    * Sorts this collection's models using a comparator, but in the opposite order.
    */
-  public sortByDesc(
-    comparator:
-      | keyof ModelReference<M>
-      | string
-      | ((model: M) => string | number)
-  ): this {
+  public sortByDesc(comparator: keyof ModelReference<M> | string | ((model: M) => string | number)): this {
     this.sortBy(comparator)
 
     this.models.reverse()
@@ -1028,9 +1039,7 @@ export class Collection<M extends Model = Model> {
     const collections = []
 
     for (let iterator = 0; iterator < size; iterator += 1) {
-      collections.push(
-        this._createCollection(this.models.splice(0, modelsPerGroup))
-      )
+      collections.push(this._createCollection(this.models.splice(0, modelsPerGroup)))
     }
 
     return collections
@@ -1042,9 +1051,7 @@ export class Collection<M extends Model = Model> {
    * @param {string|string[]|Function} key
    * @returns {number}
    */
-  public sum(
-    key: keyof ModelReference<M> | string | ((model: M) => string | number)
-  ): number {
+  public sum(key: keyof ModelReference<M> | string | ((model: M) => string | number)): number {
     let total = 0
 
     for (const model of this.models) {
@@ -1056,7 +1063,7 @@ export class Collection<M extends Model = Model> {
         value = model[key as string] as unknown as string | number
       }
 
-      total += isString(value) ? parseFloat(value) : value
+      total += (isString(value) ? parseFloat(value) : value) || 0
     }
 
     return parseFloat(total.toPrecision(12))
@@ -1089,8 +1096,8 @@ export class Collection<M extends Model = Model> {
    * @returns A native representation of this collection that will
    * determine the contents of JSON.stringify(collection).
    */
-  public toJSON(): Model[] {
-    return this.models
+  public toJSON(): SerializedCollection {
+    return this.serialize()
   }
 
   /**
@@ -1146,7 +1153,7 @@ export class Collection<M extends Model = Model> {
     const id = Model.getIdFromRecord(record)
 
     // If we don't have an ID, we can't compare the model, so just add the model to the collection
-    if (isNull(id)) {
+    if (isUndefined(id)) {
       return this.add(record)
     }
 
@@ -1159,9 +1166,7 @@ export class Collection<M extends Model = Model> {
     }
 
     // At this point, `model` should be an instance of Model.
-    assert(isModel(model), [
-      'Expected a model, plain object, or array of either.'
-    ])
+    assert(isModel(model), ['Expected a model, plain object, or array of either.'])
 
     // Update the model found in the collection by the given attributes.
     model.$update(record)
@@ -1172,41 +1177,26 @@ export class Collection<M extends Model = Model> {
   /**
    * Filters the collection by a given key / value pair.
    */
-  public where<V = unknown>(
-    key: keyof ModelReference<M> | string,
-    value?: V
-  ): this
+  public where<V = unknown>(key: keyof ModelReference<M> | string, value?: V): this
 
   /**
    * Filters the collection by a given key / value pair.
    */
-  public where<V = unknown>(
-    key: keyof ModelReference<M> | string,
-    operator: Operator,
-    value: V
-  ): this
+  public where<V = unknown>(key: keyof ModelReference<M> | string, operator: Operator, value: V): this
 
   /**
    * Filters the collection by a given key / value pair.
    */
-  public where<V>(
-    key: keyof ModelReference<M> | string,
-    operator?: V | Operator,
-    value?: V
-  ): this {
+  public where<V>(key: keyof ModelReference<M> | string, operator?: V | Operator, value?: V): this {
     const collection = this.clone()
 
     let comparisonOperator = operator
     let comparisonValue = value
 
     if (operator === undefined || (operator as unknown) === true) {
-      collection.models = collection.models.filter(
-        (model) => model[key as string]
-      )
+      collection.models = collection.models.filter((model) => model[key as string])
     } else if ((operator as unknown) === false) {
-      collection.models = collection.models.filter(
-        (model) => !model[key as string]
-      )
+      collection.models = collection.models.filter((model) => !model[key as string])
     } else {
       if (value === undefined) {
         comparisonValue = operator as V
@@ -1214,11 +1204,7 @@ export class Collection<M extends Model = Model> {
       }
 
       collection.models = this.models.filter((model) => {
-        return compareValues(
-          model[key as string],
-          comparisonValue as V,
-          comparisonOperator as Operator
-        )
+        return compareValues(model[key as string], comparisonValue as V, comparisonOperator as Operator)
       })
     }
 
@@ -1341,12 +1327,9 @@ export class Collection<M extends Model = Model> {
   /**
    * Creates a new instance of the collection.
    */
-  private _createCollection(
-    models: (M | Element)[] = [],
-    options: Partial<CollectionOptions> = {}
-  ): this {
+  private _createCollection(models: (M | Element)[] | SerializedCollection = [], options: Partial<CollectionOptions> = {}): this {
     return new (this.constructor as typeof Collection)(models, {
-      ...this._options,
+      ...this.getOptions(),
       ...options
     }) as this
   }
@@ -1361,8 +1344,9 @@ export class Collection<M extends Model = Model> {
   /**
    * Bootstrap this collection.
    */
-  private _boot(): void {
+  private _boot(options: CollectionOptions): void {
     this._generateUid()
+    this.setOptions(options)
   }
 
   /**

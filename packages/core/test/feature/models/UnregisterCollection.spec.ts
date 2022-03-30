@@ -48,9 +48,7 @@ describe('Feature – Models – UnregisterCollection', () => {
 
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
-    expect(() => user.$unregisterCollection(null)).toThrow(
-      '[ELOQJS] Collection is not valid.'
-    )
+    expect(() => user.$unregisterCollection(null)).toThrow('[ELOQJS] Collection is not valid.')
   })
 
   it('should fail if we pass a undefined collection', () => {
@@ -58,9 +56,7 @@ describe('Feature – Models – UnregisterCollection', () => {
 
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
-    expect(() => user.$unregisterCollection(undefined)).toThrow(
-      '[ELOQJS] Collection is not valid.'
-    )
+    expect(() => user.$unregisterCollection(undefined)).toThrow('[ELOQJS] Collection is not valid.')
   })
 
   it('should fail if we pass an object that is not a collection', () => {
@@ -68,9 +64,7 @@ describe('Feature – Models – UnregisterCollection', () => {
 
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
-    expect(() => user.$unregisterCollection({ a: 1 })).toThrow(
-      '[ELOQJS] Collection is not valid.'
-    )
+    expect(() => user.$unregisterCollection({ a: 1 })).toThrow('[ELOQJS] Collection is not valid.')
   })
 
   it('should fail if we pass a non-object', () => {
@@ -78,8 +72,6 @@ describe('Feature – Models – UnregisterCollection', () => {
 
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
-    expect(() => user.$unregisterCollection(5)).toThrow(
-      '[ELOQJS] Collection is not valid.'
-    )
+    expect(() => user.$unregisterCollection(5)).toThrow('[ELOQJS] Collection is not valid.')
   })
 })

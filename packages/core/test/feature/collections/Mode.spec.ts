@@ -15,15 +15,7 @@ describe('Feature – Collections – Mode', () => {
       model: Product
     })
 
-    collection2.add([
-      { price: 1 },
-      { price: 3 },
-      { price: 3 },
-      { price: 6 },
-      { price: 7 },
-      { price: 8 },
-      { price: 9 }
-    ])
+    collection2.add([{ price: 1 }, { price: 3 }, { price: 3 }, { price: 6 }, { price: 7 }, { price: 8 }, { price: 9 }])
 
     expect(collection2.mode('price')).toEqual([3])
   })
@@ -39,13 +31,7 @@ describe('Feature – Collections – Mode', () => {
       model: Product
     })
 
-    collection2.add([
-      { price: 1 },
-      { price: 1 },
-      { price: 2 },
-      { price: 4 },
-      { price: 4 }
-    ])
+    collection2.add([{ price: 1 }, { price: 1 }, { price: 2 }, { price: 4 }, { price: 4 }])
 
     expect(collection1.mode('price')).toEqual([1, 2, 3])
     expect(collection2.mode('price')).toEqual([1, 4])

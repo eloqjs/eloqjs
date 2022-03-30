@@ -12,10 +12,7 @@ export abstract class Response {
 
   protected readonly model: typeof Model
 
-  public constructor(
-    httpClientResponse: HttpClientResponse | null,
-    model: typeof Model
-  ) {
+  public constructor(httpClientResponse: HttpClientResponse | null, model: typeof Model) {
     this.httpClientResponse = httpClientResponse
     this.model = model
   }
@@ -34,9 +31,7 @@ export abstract class Response {
     const dataTransformer = this.model.options().dataTransformer
 
     if (isFunction(dataTransformer)) {
-      const responseData = dataTransformer(
-        this.httpClientResponse
-      ) as ResponseData<T>
+      const responseData = dataTransformer(this.httpClientResponse) as ResponseData<T>
 
       return responseData || null
     }

@@ -9,10 +9,7 @@ export type SingularData = Element | Element[] | null | undefined
 export class RecordResponse<M extends Model = Model> extends Response {
   public readonly data: Item<M> = null
 
-  public constructor(
-    httpClientResponse: HttpClientResponse | null,
-    model: typeof Model
-  ) {
+  public constructor(httpClientResponse: HttpClientResponse | null, model: typeof Model) {
     super(httpClientResponse, model)
 
     this.data = this.resolveData()
@@ -25,11 +22,7 @@ export class RecordResponse<M extends Model = Model> extends Response {
       return null
     }
 
-    assert(isObject(data), [
-      'Response data must be an object.',
-      `Received ${typeof data}.`,
-      'See `dataKey` and `dataTransformer` options.'
-    ])
+    assert(isObject(data), ['Response data must be an object.', `Received ${typeof data}.`, 'See `dataKey` and `dataTransformer` options.'])
 
     return this._mutate(data)
   }

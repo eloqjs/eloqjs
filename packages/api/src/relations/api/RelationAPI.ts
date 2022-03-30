@@ -31,13 +31,7 @@ export class RelationAPI<
    */
   protected query: Builder<M, boolean>
 
-  public constructor(
-    model: typeof Model,
-    belongsToModel: Model,
-    data: D,
-    key: string,
-    forceSingular: S
-  ) {
+  public constructor(model: typeof Model, belongsToModel: Model, data: D, key: string, forceSingular: S) {
     this.model = model
     this.belongsToModel = belongsToModel
     this.data = data
@@ -235,20 +229,14 @@ export class RelationAPI<
     return this.belongsToModel.$api().sync(relationship)
   }
 
-  private _updateRelation(
-    response: ResponsePromise,
-    isSingular: boolean
-  ): void {
+  private _updateRelation(response: ResponsePromise, isSingular: boolean): void {
     response.then((response) => {
       if (!response) {
         return
       }
 
       const isArray = Array.isArray(this.belongsToModel[this.key])
-      this.belongsToModel[this.key] =
-        isArray && isSingular
-          ? [...this.belongsToModel[this.key].data, response.data]
-          : response.data
+      this.belongsToModel[this.key] = isArray && isSingular ? [...this.belongsToModel[this.key].data, response.data] : response.data
     })
   }
 }

@@ -1,17 +1,7 @@
 import { Model, ModelReference } from '../model/Model'
 import { isNumber, isString } from '../support/Utils'
 
-export type Operator =
-  | '==='
-  | '=='
-  | '!=='
-  | '!='
-  | '<>'
-  | '>'
-  | '<'
-  | '>='
-  | '<='
-  | 'LIKE'
+export type Operator = '===' | '==' | '!==' | '!=' | '<>' | '>' | '<' | '>=' | '<=' | 'LIKE'
 
 /**
  * Extract value from value with wildcards.
@@ -21,20 +11,12 @@ export type Operator =
  * @param {number|number[]} index
  * @returns {string|string[]}
  */
-function extractValue<T extends number | number[]>(
-  regex: string,
-  value: string,
-  index: T
-): T extends number ? string : string[]
+function extractValue<T extends number | number[]>(regex: string, value: string, index: T): T extends number ? string : string[]
 
 /**
  * Extract value from value with wildcards.
  */
-function extractValue(
-  regex: string,
-  value: string,
-  index: number | number[]
-): string | string[] {
+function extractValue(regex: string, value: string, index: number | number[]): string | string[] {
   const extractValue = new RegExp(regex, 'i')
   const _value = value.match(extractValue) as RegExpExecArray
 
@@ -94,11 +76,7 @@ function resolveLikeOperation(value: string): RegExp {
 /**
  * Compare two values using the given operator.
  */
-export function compareValues(
-  property: unknown,
-  value: unknown,
-  operator: Operator
-): boolean {
+export function compareValues(property: unknown, value: unknown, operator: Operator): boolean {
   switch (operator) {
     case '==':
       return property == value

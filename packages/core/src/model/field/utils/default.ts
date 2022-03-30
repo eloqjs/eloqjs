@@ -6,11 +6,7 @@ type DefaultResolver = {
   defaultValue: any
 }
 
-export function resolveDefault({
-  key,
-  type,
-  defaultValue
-}: DefaultResolver): any {
+export function resolveDefault({ key, type, defaultValue }: DefaultResolver): any {
   let _isPrimitive: boolean
 
   // TODO: Improve `isUndefined` check to avoid duplicated code
@@ -38,11 +34,5 @@ export function getDefaultValue<T>(value: T | (() => T)): T {
 }
 
 function isPrimitive(type: any): boolean {
-  return (
-    type === String ||
-    type === Boolean ||
-    type === Number ||
-    type === BigInt ||
-    type === Symbol
-  )
+  return type === String || type === Boolean || type === Number || type === BigInt || type === Symbol
 }

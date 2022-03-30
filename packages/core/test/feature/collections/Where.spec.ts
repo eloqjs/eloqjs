@@ -54,9 +54,7 @@ describe('Feature – Collections – Where', () => {
   it('should accept a custom operator: bigger than', () => {
     const over150 = collection.where('price', '>', 150)
 
-    assertCollection(over150, [
-      { id: 1, name: 'Desk', price: 200, manufacturer: 'IKEA' }
-    ])
+    assertCollection(over150, [{ id: 1, name: 'Desk', price: 200, manufacturer: 'IKEA' }])
   })
 
   it('should accept a custom operator: bigger than or equal to', () => {
@@ -116,9 +114,7 @@ describe('Feature – Collections – Where', () => {
   it('should accept a custom operator: LIKE; ends with (%value)', () => {
     const filtered = collection.where('manufacturer', 'LIKE', '%ler')
 
-    assertCollection(filtered, [
-      { id: 2, name: 'Chair', price: 100, manufacturer: 'Herman Miller' }
-    ])
+    assertCollection(filtered, [{ id: 2, name: 'Chair', price: 100, manufacturer: 'Herman Miller' }])
   })
 
   it('should accept a custom operator: LIKE; any position (%value%)', () => {
@@ -216,9 +212,7 @@ describe('Feature – Collections – Where', () => {
 
     const dontHaveManufacturer = collection.where('manufacturer', false)
 
-    assertCollection(dontHaveManufacturer, [
-      { id: 4, name: 'Door', price: '100', manufacturer: null }
-    ])
+    assertCollection(dontHaveManufacturer, [{ id: 4, name: 'Door', price: '100', manufacturer: null }])
   })
 
   it('should not mutate the collection itself', () => {

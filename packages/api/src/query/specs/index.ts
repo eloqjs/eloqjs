@@ -7,13 +7,4 @@ import { PageSpec } from './PageSpec'
 import { ParamSpec } from './ParamSpec'
 import { SortSpec } from './SortSpec'
 
-export {
-  AppendSpec,
-  FieldSpec,
-  FilterSpec,
-  IncludeSpec,
-  LimitSpec,
-  PageSpec,
-  ParamSpec,
-  SortSpec
-}
+export { AppendSpec, FieldSpec, FilterSpec, IncludeSpec, LimitSpec, PageSpec, ParamSpec, SortSpec }

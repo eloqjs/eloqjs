@@ -63,8 +63,6 @@ describe('Feature – Models – Attach', () => {
       })
     }
 
-    expect(error).toThrow(
-      '[ELOQJS] Cannot attach a related model to a parent that has no ID.'
-    )
+    expect(error).toThrow('[ELOQJS] Cannot attach a related model to a parent that has no ID.')
   })
 })

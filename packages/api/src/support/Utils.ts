@@ -36,10 +36,7 @@ export function forceArray<T>(data: T | T[]): T[] {
 /**
  * Asserts that the condition is truthy, throwing immediately if not.
  */
-export function assert(
-  condition: boolean,
-  message: string[]
-): asserts condition {
+export function assert(condition: boolean, message: string[]): asserts condition {
   if (!condition) {
     throw new Error(['[ELOQJS]'].concat(message).join(' '))
   }
@@ -66,9 +63,7 @@ export function isObject(value: unknown): value is Record<string, unknown> {
  *
  * Based on [Lodash#isPlainObject]{@link https://github.com/lodash/lodash/blob/master/isPlainObject.js} (MIT)
  */
-export function isPlainObject(
-  value: unknown
-): value is Record<string, unknown> {
+export function isPlainObject(value: unknown): value is Record<string, unknown> {
   if (!isObject(value) || getTag(value) != '[object Object]') {
     return false
   }
@@ -152,9 +147,7 @@ export function isEmptyString(value: string): boolean {
 /**
  * Determines whether the given array or object is empty.
  */
-export function isEmpty(
-  collection: unknown[] | Record<string, unknown>
-): boolean {
+export function isEmpty(collection: unknown[] | Record<string, unknown>): boolean {
   return size(collection) === 0
 }
 
@@ -163,9 +156,7 @@ export function isEmpty(
  * or the number of own enumerable string keyed properties for objects.
  */
 export function size(collection: unknown[] | Record<string, unknown>): number {
-  return isArray(collection)
-    ? collection.length
-    : Object.keys(collection).length
+  return isArray(collection) ? collection.length : Object.keys(collection).length
 }
 
 /**

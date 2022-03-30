@@ -15,29 +15,24 @@ export class Model extends BaseModel {
   /**
    * Get a collection of records.
    */
-  public static all<
-    M extends typeof Model,
-    C extends Collection<InstanceType<M>>
-  >(this: M, collection?: C): CollectionPromise<InstanceType<M>, C> {
+  public static all<M extends typeof Model, C extends Collection<InstanceType<M>>>(
+    this: M,
+    collection?: C
+  ): CollectionPromise<InstanceType<M>, C> {
     return this._api().all(collection)
   }
 
   /**
    * Get the first record of a collection of records.
    */
-  public static first<M extends typeof Model>(
-    this: M
-  ): RecordPromise<InstanceType<M>> {
+  public static first<M extends typeof Model>(this: M): RecordPromise<InstanceType<M>> {
     return this._api().first()
   }
 
   /**
    * Find an specific record.
    */
-  public static find<M extends typeof Model>(
-    this: M,
-    id: string | number
-  ): RecordPromise<InstanceType<M>> {
+  public static find<M extends typeof Model>(this: M, id: string | number): RecordPromise<InstanceType<M>> {
     return this._api().find(id)
   }
 
@@ -45,10 +40,7 @@ export class Model extends BaseModel {
    * Save or update a record.
    * If the record doesn't have an ID, a new record will be created, otherwise the record will be updated.
    */
-  public static save<M extends typeof Model>(
-    this: M,
-    record: InstanceType<M> | Element
-  ): SavePromise<InstanceType<M>> {
+  public static save<M extends typeof Model>(this: M, record: InstanceType<M> | Element): SavePromise<InstanceType<M>> {
     return this._api().save(record)
   }
 
@@ -57,10 +49,7 @@ export class Model extends BaseModel {
    *
    * @param {object} query - The query to filter.
    */
-  public static where<M extends typeof Model>(
-    this: M,
-    query: Record<string, any>
-  ): Builder<InstanceType<M>>
+  public static where<M extends typeof Model>(this: M, query: Record<string, any>): Builder<InstanceType<M>>
 
   /**
    * Add a basic "where" clause to the query.
@@ -68,11 +57,7 @@ export class Model extends BaseModel {
    * @param {string | string[]} attribute - The attribute being tested.
    * @param {string} value - The value the attribute should be equal.
    */
-  public static where<M extends typeof Model>(
-    this: M,
-    attribute: string | string[],
-    value: FilterValue
-  ): Builder<InstanceType<M>>
+  public static where<M extends typeof Model>(this: M, attribute: string | string[], value: FilterValue): Builder<InstanceType<M>>
 
   /**
    * @internal
@@ -96,10 +81,7 @@ export class Model extends BaseModel {
    *
    * @param {object} query - The query to filter.
    */
-  public static whereIn<M extends typeof Model>(
-    this: M,
-    query: Record<string, any>
-  ): Builder<InstanceType<M>>
+  public static whereIn<M extends typeof Model>(this: M, query: Record<string, any>): Builder<InstanceType<M>>
 
   /**
    * Add a "where in" clause to the query.
@@ -107,11 +89,7 @@ export class Model extends BaseModel {
    * @param {string | string[]} attribute - The attribute being tested.
    * @param {string} values - The values the attribute should be equal.
    */
-  public static whereIn<M extends typeof Model>(
-    this: M,
-    attribute: string | string[],
-    values: FilterValue[]
-  ): Builder<InstanceType<M>>
+  public static whereIn<M extends typeof Model>(this: M, attribute: string | string[], values: FilterValue[]): Builder<InstanceType<M>>
 
   /**
    * @internal
@@ -135,10 +113,7 @@ export class Model extends BaseModel {
    *
    * @param {string | string[]} relationship - The relationship that should be eager loaded.
    */
-  public static with<M extends typeof Model>(
-    this: M,
-    relationship: string | string[]
-  ): Builder<InstanceType<M>> {
+  public static with<M extends typeof Model>(this: M, relationship: string | string[]): Builder<InstanceType<M>> {
     return this._api().with(relationship)
   }
 
@@ -147,10 +122,7 @@ export class Model extends BaseModel {
    *
    * @param {string | string[]} relationship - The relationship that should be eager loaded.
    */
-  public static include<M extends typeof Model>(
-    this: M,
-    relationship: string | string[]
-  ): Builder<InstanceType<M>> {
+  public static include<M extends typeof Model>(this: M, relationship: string | string[]): Builder<InstanceType<M>> {
     return this.with(relationship)
   }
 
@@ -159,10 +131,7 @@ export class Model extends BaseModel {
    *
    * @param {string | string[]} attribute - The attribute that should be eager loaded.
    */
-  public static append<M extends typeof Model>(
-    this: M,
-    attribute: string | string[]
-  ): Builder<InstanceType<M>> {
+  public static append<M extends typeof Model>(this: M, attribute: string | string[]): Builder<InstanceType<M>> {
     return this._api().append(attribute)
   }
 
@@ -181,10 +150,7 @@ export class Model extends BaseModel {
    *
    * @param {object} query - The query attributes to sort.
    */
-  public static orderBy<M extends typeof Model>(
-    this: M,
-    query: Record<string, 'asc' | 'desc'>
-  ): Builder<InstanceType<M>>
+  public static orderBy<M extends typeof Model>(this: M, query: Record<string, 'asc' | 'desc'>): Builder<InstanceType<M>>
 
   /**
    * Specify an attribute to sort by and the direction to sort in.
@@ -192,11 +158,7 @@ export class Model extends BaseModel {
    * @param {string | string[]} attribute - The attribute to sort by.
    * @param {string} [direction] - The direction to sort in.
    */
-  public static orderBy<M extends typeof Model>(
-    this: M,
-    attribute: string | string[],
-    direction?: 'asc' | 'desc'
-  ): Builder<InstanceType<M>>
+  public static orderBy<M extends typeof Model>(this: M, attribute: string | string[], direction?: 'asc' | 'desc'): Builder<InstanceType<M>>
 
   /**
    * @internal
@@ -220,10 +182,7 @@ export class Model extends BaseModel {
    *
    * @param {object} query - The custom query parameters, e.g. '{ bar: 'baz }' in "http://foo.com?bar=baz"
    */
-  public static params<M extends typeof Model>(
-    this: M,
-    query: Record<string, any>
-  ): Builder<InstanceType<M>>
+  public static params<M extends typeof Model>(this: M, query: Record<string, any>): Builder<InstanceType<M>>
 
   /**
    * Specify a custom query parameter to add to the resulting HTTP request URL.
@@ -259,10 +218,7 @@ export class Model extends BaseModel {
    *
    * @param {number} page - The number of the page.
    */
-  public static page<M extends typeof Model>(
-    this: M,
-    page: number
-  ): Builder<InstanceType<M>> {
+  public static page<M extends typeof Model>(this: M, page: number): Builder<InstanceType<M>> {
     return this._api().page(page)
   }
 
@@ -271,10 +227,7 @@ export class Model extends BaseModel {
    *
    * @param {number} limit - The limit of records.
    */
-  public static limit<M extends typeof Model>(
-    this: M,
-    limit: number
-  ): Builder<InstanceType<M>> {
+  public static limit<M extends typeof Model>(this: M, limit: number): Builder<InstanceType<M>> {
     return this._api().limit(limit)
   }
 
@@ -283,10 +236,7 @@ export class Model extends BaseModel {
    *
    * @param {...(string|Model)} resources - The resources to be built into a custom endpoint.
    */
-  public static custom<M extends typeof Model>(
-    this: M,
-    ...resources: (string | Model)[]
-  ): Builder<InstanceType<M>> {
+  public static custom<M extends typeof Model>(this: M, ...resources: (string | Model)[]): Builder<InstanceType<M>> {
     return this._api().custom(...resources)
   }
 
@@ -295,10 +245,7 @@ export class Model extends BaseModel {
    *
    * @param {HttpClientOptions} config - The configuration of the request.
    */
-  public static config<M extends typeof Model>(
-    this: M,
-    config: Partial<HttpClientOptions>
-  ): ModelAPIStatic<M> {
+  public static config<M extends typeof Model>(this: M, config: Partial<HttpClientOptions>): ModelAPIStatic<M> {
     return this._api().config(config)
   }
 

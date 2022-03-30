@@ -12,9 +12,7 @@ export function Model(model: typeof BaseModel, config: Config): void {
    * Allows you to get the current HTTP client (AxiosHttpClient by default), e.g. to alter its configuration.
    */
   model.getHttpClient = function (): HttpClient {
-    assert(!!this.httpClient, [
-      'The http client instance is not registered. Please register the http client instance to the model.'
-    ])
+    assert(!!this.httpClient, ['The http client instance is not registered. Please register the http client instance to the model.'])
 
     return this.httpClient
   }
@@ -32,18 +30,14 @@ export function Model(model: typeof BaseModel, config: Config): void {
   /**
    * Get an [Static API]{@link API.ModelAPIStatic} instance from a static {@link Model}.
    */
-  model.api = function <M extends typeof BaseModel>(
-    this: M
-  ): API.ModelAPIStatic<M> {
+  model.api = function <M extends typeof BaseModel>(this: M): API.ModelAPIStatic<M> {
     return new API.ModelAPIStatic(this)
   }
 
   /**
    * Get an [Instance API]{@link API.ModelAPIInstance} instance from a {@link Model} instance.
    */
-  model.prototype.$api = function <
-    M extends BaseModel
-  >(): API.ModelAPIInstance<M> {
+  model.prototype.$api = function <M extends BaseModel>(): API.ModelAPIInstance<M> {
     return new API.ModelAPIInstance(this as M)
   }
 }
