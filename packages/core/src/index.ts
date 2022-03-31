@@ -3,14 +3,14 @@
  */
 export type {
   DefaultFactory,
+  ExtractFieldTypes,
   ExtractModelFields,
-  ExtractModelFieldsTypes,
   FieldConstructor,
   FieldMethod,
   FieldOptions,
   FieldType,
   InferFieldType,
-  InferNullableField,
+  InferNullishField,
   ModelAttributes,
   ModelField,
   ModelFields,
