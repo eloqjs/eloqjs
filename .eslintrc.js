@@ -76,6 +76,13 @@ module.exports = {
       rules: {
         '@typescript-eslint/no-var-requires': ['off']
       }
+    },
+    {
+      files: ['**/scripts/**.*'],
+      rules: {
+        '@typescript-eslint/no-var-requires': 'off',
+        'no-console': 'off'
+      }
     }
   ]
 }

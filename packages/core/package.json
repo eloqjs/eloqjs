@@ -27,11 +27,12 @@
     "dist"
   ],
   "scripts": {
-    "build": "yarn run clean && yarn run compile",
+    "build": "yarn run clean && yarn run compile && yarn run compile:types",
     "clean": "rimraf -rf ./dist",
     "compile": "siroc build",
+    "compile:types": "api-extractor run --local --verbose",
     "coverage": "jest --collect-coverage",
-    "lint": "eslint --ext .ts,.js .",
+    "lint": "eslint --ext .ts,.js,.json .",
     "lint:fix": "yarn lint --fix",
     "test": "jest",
     "test:watch": "jest --watch",
