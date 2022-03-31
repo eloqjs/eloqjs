@@ -57,6 +57,18 @@ export type InferFieldType<T> = [T] extends [null]
     : V
   : T
 
+export type InferFieldTypeOrCast<T> = [T] extends [{ cast: ObjectConstructor }]
+  ? Record<string, any> // Cast to object
+  : [T] extends [{ cast: BooleanConstructor }]
+  ? boolean // Cast to boolean
+  : [T] extends [{ cast: DateConstructor }]
+  ? Date // Cast to date
+  : [T] extends [{ cast: (...args: any[]) => infer C }]
+  ? C // If cast is a function, use its return type
+  : [T] extends [{ cast: new (...args: any[]) => infer C }]
+  ? C // If cast is a class, use its return type
+  : InferFieldType<T> // If not casting, infer field type
+
 export type InferNullishField<T> = T extends { nullable: true }
   ? null
   : T extends
@@ -102,11 +114,7 @@ export type ModelProperties<T extends typeof Model, O = ExtractModelFields<T>> =
           : never // Wrong relation type
         : never // Will never reach here
       : never // Will never reach here
-    : [O[K]] extends [{ cast: (...args: any[]) => infer C }]
-    ? C | InferNullishField<O[K]> // If cast is a function, use its return type
-    : [O[K]] extends [{ cast: new (...args: any[]) => infer C }]
-    ? C | InferNullishField<O[K]> // If cast is a class, use its return type
-    : InferFieldType<O[K]> | InferNullishField<O[K]> // Infer type of other fields
+    : InferFieldTypeOrCast<O[K]> | InferNullishField<O[K]>
 }
 
 export type ModelKeys<T extends typeof Model> = keyof ModelAttributes<T>
@@ -125,9 +133,5 @@ export type ModelAttributes<T extends typeof Model, R extends boolean = true, O 
           : never // Will never reach here
         : never // Will never reach here
       : never // Relations are disabled
-    : [O[K]] extends [{ cast: (...args: any[]) => infer C }]
-    ? C | InferNullishField<O[K]> // If cast is a function, use its return type
-    : [O[K]] extends [{ cast: new (...args: any[]) => infer C }]
-    ? C | InferNullishField<O[K]> // If cast is a class, use its return type
-    : InferFieldType<O[K]> | InferNullishField<O[K]>
+    : InferFieldTypeOrCast<O[K]> | InferNullishField<O[K]>
 }
