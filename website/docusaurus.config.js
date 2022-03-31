@@ -25,7 +25,7 @@ module.exports = {
         },
         {
           type: 'doc',
-          docId: 'api/index',
+          docId: 'api-reference/index',
           position: 'left',
           label: 'API'
         },
