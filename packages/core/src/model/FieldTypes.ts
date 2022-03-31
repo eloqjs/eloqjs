@@ -11,23 +11,21 @@ export type FieldMethod<T, TConstructor = any> = [T] extends [((...args: any) =>
   : never
 
 // eslint-disable-next-line @typescript-eslint/ban-types
-export type FieldConstructor<T = any> = { new (...args: any[]): T & {} } | { (): T } | FieldMethod<T>
-
-export type FieldType<T> = FieldConstructor<T> | FieldConstructor<T>[]
+export type FieldType<T = any> = { new (...args: any[]): T & {} } | { (): T } | FieldMethod<T>
 
 export interface FieldOptions<T = any, D = T> {
-  type: FieldType<T> | true | null
+  type: FieldType<T> | FieldType<T>[]
   relation?: 'HasOne' | 'HasMany'
-  cast?: boolean
+  cast?: true | FieldType<T> | ((value: unknown) => unknown)
   nullable?: boolean
   default?: D | DefaultFactory<D> | null | undefined | object
 
   validator?(value: unknown): boolean
 
-  mutator?(value: unknown): boolean
+  mutator?(value: unknown): unknown
 }
 
-export type ModelField<T, D = T> = FieldOptions<T, D> | FieldType<T>
+export type ModelField<T, D = T> = FieldOptions<T, D> | FieldType<T> | FieldType<T>[]
 
 export type ModelFields<P = Data> = {
   [K in keyof P]: ModelField<P[K]> | null

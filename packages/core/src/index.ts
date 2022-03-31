@@ -6,7 +6,6 @@ export type {
   DefaultFactory,
   ExtractFieldTypes,
   ExtractModelFields,
-  FieldConstructor,
   FieldMethod,
   FieldOptions,
   FieldType,
