@@ -1,5 +1,5 @@
 import { RelationEnum } from '../../relations/RelationEnum'
-import { isNull, isNullish, isPlainObject, isString, isUndefined } from '../../support/Utils'
+import { isBoolean, isNull, isNullish, isPlainObject, isString, isUndefined } from '../../support/Utils'
 import { Model } from '../Model'
 import { resolveCast } from './utils/cast'
 import { getDefaultValue, resolveDefault } from './utils/default'
@@ -32,7 +32,7 @@ export class Field {
       throw new Error('The field "key" must be an string.')
     }
 
-    if (isNullish(field)) {
+    if (isNullish(field) || isBoolean(field)) {
       throw new Error('The field is not defined.')
     }
 

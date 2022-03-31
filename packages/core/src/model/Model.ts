@@ -93,14 +93,6 @@ export interface CloneModelOptions {
   deep?: boolean
 }
 
-interface Model {
-  /**
-   * Property used to map the model type.
-   * This is intended for type usage and should not be used as value.
-   */
-  readonly $modelType: typeof Model
-}
-
 class Model {
   /**
    * The name to be used for the model.
@@ -161,6 +153,12 @@ class Model {
   public $fatal: boolean = false
 
   /**
+   * Property used to map the model type.
+   * This is intended for type usage and should not be used as value.
+   */
+  public readonly $modelType: typeof Model = Model
+
+  /**
    * The unique ID for the model.
    */
   public readonly $uid!: string
@@ -204,7 +202,7 @@ class Model {
    * Create a new model instance.
    */
   public constructor(
-    attributes?: ModelInput<typeof Model> | SerializedModel | Element,
+    attributes?: ModelInput<any> | SerializedModel | Element,
     collection: Collection | Collection[] | null = null,
     options: ModelOptions = {}
   ) {
@@ -224,7 +222,7 @@ class Model {
       // Override options from deserialized data
       this.$setOptions(options)
     } else {
-      this.$fill(attributes as ModelInput<typeof Model>)
+      this.$fill(attributes as ModelInput<any>)
     }
   }
 
@@ -617,16 +615,10 @@ class Model {
    *
    * @returns The value that was set.
    */
-  public $set<K extends ModelKeys<this['$modelType']>, T extends ModelInput<this['$modelType']>[K]>(
+  public $set<K extends ModelKeys<this['$modelType']>>(
     attribute: K,
-    value: Exclude<ModelInput<this['$modelType']>[K], undefined> extends Model | ModelInput<typeof Model>
-      ? Exclude<ModelInput<this['$modelType']>[K], undefined>
-      : Exclude<ModelInput<this['$modelType']>[K], undefined> extends (infer U)[]
-      ? Exclude<U, undefined> extends Model | ModelInput<typeof Model>
-        ? Exclude<U, undefined>[]
-        : U[]
-      : T
-  ): T
+    value: ModelInput<this['$modelType']>[K]
+  ): ModelProperties<this['$modelType']>[K]
   public $set(record: ModelInput<this['$modelType']> | this): void
   public $set<T = any>(attribute: string | Element, value?: T): T | void {
     // If the given attributes is a model, then get its attributes.
@@ -727,10 +719,7 @@ class Model {
    *
    * @returns The value of the attribute or `fallback` if not found.
    */
-  public $get<K extends ModelKeys<this['$modelType']>, F = never>(
-    attribute: K,
-    fallback?: F
-  ): ValueOf<ModelProperties<this['$modelType']>, K> | F
+  public $get<K extends ModelKeys<this['$modelType']>, F = never>(attribute: K, fallback?: F): ModelProperties<this['$modelType']>[K] | F
   public $get(attribute: string, fallback?: unknown): any {
     let value = this._getAttribute(attribute)
 

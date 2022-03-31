@@ -11,15 +11,21 @@ export function resolveCast({ key, type, cast }: CastResolver): any {
     return cast
   }
 
-  if (isArray(type)) {
-    if (isFunction(cast)) {
-      return (value: any) => cast(value)
-    }
+  if (isClass(cast)) {
+    return (value: any) => new cast(value)
+  }
 
-    throw new Error(`Invalid cast for field "${key}": The cast must be a Function when multiple types are defined.`)
+  if (isConstructor(cast) || isFunction(cast)) {
+    return (value: any) => cast(value)
   }
 
   if (cast === true) {
+    if (isArray(type)) {
+      throw new Error(
+        `Invalid cast for field "${key}": The cast must be either a Function or a Constructor when multiple types are defined.`
+      )
+    }
+
     return (value: any) => castValue(type, value)
   }
 
@@ -46,4 +52,8 @@ function isClass(obj: any) {
   const isPrototypeCtorClass =
     obj.prototype.constructor && obj.prototype.constructor.toString && obj.prototype.constructor.toString().substring(0, 5) === 'class'
   return isCtorClass || isPrototypeCtorClass
+}
+
+function isConstructor(type: any): boolean {
+  return typeof type === 'function' && type.prototype && type.prototype.constructor === type
 }
