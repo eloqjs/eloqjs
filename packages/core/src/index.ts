@@ -1,6 +1,7 @@
 /**
  * Model
  */
+export { defineFields } from './model/DefineFields'
 export type {
   DefaultFactory,
   ExtractFieldTypes,
