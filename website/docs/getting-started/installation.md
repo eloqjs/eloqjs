@@ -9,6 +9,13 @@ Add **@eloqjs/core** dependency to your project:
 npm install @eloqjs/core
 ```
 
+:::caution
+
+If you are using the `dev` version of `@eloqjs/core`, you should fix your `package.json` to the exact version that you
+develop with to avoid updating with breaking changes since package is auto published.
+
+:::
+
 ## Installing the API plugin
 
 Add **@eloqjs/api** dependency to your project:
@@ -16,6 +23,13 @@ Add **@eloqjs/api** dependency to your project:
 ```bash npm2yarn
 npm install @eloqjs/api
 ```
+
+:::caution
+
+If you are using the `dev` version of `@eloqjs/api`, you should fix your `package.json` to the exact version that you
+develop with to avoid updating with breaking changes since package is auto published.
+
+:::
 
 ### Nuxt
 
