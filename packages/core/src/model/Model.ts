@@ -93,14 +93,6 @@ export interface CloneModelOptions {
   deep?: boolean
 }
 
-interface Model {
-  /**
-   * Property used to map the model type.
-   * This is intended for type usage and should not be used as value.
-   */
-  readonly $modelType: typeof Model
-}
-
 class Model {
   /**
    * The name to be used for the model.
@@ -159,6 +151,12 @@ class Model {
    * Determines if the model is in fatal state.
    */
   public $fatal: boolean = false
+
+  /**
+   * Property used to map the model type.
+   * This is intended for type usage and should not be used as value.
+   */
+  public readonly $modelType: typeof Model = Model
 
   /**
    * The unique ID for the model.
