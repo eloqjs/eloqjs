@@ -4,19 +4,27 @@
 export { defineFields } from './model/DefineFields'
 export type {
   DefaultFactory,
-  ExtractFieldTypes,
   ExtractModelFields,
+  FieldCastValue,
+  FieldDefaultValue,
   FieldMethod,
   FieldOptions,
   FieldType,
+  FieldTypeValue,
+  HasManyRelation,
+  HasOneRelation,
+  InferFieldCast,
   InferFieldType,
+  InferFieldTypeOrCast,
   InferNullishField,
   ModelAttributes,
   ModelField,
   ModelFields,
   ModelInput,
   ModelKeys,
-  ModelProperties
+  ModelProperties,
+  NullableField,
+  ResolveFields
 } from './model/FieldTypes'
 export type {
   CloneModelOptions,
