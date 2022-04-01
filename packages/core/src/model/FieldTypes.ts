@@ -28,7 +28,7 @@ export interface FieldOptions<T = any, D = T> {
 export type ModelField<T, D = T> = FieldOptions<T, D> | FieldType<T> | FieldType<T>[]
 
 export type ModelFields<P = Data> = {
-  [K in keyof P]: ModelField<P[K]> | null
+  [K in keyof P]: ModelField<P[K]>
 }
 
 export type InferFieldType<T> = [T] extends [null]
