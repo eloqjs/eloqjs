@@ -93,7 +93,7 @@ export interface CloneModelOptions {
   deep?: boolean
 }
 
-class Model {
+abstract class Model {
   /**
    * The name to be used for the model.
    */
@@ -390,7 +390,7 @@ class Model {
    * in the model schema.
    */
   public static hydrate(record?: Element): Element {
-    return new this(record).$getAttributes()
+    return this.instantiate(record).$getAttributes()
   }
 
   /**
@@ -433,6 +433,13 @@ class Model {
 
       return true
     })
+  }
+
+  /**
+   * Create a new instance of this model.
+   */
+  public static instantiate<M extends typeof Model>(this: M, record?: Element): InstanceType<M> {
+    return new (this as any)(record)
   }
 
   /**
@@ -1003,7 +1010,7 @@ class Model {
           let model = relation.data as Item
 
           if (isNull(model)) {
-            model = relation.data = new relation.model(value as Serialize.SerializedModel)
+            model = relation.data = relation.model.instantiate(value as Serialize.SerializedModel)
           } else {
             model.$deserialize(value as Serialize.SerializedModel)
           }
@@ -1077,7 +1084,7 @@ class Model {
     }
 
     // Create clone instance
-    const clone = new (this.$constructor())() as this
+    const clone = this.$constructor().instantiate() as this
 
     // Serialize current model instance. If the `deep` option is enabled, we should serialize relationships as well.
     // Then the clone deserialize the data.

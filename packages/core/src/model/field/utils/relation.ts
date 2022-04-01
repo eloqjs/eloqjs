@@ -51,7 +51,7 @@ export function mutateHasOne(record: Model | Element, related: typeof Model): It
     return record
   }
 
-  return record ? new related(record) : null
+  return record ? new (related as any)(record) : null
 }
 
 export function mutateHasMany(records: Collection | Element[], related: typeof Model): Collection {

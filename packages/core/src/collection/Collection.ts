@@ -113,7 +113,7 @@ export class Collection<M extends Model = Model> {
 
     assert(!!modelConstructor, ['Model type is not defined.'])
 
-    return new modelConstructor(record) as T
+    return new (modelConstructor as any)(record) as T
   }
 
   public [Symbol.iterator](): Iterator<M> {

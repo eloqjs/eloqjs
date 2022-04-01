@@ -202,7 +202,7 @@ export class RelationAPI<
     let relationship = record as M
 
     if (!isModel(record)) {
-      relationship = new this.model(record) as M
+      relationship = this.model.instantiate(record) as M
     }
 
     return this.belongsToModel.$api().attach(relationship)
@@ -212,7 +212,7 @@ export class RelationAPI<
    * Delete a record of this relation and detach it from the parent {@link Model}.
    */
   public detach(id: string | number): DeletePromise {
-    const relationship = new this.model({ [this.model.primaryKey]: id }) as M
+    const relationship = this.model.instantiate({ [this.model.primaryKey]: id }) as M
     return this.belongsToModel.$api().detach(relationship)
   }
 
@@ -223,7 +223,7 @@ export class RelationAPI<
     let relationship = record as M
 
     if (!isModel(record)) {
-      relationship = new this.model(record) as M
+      relationship = this.model.instantiate(record) as M
     }
 
     return this.belongsToModel.$api().sync(relationship)

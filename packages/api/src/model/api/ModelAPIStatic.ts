@@ -264,6 +264,6 @@ export class ModelAPIStatic<M extends typeof Model = typeof Model> {
   }
 
   private _instantiate(record: InstanceType<M> | Element): InstanceType<M> {
-    return isModel(record) ? record : (new this.model(record) as InstanceType<M>)
+    return isModel(record) ? record : (this.model.instantiate(record) as InstanceType<M>)
   }
 }
