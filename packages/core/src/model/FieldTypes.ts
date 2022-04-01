@@ -85,9 +85,9 @@ export type InferFieldCast<T, D = any> = [T] extends [FieldCastValue<ObjectConst
   ? C // If cast is a class, use its return type
   : D // If cast is true, use field type
 
-export type InferFieldTypeOrCast<T> = [T] extends [FieldCastValue<any>] ? InferFieldCast<T, InferFieldType<T>> : InferFieldType<T>
+export type InferFieldCastOrType<T> = [T] extends [FieldCastValue<any>] ? InferFieldCast<T, InferFieldType<T>> : InferFieldType<T>
 
-export type InferFieldTypeOrCastOrAccessor<T, A> = [T] extends [FieldAccessorValue<infer U>]
+export type InferFieldAccessorOrCastOrType<T, A> = [T] extends [FieldAccessorValue<infer U>]
   ? U // Accessor defined in field options
   : A extends (...args: any[]) => infer U
   ? U // Accessor defined in `accessors` method
@@ -119,7 +119,7 @@ export type ModelProperties<T extends typeof Model, O = ExtractModelFields<T>, A
     ? Relations.HasOne<InstanceType<U>> // HasOne relation
     : [O[K]] extends [HasManyRelation<infer U>]
     ? Relations.HasMany<InstanceType<U>> // HasMany relation
-    : InferFieldTypeOrCastOrAccessor<O[K], ExtractAccessorType<A, K>> | InferNullishField<O[K]>
+    : InferFieldAccessorOrCastOrType<O[K], ExtractAccessorType<A, K>> | InferNullishField<O[K]>
 }
 
 export type ModelKeys<T extends typeof Model> = keyof ModelAttributes<T>
@@ -131,5 +131,5 @@ export type ModelAttributes<T extends typeof Model, R extends boolean = true, O 
       : [O[K]] extends [HasManyRelation<infer U>]
       ? ModelAttributes<U, R>[] // HasMany relation
       : never // Relations are disabled
-    : InferFieldTypeOrCast<O[K]> | InferNullishField<O[K]>
+    : InferFieldCastOrType<O[K]> | InferNullishField<O[K]>
 }
