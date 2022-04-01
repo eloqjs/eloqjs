@@ -24,7 +24,7 @@ import {
 } from '../support/Utils'
 import { Element, Item } from '../types/Data'
 import { ValueOf } from '../types/Utilities'
-import { Mutators } from './Contracts'
+import { Accessors, Mutators } from './Contracts'
 import * as Contracts from './Contracts'
 import { Field } from './field/Field'
 import { mutateHasOne } from './field/utils/relation'
@@ -311,6 +311,13 @@ abstract class Model {
    * Mutators to mutate matching fields when instantiating the model.
    */
   public static mutators(): Mutators {
+    return {}
+  }
+
+  /**
+   * Mutators to mutate matching fields when instantiating the model.
+   */
+  public static accessors(): Accessors {
     return {}
   }
 
@@ -1504,7 +1511,7 @@ abstract class Model {
       value = this._attributes.get(attribute)
     }
 
-    return value
+    return field.retrieve(value)
   }
 
   /**

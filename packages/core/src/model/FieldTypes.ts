@@ -22,6 +22,8 @@ export interface FieldOptions<T = any, D = T> {
 
   validator?(value: unknown): boolean
 
+  accessor?(value: unknown): unknown
+
   mutator?(value: unknown): unknown
 }
 
@@ -41,11 +43,14 @@ export type ResolveFields<T> = {
 export type FieldTypeValue<T> = T | { type: T }
 export type FieldCastValue<T> = { cast: T }
 export type FieldDefaultValue<T> = { default: T }
+export type FieldAccessorValue<T> = { accessor: (...args: any[]) => T }
 export type HasOneRelation<T extends typeof Model> = { type: T; relation: 'HasOne' }
 export type HasManyRelation<T extends typeof Model> = { type: T; relation: 'HasMany' }
 export type NullableField = { nullable: true }
 
 export type ExtractModelFields<T extends typeof Model> = ReturnType<T['fields']>
+export type ExtractModelAccessors<T extends typeof Model> = ReturnType<T['accessors']>
+export type ExtractAccessorType<A, K> = K extends keyof A ? A[K] : undefined
 
 export type InferFieldType<T> = [T] extends [FieldTypeValue<null | true>]
   ? any // null & true would fail to infer
@@ -82,6 +87,14 @@ export type InferFieldCast<T, D = any> = [T] extends [FieldCastValue<ObjectConst
 
 export type InferFieldTypeOrCast<T> = [T] extends [FieldCastValue<any>] ? InferFieldCast<T, InferFieldType<T>> : InferFieldType<T>
 
+export type InferFieldTypeOrCastOrAccessor<T, A> = [T] extends [FieldAccessorValue<infer U>]
+  ? U // Accessor defined in field options
+  : A extends (...args: any[]) => infer U
+  ? U // Accessor defined in `accessors` method
+  : [T] extends [FieldCastValue<any>]
+  ? InferFieldCast<T, InferFieldType<T>> // Cast type
+  : InferFieldType<T> // Field type
+
 export type InferNullishField<T> = T extends NullableField
   ? null // Nullable field
   : T extends
@@ -101,12 +114,12 @@ export type ModelInput<T extends typeof Model, O = ExtractModelFields<T>> = {
     : InferFieldType<O[K]> | InferNullishField<O[K]>
 }
 
-export type ModelProperties<T extends typeof Model, O = ExtractModelFields<T>> = {
+export type ModelProperties<T extends typeof Model, O = ExtractModelFields<T>, A = ExtractModelAccessors<T>> = {
   [K in string & keyof O]: [O[K]] extends [HasOneRelation<infer U>]
     ? Relations.HasOne<InstanceType<U>> // HasOne relation
     : [O[K]] extends [HasManyRelation<infer U>]
     ? Relations.HasMany<InstanceType<U>> // HasMany relation
-    : InferFieldTypeOrCast<O[K]> | InferNullishField<O[K]>
+    : InferFieldTypeOrCastOrAccessor<O[K], ExtractAccessorType<A, K>> | InferNullishField<O[K]>
 }
 
 export type ModelKeys<T extends typeof Model> = keyof ModelAttributes<T>

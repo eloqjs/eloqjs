@@ -1,10 +1,23 @@
 /**
  * Model
  */
+export type {
+  Accessor,
+  Accessors,
+  GlobalHook,
+  GlobalHooks,
+  HookableClosure,
+  LocalHook,
+  LocalHooks,
+  MutationHook,
+  Mutator,
+  Mutators
+} from './model/Contracts'
 export { defineFields } from './model/DefineFields'
 export type {
   DefaultFactory,
   ExtractModelFields,
+  FieldAccessorValue,
   FieldCastValue,
   FieldDefaultValue,
   FieldMethod,
@@ -16,6 +29,7 @@ export type {
   InferFieldCast,
   InferFieldType,
   InferFieldTypeOrCast,
+  InferFieldTypeOrCastOrAccessor,
   InferNullishField,
   ModelAttributes,
   ModelField,

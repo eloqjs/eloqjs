@@ -25,3 +25,7 @@ export interface LocalHooks {
 export type Mutator<T> = (value: T) => T
 
 export type Mutators = Record<string, Mutator<any>>
+
+export type Accessor<T> = (value: T) => T
+
+export type Accessors = Record<string, Accessor<any>>
