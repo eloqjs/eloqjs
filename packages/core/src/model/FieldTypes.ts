@@ -1,6 +1,6 @@
 import * as Relations from '../relations'
 import { Data } from '../types/Data'
-import { IfAny } from '../types/Utilities'
+import { IfAny, MergeObject } from '../types/Utilities'
 import { Model } from './Model'
 
 export type DefaultFactory<T> = () => T | null | undefined
@@ -29,6 +29,10 @@ export type ModelField<T, D = T> = FieldOptions<T, D> | FieldType<T> | FieldType
 
 export type ModelFields<P = Data> = {
   [K in keyof P]: ModelField<P[K]>
+}
+
+export type ResolveFields<T> = {
+  [K in keyof T]?: T[K] extends { type: any } ? MergeObject<T[K], FieldOptions<T[K]>> : T[K]
 }
 
 export type InferFieldType<T> = [T] extends [null]
