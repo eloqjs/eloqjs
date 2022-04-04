@@ -125,10 +125,12 @@ export type ModelProperties<T extends typeof Model, O = ExtractModelFields<T>> =
 export type ModelKeys<T extends typeof Model> = keyof ModelAttributes<T>
 
 export type ModelAttributes<T extends typeof Model, R extends boolean = true, O = ExtractModelFields<T>> = {
-  [K in string & keyof O]: R extends true
-    ? [O[K]] extends [HasOneRelation<infer U>]
+  [K in string & keyof O]: [O[K]] extends [HasOneRelation<infer U>]
+    ? R extends true
       ? ModelAttributes<U, R> | null // HasOne relation
-      : [O[K]] extends [HasManyRelation<infer U>]
+      : never // Relations are disabled
+    : [O[K]] extends [HasManyRelation<infer U>]
+    ? R extends true
       ? ModelAttributes<U, R>[] // HasMany relation
       : never // Relations are disabled
     : InferFieldCastOrType<O[K]> | InferNullishField<O[K]>
