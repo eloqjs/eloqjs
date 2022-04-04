@@ -51,7 +51,7 @@ Copyright (c) João Pedro Antunes Silva
 [npm-version-href]: https://npmjs.com/package/@eloqjs/core/v/dev
 
 [npm-downloads-src]: https://img.shields.io/npm/dt/@eloqjs/core.svg?logo=npm&style=flat-square
-[npm-downloads-href]: https://npmjs.com/package/@eloqjs/core
+[npm-downloads-href]: https://npmjs.com/package/@eloqjs/core/v/dev
 
 [github-actions-ci-src]: https://img.shields.io/github/workflow/status/eloqjs/eloqjs/Test%20and%20Release?label=actions&logo=github&style=flat-square
 [github-actions-ci-href]: https://github.com/eloqjs/eloqjs/actions?query=workflow%3ATest%20and%20Release
