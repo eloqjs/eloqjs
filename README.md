@@ -11,8 +11,7 @@
 
 ## Features
 
-- JSON API specification support
-- TypeScript support
+- Coming soon...
 
 ## Contributing
 
