@@ -47,8 +47,8 @@ Copyright (c) João Pedro Antunes Silva
 
 <!-- Badges -->
 
-[npm-version-src]: https://img.shields.io/npm/v/@eloqjs/core/latest.svg?logo=npm&style=flat-square
-[npm-version-href]: https://npmjs.com/package/@eloqjs/core
+[npm-version-src]: https://img.shields.io/npm/v/@eloqjs/core/dev.svg?logo=npm&style=flat-square
+[npm-version-href]: https://npmjs.com/package/@eloqjs/core/v/dev
 
 [npm-downloads-src]: https://img.shields.io/npm/dt/@eloqjs/core.svg?logo=npm&style=flat-square
 [npm-downloads-href]: https://npmjs.com/package/@eloqjs/core
