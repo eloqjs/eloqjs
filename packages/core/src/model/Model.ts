@@ -752,6 +752,7 @@ abstract class Model {
   ): NonNullable<ValueOf<ModelProperties<this['$modelType']>, K>> | F
   public $saved(attribute: string, fallback: unknown): any
   public $saved(attribute: string, fallback?: unknown): any {
+    const field = this.$getField(attribute)
     let value = this._getReference(attribute)
 
     // Use the fallback if the value is nullish.
@@ -759,7 +760,7 @@ abstract class Model {
       value = fallback
     }
 
-    return value
+    return field.retrieve(value)
   }
 
   /**
