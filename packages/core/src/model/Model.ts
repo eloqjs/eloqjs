@@ -722,6 +722,7 @@ abstract class Model {
   ): NonNullable<ValueOf<ModelProperties<this['$modelType']>, K>> | F
   public $get(attribute: string, fallback: unknown): any
   public $get(attribute: string, fallback?: unknown): any {
+    const field = this.$getField(attribute)
     let value = this._getAttribute(attribute)
 
     // Use the fallback if the value is nullish.
@@ -729,7 +730,7 @@ abstract class Model {
       value = fallback
     }
 
-    return value
+    return field.retrieve(value)
   }
 
   /**
@@ -1518,7 +1519,7 @@ abstract class Model {
       value = this._attributes.get(attribute)
     }
 
-    return field.retrieve(value)
+    return value
   }
 
   /**
