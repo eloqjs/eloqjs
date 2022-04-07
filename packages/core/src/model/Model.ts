@@ -712,7 +712,11 @@ abstract class Model {
    *
    * @returns The value of the attribute or `fallback` if not found.
    */
-  public $get<K extends ModelKeys<this['$modelType']>, F = never>(attribute: K, fallback?: F): ModelProperties<this['$modelType']>[K] | F
+  public $get<K extends ModelKeys<this['$modelType']>>(attribute: K): ValueOf<ModelProperties<this['$modelType']>, K>
+  public $get<K extends ModelKeys<this['$modelType']>, F>(
+    attribute: K,
+    fallback: F
+  ): NonNullable<ValueOf<ModelProperties<this['$modelType']>, K>> | F
   public $get(attribute: string, fallback?: unknown): any {
     let value = this._getAttribute(attribute)
 
@@ -735,10 +739,11 @@ abstract class Model {
    *
    * @returns The value of the attribute's reference or `fallback` if not found.
    */
-  public $saved<K extends ModelKeys<this['$modelType']>, F = never>(
+  public $saved<K extends ModelKeys<this['$modelType']>>(attribute: K): ValueOf<ModelProperties<this['$modelType']>, K>
+  public $saved<K extends ModelKeys<this['$modelType']>, F>(
     attribute: K,
-    fallback?: F
-  ): ValueOf<ModelProperties<this['$modelType']>, K> | F
+    fallback: F
+  ): NonNullable<ValueOf<ModelProperties<this['$modelType']>, K>> | F
   public $saved(attribute: string, fallback?: unknown): any {
     let value = this._getReference(attribute)
 
