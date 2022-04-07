@@ -633,28 +633,7 @@ abstract class Model {
     attribute: K,
     value: ModelInput<this['$modelType']>[K]
   ): ModelProperties<this['$modelType']>[K]
-  public $set(record: ModelInput<this['$modelType']> | this): void
-  public $set<T = any>(attribute: string | Element, value?: T): T | void {
-    // If the given attributes is a model, then get its attributes.
-    if (isModel(attribute)) {
-      attribute = attribute.$getAttributes()
-    }
-
-    // Allow batch set of multiple attributes at once, ie. $set({...});
-    if (isPlainObject(attribute)) {
-      const fields = this.$fields()
-
-      for (const key in fields) {
-        if (!(key in attribute)) {
-          continue
-        }
-
-        this.$set(key, attribute[key])
-      }
-
-      return
-    }
-
+  public $set<T = any>(attribute: string, value: T): T | void {
     const defined = attribute in this
 
     // Only register the pass-through property if it's not already set up.
@@ -686,7 +665,7 @@ abstract class Model {
           if (isNull(model)) {
             previous.data = mutateHasOne(value as Element, previous.model)
           } else {
-            model.$set((value || {}) as Element)
+            model.$fill((value || {}) as Element)
           }
 
           break
@@ -772,13 +751,18 @@ abstract class Model {
   }
 
   /**
-   * Fill this model by the given attributes. Missing fields will be populated
+   * Fill this model by the given attributes. Missing fields that were not previously defined, will be populated
    * by the attributes default value.
    */
-  public $fill(attributes?: ModelInput<this['$modelType']>, options?: ModelOptions): void
+  public $fill(attributes?: ModelInput<this['$modelType']> | this, options?: ModelOptions): void
   public $fill(attributes: Element = {}, options: ModelOptions = {}): void {
     const fields = this.$fields()
     const fillRelation = options.relations ?? this.$getOption('relations') ?? true
+
+    // If the given attributes is a model, then get its attributes.
+    if (isModel(attributes)) {
+      attributes = attributes.$getAttributes()
+    }
 
     for (const key in fields) {
       const field = fields[key]
@@ -790,7 +774,7 @@ abstract class Model {
       }
 
       // It's not a requirement to respond with a complete dataset, so we merge with current data.
-      if (isUndefined(value)) {
+      if (!(key in attributes)) {
         value = this._getAttribute(key)
       }
 

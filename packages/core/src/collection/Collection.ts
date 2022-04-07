@@ -954,7 +954,7 @@ export class Collection<M extends Model = Model> {
     assert(isModel(model), ['Expected a model, plain object, or array of either.'])
 
     // Fill the model found in the collection by the given attributes.
-    model.$set(record)
+    model.$fill(record)
 
     return model
   }

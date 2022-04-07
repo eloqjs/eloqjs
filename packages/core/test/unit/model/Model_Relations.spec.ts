@@ -228,7 +228,7 @@ describe('Unit - Model – Relations', () => {
     expect(user.profile.data!.id).toBe(3)
     expect(user.profile.data!.name).toBe('Joe')
 
-    user.$set({
+    user.$fill({
       name: 'John Doe',
       profile: { name: 'John' }
     })
@@ -297,7 +297,7 @@ describe('Unit - Model – Relations', () => {
 
     expect(user.profile.data!).toBeNull()
 
-    user.$set({
+    user.$fill({
       name: 'John Doe',
       profile: { id: 3, user_id: 1, name: 'John' }
     })
@@ -377,7 +377,7 @@ describe('Unit - Model – Relations', () => {
     expect(post.comments.data.models[1].id).toBe(2)
     expect(post.comments.data.models[1].message).toBe('bar')
 
-    post.$set({
+    post.$fill({
       title: 'My awesome post',
       comments: [
         {
@@ -611,7 +611,7 @@ describe('Unit - Model – Relations', () => {
     expect(post.comments.data.models[0].id).toBe(1)
     expect(post.comments.data.models[1].id).toBe(2)
 
-    post.comments.data.models[1].$set({
+    post.comments.data.models[1].$fill({
       id: 2,
       message: 'bar baz'
     })
