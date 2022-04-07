@@ -1,5 +1,5 @@
 import * as Relations from '../relations'
-import { Data, Element } from '../types/Data'
+import { Data } from '../types/Data'
 import { IfAny, MergeObject } from '../types/Utilities'
 import { Model } from './Model'
 
@@ -104,15 +104,13 @@ export type InferNullishField<T> = T extends NullableField
     : never // Otherwise, field is required
   : undefined // Non-nullable field
 
-export type ModelInput<T extends typeof Model, O = ExtractModelFields<T>> =
-  | {
-      [K in string & keyof O]?: [O[K]] extends [HasOneRelation<infer U>]
-        ? InstanceType<U> | ModelInput<U> | null // HasOne relation
-        : [O[K]] extends [HasManyRelation<infer U>]
-        ? (InstanceType<U> | ModelInput<U>)[] // HasMany relation
-        : InferFieldType<O[K]> | InferNullishField<O[K]>
-    }
-  | Element
+export type ModelInput<T extends typeof Model, O = ExtractModelFields<T>> = {
+  [K in string & keyof O]?: [O[K]] extends [HasOneRelation<infer U>]
+    ? InstanceType<U> | ModelInput<U> | null // HasOne relation
+    : [O[K]] extends [HasManyRelation<infer U>]
+    ? (InstanceType<U> | ModelInput<U>)[] // HasMany relation
+    : InferFieldType<O[K]> | InferNullishField<O[K]>
+}
 
 export type ModelProperties<T extends typeof Model, O = ExtractModelFields<T>> = {
   [K in string & keyof O]: [O[K]] extends [HasOneRelation<infer U>]
