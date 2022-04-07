@@ -35,8 +35,6 @@ module.exports = {
   },
   ignorePatterns: ['dist'],
   rules: {
-    'max-len': ['error', { code: 140 }],
-
     'prettier/prettier': 'error',
 
     'simple-import-sort/imports': 'warn',
