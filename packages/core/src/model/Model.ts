@@ -1138,7 +1138,7 @@ abstract class Model {
   /**
    * Determine if the model or any of the given attribute(s) have been modified.
    */
-  public $isDirty<K extends ModelKeys<this['$modelType']>>(attributes?: K | K[]): boolean {
+  public $isDirty(attributes?: ModelKeys<this['$modelType']> | ModelKeys<this['$modelType']>[]): boolean {
     attributes = forceArray(attributes || [])
 
     if (isEmpty(attributes)) {
@@ -1159,14 +1159,14 @@ abstract class Model {
   /**
    * Determine if the model and all the given attribute(s) have remained the same.
    */
-  public $isClean<K extends ModelKeys<this['$modelType']>>(attributes?: K | K[]): boolean {
+  public $isClean(attributes?: ModelKeys<this['$modelType']> | ModelKeys<this['$modelType']>[]): boolean {
     return !this.$isDirty(attributes)
   }
 
   /**
    * Determine if the model or any of the given attribute(s) have been modified.
    */
-  public $wasChanged<K extends ModelKeys<this['$modelType']>>(attributes?: K | K[]): boolean {
+  public $wasChanged(attributes?: ModelKeys<this['$modelType']> | ModelKeys<this['$modelType']>[]): boolean {
     return this._attributes.wasChanged(attributes) || this._relationships.wasChanged(attributes)
   }
 
@@ -1184,7 +1184,7 @@ abstract class Model {
   /**
    * Sync the reference attributes with the current.
    */
-  public $syncReference<K extends ModelKeys<this['$modelType']>>(attributes?: K | K[]): this {
+  public $syncReference(attributes?: ModelKeys<this['$modelType']> | ModelKeys<this['$modelType']>[]): this {
     // A copy of the saved state before the attributes were synced.
     const before = this._getReferences()
 
@@ -1310,7 +1310,7 @@ abstract class Model {
    *
    * It's also possible to pass an array of attributes to reset.
    */
-  public $reset<K extends ModelKeys<this['$modelType']>>(attributes?: K | K[]): void {
+  public $reset(attributes?: ModelKeys<this['$modelType']> | ModelKeys<this['$modelType']>[]): void {
     // A copy of the active state before the attributes were reset.
     const before = this._getAttributes()
 
