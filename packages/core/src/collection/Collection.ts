@@ -134,7 +134,9 @@ export class Collection<M extends Model = Model> {
   /**
    * Get a collection's option.
    */
-  public getOption<K extends keyof CollectionOptions>(key: K, fallback?: ValueOf<CollectionOptions, K>): ValueOf<CollectionOptions, K> {
+  public getOption<K extends keyof CollectionOptions>(key: K): ValueOf<CollectionOptions, K>
+  public getOption<K extends keyof CollectionOptions, F>(key: K, fallback: F): NonNullable<ValueOf<CollectionOptions, K>> | F
+  public getOption(key: string, fallback?: unknown): any {
     return this._options[key] ?? fallback
   }
 
