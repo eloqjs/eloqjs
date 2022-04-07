@@ -1064,7 +1064,9 @@ abstract class Model {
 
         const value = this._relationships.get(key).data
 
-        result[key] = options.relations ? Serialize.getRelationAttributes(value, options.isRequest) : Serialize.emptyRelation(value)
+        result[key] = options.relations
+          ? Serialize.getRelationAttributes(value, options.isRequest)
+          : Serialize.emptyRelation(value)
       } else {
         if (options.shouldPatch && this._attributes.isClean(key)) {
           continue

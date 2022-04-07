@@ -50,7 +50,9 @@ function isClass(obj: any) {
     return isCtorClass
   }
   const isPrototypeCtorClass =
-    obj.prototype.constructor && obj.prototype.constructor.toString && obj.prototype.constructor.toString().substring(0, 5) === 'class'
+    obj.prototype.constructor &&
+    obj.prototype.constructor.toString &&
+    obj.prototype.constructor.toString().substring(0, 5) === 'class'
   return isCtorClass || isPrototypeCtorClass
 }
 

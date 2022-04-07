@@ -56,7 +56,12 @@ export type { SerializedModel, SerializeModelOptions } from './model/Serialize'
 /**
  * Collection
  */
-export type { CloneCollectionOptions, CollectionOptions, SerializeCollectionOptions, SerializedCollection } from './collection/Collection'
+export type {
+  CloneCollectionOptions,
+  CollectionOptions,
+  SerializeCollectionOptions,
+  SerializedCollection
+} from './collection/Collection'
 export { Collection } from './collection/Collection'
 
 /**

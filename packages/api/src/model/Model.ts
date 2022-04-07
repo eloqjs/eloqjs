@@ -89,7 +89,11 @@ export class Model extends BaseModel {
    * @param {string | string[]} attribute - The attribute being tested.
    * @param {string} values - The values the attribute should be equal.
    */
-  public static whereIn<M extends typeof Model>(this: M, attribute: string | string[], values: FilterValue[]): Builder<InstanceType<M>>
+  public static whereIn<M extends typeof Model>(
+    this: M,
+    attribute: string | string[],
+    values: FilterValue[]
+  ): Builder<InstanceType<M>>
 
   /**
    * @internal
@@ -158,7 +162,11 @@ export class Model extends BaseModel {
    * @param {string | string[]} attribute - The attribute to sort by.
    * @param {string} [direction] - The direction to sort in.
    */
-  public static orderBy<M extends typeof Model>(this: M, attribute: string | string[], direction?: 'asc' | 'desc'): Builder<InstanceType<M>>
+  public static orderBy<M extends typeof Model>(
+    this: M,
+    attribute: string | string[],
+    direction?: 'asc' | 'desc'
+  ): Builder<InstanceType<M>>
 
   /**
    * @internal

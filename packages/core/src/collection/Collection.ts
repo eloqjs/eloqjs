@@ -528,7 +528,11 @@ export class Collection<M extends Model = Model> {
    */
   public median(key: keyof ModelReference<M> | string): number {
     if (this.count() % 2 === 0) {
-      return ((this.models[this.count() / 2 - 1][key as string] as number) + (this.models[this.count() / 2][key as string] as number)) / 2
+      return (
+        ((this.models[this.count() / 2 - 1][key as string] as number) +
+          (this.models[this.count() / 2][key as string] as number)) /
+        2
+      )
     }
 
     return this.models[Math.floor(this.count() / 2)][key as string] as number

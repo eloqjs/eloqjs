@@ -236,7 +236,8 @@ export class RelationAPI<
       }
 
       const isArray = Array.isArray(this.belongsToModel[this.key])
-      this.belongsToModel[this.key] = isArray && isSingular ? [...this.belongsToModel[this.key].data, response.data] : response.data
+      this.belongsToModel[this.key] =
+        isArray && isSingular ? [...this.belongsToModel[this.key].data, response.data] : response.data
     })
   }
 }
