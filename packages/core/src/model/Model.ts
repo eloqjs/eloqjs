@@ -275,7 +275,8 @@ abstract class Model {
   /**
    * The definition of the fields of the model and its relations.
    */
-  public static fields(): Record<string, any> {
+  // eslint-disable-next-line @typescript-eslint/ban-types
+  public static fields(): {} {
     return {}
   }
 
@@ -633,6 +634,7 @@ abstract class Model {
     attribute: K,
     value: ModelInput<this['$modelType']>[K]
   ): ModelProperties<this['$modelType']>[K]
+  public $set(attribute: string, value: unknown): any
   public $set<T = any>(attribute: string, value: T): T | void {
     const defined = attribute in this
 
@@ -713,10 +715,12 @@ abstract class Model {
    * @returns The value of the attribute or `fallback` if not found.
    */
   public $get<K extends ModelKeys<this['$modelType']>>(attribute: K): ValueOf<ModelProperties<this['$modelType']>, K>
+  public $get(attribute: string): any
   public $get<K extends ModelKeys<this['$modelType']>, F>(
     attribute: K,
     fallback: F
   ): NonNullable<ValueOf<ModelProperties<this['$modelType']>, K>> | F
+  public $get(attribute: string, fallback: unknown): any
   public $get(attribute: string, fallback?: unknown): any {
     let value = this._getAttribute(attribute)
 
@@ -740,10 +744,12 @@ abstract class Model {
    * @returns The value of the attribute's reference or `fallback` if not found.
    */
   public $saved<K extends ModelKeys<this['$modelType']>>(attribute: K): ValueOf<ModelProperties<this['$modelType']>, K>
+  public $saved(attribute: string): any
   public $saved<K extends ModelKeys<this['$modelType']>, F>(
     attribute: K,
     fallback: F
   ): NonNullable<ValueOf<ModelProperties<this['$modelType']>, K>> | F
+  public $saved(attribute: string, fallback: unknown): any
   public $saved(attribute: string, fallback?: unknown): any {
     let value = this._getReference(attribute)
 
@@ -1138,7 +1144,9 @@ abstract class Model {
   /**
    * Determine if the model or any of the given attribute(s) have been modified.
    */
-  public $isDirty(attributes?: ModelKeys<this['$modelType']> | ModelKeys<this['$modelType']>[]): boolean {
+  public $isDirty(attributes?: ModelKeys<this['$modelType']> | ModelKeys<this['$modelType']>[]): boolean
+  public $isDirty(attributes?: string | string[]): boolean
+  public $isDirty(attributes?: string | string[]): boolean {
     attributes = forceArray(attributes || [])
 
     if (isEmpty(attributes)) {
@@ -1159,14 +1167,18 @@ abstract class Model {
   /**
    * Determine if the model and all the given attribute(s) have remained the same.
    */
-  public $isClean(attributes?: ModelKeys<this['$modelType']> | ModelKeys<this['$modelType']>[]): boolean {
+  public $isClean(attributes?: ModelKeys<this['$modelType']> | ModelKeys<this['$modelType']>[]): boolean
+  public $isClean(attributes?: string | string[]): boolean
+  public $isClean(attributes?: string | string[]): boolean {
     return !this.$isDirty(attributes)
   }
 
   /**
    * Determine if the model or any of the given attribute(s) have been modified.
    */
-  public $wasChanged(attributes?: ModelKeys<this['$modelType']> | ModelKeys<this['$modelType']>[]): boolean {
+  public $wasChanged(attributes?: ModelKeys<this['$modelType']> | ModelKeys<this['$modelType']>[]): boolean
+  public $wasChanged(attributes?: string | string[]): boolean
+  public $wasChanged(attributes?: string | string[]): boolean {
     return this._attributes.wasChanged(attributes) || this._relationships.wasChanged(attributes)
   }
 
@@ -1184,7 +1196,9 @@ abstract class Model {
   /**
    * Sync the reference attributes with the current.
    */
-  public $syncReference(attributes?: ModelKeys<this['$modelType']> | ModelKeys<this['$modelType']>[]): this {
+  public $syncReference(attributes?: ModelKeys<this['$modelType']> | ModelKeys<this['$modelType']>[]): this
+  public $syncReference(attributes?: string | string[]): this
+  public $syncReference(attributes?: string | string[]): this {
     // A copy of the saved state before the attributes were synced.
     const before = this._getReferences()
 
@@ -1310,7 +1324,9 @@ abstract class Model {
    *
    * It's also possible to pass an array of attributes to reset.
    */
-  public $reset(attributes?: ModelKeys<this['$modelType']> | ModelKeys<this['$modelType']>[]): void {
+  public $reset(attributes?: ModelKeys<this['$modelType']> | ModelKeys<this['$modelType']>[]): void
+  public $reset(attributes?: string | string[]): void
+  public $reset(attributes?: string | string[]): void {
     // A copy of the active state before the attributes were reset.
     const before = this._getAttributes()
 
