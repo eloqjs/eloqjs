@@ -1,8 +1,7 @@
 /**
  * Model
  */
-export type { AttributesData } from './model/attributes/Attributes'
-export { Attributes } from './model/attributes/Attributes'
+export type { Attributes, AttributesData } from './model/attributes/Attributes'
 export { DefaultAttributes } from './model/attributes/DefaultAttributes'
 export type {
   Accessor,
