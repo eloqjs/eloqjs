@@ -2,16 +2,18 @@ import defu from 'defu'
 
 import { Collection, SerializedCollection } from '../collection/Collection'
 import * as Relations from '../relations'
+import { Relation } from '../relations'
 import { RelationEnum } from '../relations/RelationEnum'
-import { AttrMap } from '../support/AttrMap'
 import { Map } from '../support/Map'
 import { Uid as UidGenerator } from '../support/Uid'
 import {
   assert,
+  clone,
   forceArray,
   isArray,
   isEmpty,
   isEmptyString,
+  isEqual,
   isFunction,
   isModel,
   isNull,
@@ -24,6 +26,11 @@ import {
 } from '../support/Utils'
 import { Element, Item } from '../types/Data'
 import { ValueOf } from '../types/Utilities'
+import { Attributes } from './attributes/Attributes'
+import { DefaultAttributes } from './attributes/DefaultAttributes'
+import { attributeReviver } from './attributes/utils/attribute-reviver'
+import { hasChanges } from './attributes/utils/has-changes'
+import { isRelationDirty } from './attributes/utils/is-relationship-dirty'
 import { Accessors, Mutators } from './Contracts'
 import * as Contracts from './Contracts'
 import { Field } from './field/Field'
@@ -184,14 +191,19 @@ abstract class Model {
   private readonly _collections: Map<Collection<this>> = new Map<Collection<this>>()
 
   /**
-   * The unmutated attributes of the record.
+   * The current state of the model's attributes.
    */
-  private readonly _attributes: AttrMap<unknown> = new AttrMap<unknown>()
+  private readonly _attributes: Attributes = new DefaultAttributes()
 
   /**
-   * The unmutated relationships of the record.
+   * The saved state of the model's attributes.
    */
-  private readonly _relationships: AttrMap<Relations.Relation> = new AttrMap<Relations.Relation>()
+  private readonly _reference: Attributes = new DefaultAttributes()
+
+  /**
+   * The attributes that have been changed since the last sync.
+   */
+  private readonly _changes: Attributes = new DefaultAttributes()
 
   /**
    * The options of the record.
@@ -653,7 +665,7 @@ abstract class Model {
     }
 
     // Current value of the attribute, or `undefined` if not set
-    const previous: any = this._getAttribute(attribute)
+    const previous = this._attributes.get(attribute)
     const field = this.$getField(attribute)
 
     // If we have a relationship that was previous defined, we need to access it and set the given attribute,
@@ -693,7 +705,15 @@ abstract class Model {
       value = field.make(value, this)
 
       // Set the attribute value.
-      this._setAttribute(attribute, value)
+      if (!this._reference.has(attribute)) {
+        if (isArray(value) || isPlainObject(value)) {
+          this._reference.set(attribute, clone(value, attributeReviver))
+        } else {
+          this._reference.set(attribute, value)
+        }
+      }
+
+      this._attributes.set(attribute, value)
     }
 
     // TODO: Deep equality comparison
@@ -723,7 +743,7 @@ abstract class Model {
   public $get(attribute: string, fallback: unknown): any
   public $get(attribute: string, fallback?: unknown): any {
     const field = this.$getField(attribute)
-    let value = this._getAttribute(attribute)
+    let value = this._attributes.get(attribute)
 
     // Use the fallback if the value is nullish.
     if (isNullish(value) && fallback) {
@@ -753,7 +773,7 @@ abstract class Model {
   public $saved(attribute: string, fallback: unknown): any
   public $saved(attribute: string, fallback?: unknown): any {
     const field = this.$getField(attribute)
-    let value = this._getReference(attribute)
+    let value = this._reference.get(attribute)
 
     // Use the fallback if the value is nullish.
     if (isNullish(value) && fallback) {
@@ -788,7 +808,7 @@ abstract class Model {
 
       // It's not a requirement to respond with a complete dataset, so we merge with current data.
       if (!(key in attributes)) {
-        value = this._getAttribute(key)
+        value = this._attributes.get(key)
       }
 
       // We must get the data from relationships
@@ -848,7 +868,7 @@ abstract class Model {
         // Then, we check if the field is a relationship.
         if (field.relation) {
           // If so, we get the relationship.
-          const relation = this._relationships.get(key)
+          const relation = this._attributes.get(key)
 
           // Now we switch between the different types of relations.
           switch (field.relation) {
@@ -948,7 +968,7 @@ abstract class Model {
       attributes: {
         data: {},
         reference: {},
-        changes: this._attributes.getChanges()
+        changes: this._changes.getAll()
       },
       relationships: {}
     }
@@ -960,12 +980,12 @@ abstract class Model {
 
       if (!field.relation) {
         const value = this._attributes.get(key)
-        const reference = this._attributes.$get(key)
+        const reference = this._reference.get(key)
 
         serializedModel.attributes.data[key] = Serialize.value(value)
         serializedModel.attributes.reference[key] = Serialize.value(reference)
       } else if (options.relations) {
-        const relation = this._relationships.get(key).data
+        const relation = this._attributes.get(key).data
         const value = Serialize.relation(relation)
 
         if (isNull(value)) {
@@ -989,24 +1009,18 @@ abstract class Model {
     this.$setOptions(serializedModel.options)
 
     // Read attributes
-    for (const [attribute, value] of Object.entries(serializedModel.attributes.data)) {
-      this._attributes.set(attribute, value)
-    }
+    this._attributes.setAll(serializedModel.attributes.data)
 
     // Read attributes references
-    for (const [attribute, value] of Object.entries(serializedModel.attributes.reference)) {
-      this._attributes.$set(attribute, value)
-    }
+    this._reference.setAll(serializedModel.attributes.reference)
 
     // Read attributes changes
-    for (const [attribute, value] of Object.entries(serializedModel.attributes.changes)) {
-      this._attributes.setChange(attribute, value)
-    }
+    this._changes.replace(serializedModel.attributes.changes)
 
     // Read relationships
     for (const [attribute, value] of Object.entries(serializedModel.relationships)) {
       const field = this.$getField(attribute)
-      const relation = this._relationships.get(attribute)
+      const relation = this._attributes.get(attribute)
 
       switch (field.relation) {
         // It's the "Has One" relation, so we access the model and deserialize.
@@ -1060,17 +1074,17 @@ abstract class Model {
       }
 
       if (field.relation) {
-        if (options.shouldPatch && this._relationships.isClean(key)) {
+        if (options.shouldPatch && this.$isClean(key)) {
           continue
         }
 
-        const value = this._relationships.get(key).data
+        const value = this._attributes.get(key).data
 
         result[key] = options.relations
           ? Serialize.getRelationAttributes(value, options.isRequest)
           : Serialize.emptyRelation(value)
       } else {
-        if (options.shouldPatch && this._attributes.isClean(key)) {
+        if (options.shouldPatch && this.$isClean(key)) {
           continue
         }
 
@@ -1107,10 +1121,10 @@ abstract class Model {
         }
 
         // Get the model instance of the relationship
-        const value = this._relationships.get(attribute)
+        const value = this._attributes.get(attribute)
 
         // Set the relationship
-        clone._relationships.set(attribute, value)
+        clone._attributes.set(attribute, value)
       }
     }
 
@@ -1151,21 +1165,7 @@ abstract class Model {
   public $isDirty(attributes?: ModelKeys<this['$modelType']> | ModelKeys<this['$modelType']>[]): boolean
   public $isDirty(attributes?: string | string[]): boolean
   public $isDirty(attributes?: string | string[]): boolean {
-    attributes = forceArray(attributes || [])
-
-    if (isEmpty(attributes)) {
-      return this._attributes.isDirty() || this._relationships.isDirty()
-    }
-
-    return attributes.some((attribute) => {
-      const field = this.$getField(attribute)
-
-      if (field.relation) {
-        return this._relationships.isDirty(attribute)
-      } else {
-        return this._attributes.isDirty(attribute)
-      }
-    })
+    return hasChanges(this._attributes.getAll(), this.$getDirty(), forceArray(attributes || []))
   }
 
   /**
@@ -1183,18 +1183,28 @@ abstract class Model {
   public $wasChanged(attributes?: ModelKeys<this['$modelType']> | ModelKeys<this['$modelType']>[]): boolean
   public $wasChanged(attributes?: string | string[]): boolean
   public $wasChanged(attributes?: string | string[]): boolean {
-    return this._attributes.wasChanged(attributes) || this._relationships.wasChanged(attributes)
+    return hasChanges(this._attributes.getAll(), this._changes.getAll(), forceArray(attributes || []))
   }
 
-  public $getDirty(): ModelInput<this['$modelType']> {
-    return { ...this._attributes.getDirty(), ...this._relationships.getDirty() } as ModelInput<this['$modelType']>
+  public $getDirty(): Partial<ModelProperties<this['$modelType']>> {
+    const dirty: Partial<ModelProperties<this['$modelType']>> = {}
+    const attributes = this._attributes.getAll()
+
+    for (const key in attributes) {
+      const reference = this._reference.get(key)
+      const value = attributes[key]
+      const isDirty = value instanceof Relation ? isRelationDirty(value) : !isEqual(value, reference)
+
+      if (isDirty) {
+        dirty[key] = attributes[key]
+      }
+    }
+
+    return dirty
   }
 
-  public $getChanges(): ModelInput<this['$modelType']> {
-    return {
-      ...this._attributes.getChanges(),
-      ...this._relationships.getChanges()
-    } as ModelInput<this['$modelType']>
+  public $getChanges(): Partial<ModelProperties<this['$modelType']>> {
+    return this._changes.getAll() as Partial<ModelProperties<this['$modelType']>>
   }
 
   /**
@@ -1204,11 +1214,18 @@ abstract class Model {
   public $syncReference(attributes?: string | string[]): this
   public $syncReference(attributes?: string | string[]): this {
     // A copy of the saved state before the attributes were synced.
-    const before = this._getReferences()
+    const before = this._reference.clone().getAll()
 
     // Sync attributes
-    this._attributes.syncReference(attributes)
-    this._relationships.syncReference(attributes)
+    if (isUndefined(attributes)) {
+      this._reference.replace(this._attributes.clone().getAll())
+    } else {
+      attributes = forceArray(attributes).filter((attribute) => Object.keys(this._attributes.getAll()).includes(attribute))
+
+      for (const attribute of attributes) {
+        this._reference.set(attribute, this._attributes.get(attribute))
+      }
+    }
 
     /*const fields = this.$fields()
 
@@ -1240,7 +1257,7 @@ abstract class Model {
     }*/
 
     // A copy of the saved state after the attributes were synced.
-    const after = this._getReferences()
+    const after = this._reference.clone().getAll()
 
     // Emit syncReference event
     this.$emit('syncReference', {
@@ -1257,14 +1274,13 @@ abstract class Model {
    */
   public $syncChanges(): this {
     // A copy of the state before the changes were synced.
-    const before = this.$getChanges()
+    const before = this._changes.clone().getAll()
 
     // Sync changes
-    this._attributes.syncChanges()
-    this._relationships.syncChanges()
+    this._changes.replace(this.$getDirty())
 
     // A copy of the state after the changes were synced.
-    const after = this.$getChanges()
+    const after = this._changes.clone().getAll()
 
     // Emit syncChanges event
     this.$emit('syncChanges', {
@@ -1281,14 +1297,14 @@ abstract class Model {
    */
   public $clear(): void {
     // A copy of the active state before the attributes were cleared.
-    const before = this._getAttributes()
+    const before = this._attributes.clone().getAll()
 
     // Clear attributes and state
     this.$clearAttributes()
     this.$clearState()
 
     // A copy of the active state after the attributes were cleared.
-    const after = this._getAttributes()
+    const after = this._attributes.clone().getAll()
 
     // Emit clear event
     this.$emit('clear', {
@@ -1303,11 +1319,10 @@ abstract class Model {
    */
   public $clearAttributes(): void {
     for (const key in this.$fields()) {
-      this[key] = undefined
+      this.$set(key, undefined)
     }
 
-    this._attributes.syncReference()
-    this._relationships.syncReference()
+    this.$syncReference()
   }
 
   /**
@@ -1332,14 +1347,21 @@ abstract class Model {
   public $reset(attributes?: string | string[]): void
   public $reset(attributes?: string | string[]): void {
     // A copy of the active state before the attributes were reset.
-    const before = this._getAttributes()
+    const before = this._attributes.clone().getAll()
 
     // Reset attributes
-    this._attributes.reset(attributes)
-    this._relationships.reset(attributes)
+    if (isUndefined(attributes)) {
+      this._attributes.replace(this._reference.clone().getAll())
+    } else {
+      attributes = forceArray(attributes).filter((attribute) => Object.keys(this._attributes.getAll()).includes(attribute))
+
+      for (const attribute of attributes) {
+        this._attributes.set(attribute, this._reference.get(attribute))
+      }
+    }
 
     // A copy of the active state after the attributes were reset.
-    const after = this._getAttributes()
+    const after = this._attributes.clone().getAll()
 
     // Emit reset event
     this.$emit('reset', {
@@ -1486,93 +1508,6 @@ abstract class Model {
 
       set: (): void => assert(false, ["The saved state of a property can't be overridden."])
     })
-  }
-
-  /**
-   * Set an attribute in `{@link _attributes}` or {@link _relationships}, based on field type.
-   */
-  private _setAttribute(attribute: string, value: any): any {
-    const field = this.$getField(attribute)
-
-    // Set the attribute based on field type.
-    if (field.relation) {
-      this._relationships.set(attribute, value)
-    } else {
-      this._attributes.set(attribute, value)
-    }
-
-    return value
-  }
-
-  /**
-   * Get an attribute from {@link _attributes} or {@link _relationships}, based on field type.
-   *
-   * @returns The unmutated value of attribute.
-   */
-  private _getAttribute(attribute: string): any {
-    const field = this.$getField(attribute)
-    let value: any
-
-    // Get the attribute based on field type.
-    if (field.relation) {
-      value = this._relationships.get(attribute)
-    } else {
-      value = this._attributes.get(attribute)
-    }
-
-    return value
-  }
-
-  /**
-   * Get all attributes from {@link _attributes} and {@link _relationships}.
-   *
-   * Do not confuse with the public method {@link $getAttributes},
-   * which serializes the model and get all attributes without relationships.
-   *
-   * @returns The unmutated attributes.
-   */
-  private _getAttributes(): Record<string, any> {
-    const attributes = {}
-
-    for (const field of Object.keys(this.$fields())) {
-      attributes[field] = this._getAttribute(field)
-    }
-
-    return attributes
-  }
-
-  /**
-   * Get an attribute's reference from {@link _attributes} or {@link _relationships}, based on field type.
-   *
-   * @returns The unmutated value of attribute's reference.
-   */
-  private _getReference(attribute: string): any {
-    const field = this.$getField(attribute)
-    let value: any
-
-    // Get the attribute based on field type.
-    if (field.relation) {
-      value = this._relationships.$get(attribute)
-    } else {
-      value = this._attributes.$get(attribute)
-    }
-
-    return value
-  }
-
-  /**
-   * Get references of all attributes from {@link _attributes} and {@link _relationships}.
-   *
-   * @returns The unmutated references of attributes.
-   */
-  private _getReferences(): Record<string, any> {
-    const references = {}
-
-    for (const field of Object.keys(this.$fields())) {
-      references[field] = this._getReference(field)
-    }
-
-    return references
   }
 
   /**

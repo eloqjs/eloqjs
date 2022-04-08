@@ -1,6 +1,9 @@
 /**
  * Model
  */
+export type { AttributesData } from './model/attributes/Attributes'
+export { Attributes } from './model/attributes/Attributes'
+export { DefaultAttributes } from './model/attributes/DefaultAttributes'
 export type {
   Accessor,
   Accessors,
@@ -14,6 +17,7 @@ export type {
   Mutators
 } from './model/Contracts'
 export { defineFields } from './model/DefineFields'
+export { Field } from './model/field/Field'
 export type {
   DefaultFactory,
   ExtractModelFields,
