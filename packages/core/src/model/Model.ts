@@ -173,7 +173,7 @@ abstract class Model {
   /**
    * The saved state of attributes.
    */
-  public readonly $: ModelProperties<this['$modelType']> = {} as ModelProperties<this['$modelType']>
+  public readonly $: ModelReference<this> = {} as ModelReference<this>
 
   /**
    * The local hook registries.
