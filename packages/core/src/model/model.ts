@@ -414,7 +414,7 @@ abstract class Model {
     const fields = this.fields()
     const _fields = {}
 
-    for (const key in this.fields()) {
+    for (const key in fields) {
       _fields[key] = new Field(key, fields[key], this)
     }
 
