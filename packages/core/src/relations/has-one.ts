@@ -1,5 +1,5 @@
-import { Model } from '../model/Model'
+import { Model } from '../model'
 import { Item } from '../types'
-import { Relation } from './Relation'
+import { Relation } from './relation'
 
 export type HasOne<M extends Model = Model> = Relation<M, Item<M>, true>

@@ -1,11 +1,10 @@
 import defu from 'defu'
 
-import { Collection, SerializedCollection } from '../collection/Collection'
+import { Collection, SerializedCollection } from '../collection'
 import { Uid as UidGenerator } from '../helpers/uid'
 import * as Relations from '../relations'
-import { Relation } from '../relations'
-import { RelationEnum } from '../relations/RelationEnum'
-import { Element, Item, ValueOf } from '../types'
+import { Element, Item, ModelAttributes, ModelInput, ModelKeys, ModelProperties } from '../types'
+import { ValueOf } from '../types/utilities'
 import { assert, clone, forceArray } from '../utils'
 import {
   isArray,
@@ -22,79 +21,27 @@ import {
   isString,
   isUndefined
 } from '../utils/is'
-import { Attributes } from './attributes/Attributes'
-import { DefaultAttributes } from './attributes/DefaultAttributes'
+import { Attributes } from './attributes/attributes'
+import { DefaultAttributes } from './attributes/default-attributes'
 import { attributeReviver } from './attributes/utils/attribute-reviver'
 import { hasChanges } from './attributes/utils/has-changes'
 import { isRelationDirty } from './attributes/utils/is-relationship-dirty'
-import { Accessors, Mutators } from './Contracts'
-import * as Contracts from './Contracts'
-import { Field } from './field/Field'
+import { Field } from './field/field'
 import { mutateHasOne } from './field/utils/relation'
-import { ModelAttributes, ModelInput, ModelKeys, ModelProperties } from './FieldTypes'
-import * as Serialize from './Serialize'
-import { isSerializedModel, SerializedModel } from './Serialize'
-
-export type Fields = Record<string, Field>
-export type ModelSchemas = Record<string, Fields>
-export type ModelRegistries = Record<string, ModelRegistry>
-export type ModelRegistry = Record<string, () => Field>
-export type ModelReference<T> = Readonly<Omit<T, keyof Model>>
-
-export interface ModelOptions {
-  /**
-   * Whether this model should fill relationships on instantiate.
-   */
-  relations?: boolean
-
-  /**
-   * Whether this model should allow an existing identifier to be
-   * overwritten on update.
-   */
-  overwriteIdentifier?: boolean
-
-  /**
-   * Whether this model should perform a "patch" on update,
-   * which will only send changed attributes in the request.
-   */
-  patch?: boolean
-
-  /**
-   * Whether this model should save even if no attributes have changed
-   * since the last time they were synced. If set to `false` and no
-   * changes have been made, the request will be considered a success.
-   */
-  saveUnchanged?: boolean
-
-  /**
-   * Allow custom options.
-   */
-  [key: string]: unknown
-}
-
-export interface GetModelAttributesOptions {
-  /**
-   * Whether the relationships should be serialized.
-   */
-  relations?: boolean
-
-  /**
-   * Whether the serialization is for a request.
-   */
-  isRequest?: boolean
-
-  /**
-   * Whether the request is a PATCH request.
-   */
-  shouldPatch?: boolean
-}
-
-export interface CloneModelOptions {
-  /**
-   * Whether it should clone deeply. This will clone relationships too.
-   */
-  deep?: boolean
-}
+import * as Serialize from './serialize'
+import { isSerializedModel, SerializedModel } from './serialize'
+import * as Contracts from './types'
+import {
+  Accessors,
+  CloneModelOptions,
+  Fields,
+  GetModelAttributesOptions,
+  ModelOptions,
+  ModelReference,
+  ModelRegistries,
+  ModelSchemas,
+  Mutators
+} from './types'
 
 abstract class Model {
   /**
@@ -669,7 +616,7 @@ abstract class Model {
     if (field.relation && previous instanceof Relations.Relation) {
       switch (field.relation) {
         // It's the "Has One" relation, so we access the model and set the attribute.
-        case RelationEnum.HAS_ONE: {
+        case Relations.RelationEnum.HAS_ONE: {
           const model = previous.data as Item
 
           if (isNull(model)) {
@@ -682,7 +629,7 @@ abstract class Model {
         }
         // It's the "Has Many" relation, so we access the collection and loop through its models,
         // then set attributes of each one of them.
-        case RelationEnum.HAS_MANY: {
+        case Relations.RelationEnum.HAS_MANY: {
           const collection = previous.data as Collection
           let _value: unknown = value
 
@@ -869,7 +816,7 @@ abstract class Model {
           // Now we switch between the different types of relations.
           switch (field.relation) {
             // It's the "Has One" relation, so we access the model and sync it.
-            case RelationEnum.HAS_ONE: {
+            case Relations.RelationEnum.HAS_ONE: {
               const model = relation.data as Item
 
               if (!isNull(model)) {
@@ -881,7 +828,7 @@ abstract class Model {
             }
             // It's the "Has Many" relation, so we access the collection and loop through its models,
             // then sync each one of them.
-            case RelationEnum.HAS_MANY: {
+            case Relations.RelationEnum.HAS_MANY: {
               const collection = relation.data as Collection
               let attribute = attributes[key]
 
@@ -1020,7 +967,7 @@ abstract class Model {
 
       switch (field.relation) {
         // It's the "Has One" relation, so we access the model and deserialize.
-        case RelationEnum.HAS_ONE: {
+        case Relations.RelationEnum.HAS_ONE: {
           let model = relation.data as Item
 
           if (isNull(model)) {
@@ -1033,7 +980,7 @@ abstract class Model {
         }
         // It's the "Has Many" relation, so we access the collection and loop through its models,
         // then deserialize each one of them.
-        case RelationEnum.HAS_MANY: {
+        case Relations.RelationEnum.HAS_MANY: {
           const collection = relation.data as Collection
           collection.deserialize(value as SerializedCollection)
 
@@ -1189,7 +1136,7 @@ abstract class Model {
     for (const key in attributes) {
       const reference = this._reference.get(key)
       const value = attributes[key]
-      const isDirty = value instanceof Relation ? isRelationDirty(value) : !isEqual(value, reference)
+      const isDirty = value instanceof Relations.Relation ? isRelationDirty(value) : !isEqual(value, reference)
 
       if (isDirty) {
         dirty[key] = attributes[key]
@@ -1232,7 +1179,7 @@ abstract class Model {
         const relation = this._relationships.get(key)
 
         switch (field.relation) {
-          case RelationEnum.HAS_ONE: {
+          case Relations.RelationEnum.HAS_ONE: {
             const model = relation.data as Item
 
             if (!isNull(model)) {
@@ -1240,7 +1187,7 @@ abstract class Model {
             }
             break
           }
-          case RelationEnum.HAS_MANY: {
+          case Relations.RelationEnum.HAS_MANY: {
             const collection = relation.data as Collection
             collection.syncReference()
             break

@@ -1,10 +1,9 @@
-import { Collection } from '../../../collection/Collection'
-import { Relation } from '../../../relations'
-import { RelationEnum } from '../../../relations/RelationEnum'
+import { Collection } from '../../../collection'
+import { Relation, RelationEnum } from '../../../relations'
 import { Element, Item } from '../../../types'
 import { capitalize } from '../../../utils'
 import { isArray, isCollection, isModel, isModelClass } from '../../../utils/is'
-import { Model } from '../../Model'
+import { Model } from '../../model'
 
 type RelationTypeResolver = {
   key: string

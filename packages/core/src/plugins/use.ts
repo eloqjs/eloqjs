@@ -1,5 +1,5 @@
-import { Collection } from '../collection/Collection'
-import { Model } from '../model/Model'
+import { Collection } from '../collection'
+import { Model } from '../model'
 import { Relation } from '../relations'
 
 export interface PluginComponents {

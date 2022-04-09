@@ -1,5 +1,5 @@
-import { Collection, SerializedCollection } from '../collection/Collection'
-import { Model } from '../model/Model'
+import { Collection, SerializedCollection } from '../collection'
+import { Model } from '../model'
 
 /**
  * Determines whether the given value is the type of `function`.

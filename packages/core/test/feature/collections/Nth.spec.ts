@@ -1,4 +1,4 @@
-import { Collection } from '../../../src/collection/Collection'
+import { Collection } from '../../../src/collection'
 import { assertCollection } from '../../Helpers'
 import Product from './dummy/models/Product'
 

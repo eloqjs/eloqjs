@@ -1,4 +1,4 @@
-import { Model } from '../model/Model'
+import { Model } from '../model'
 import { isArray, isFunction, isString } from './is'
 
 /**

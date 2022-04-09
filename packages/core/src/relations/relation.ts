@@ -1,5 +1,5 @@
-import { Collection } from '../collection/Collection'
-import { Model } from '../model/Model'
+import { Collection } from '../collection'
+import { Model } from '../model'
 import { Item } from '../types'
 
 export class Relation<

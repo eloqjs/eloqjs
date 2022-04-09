@@ -1,4 +1,4 @@
-import { RelationEnum } from '../../../relations/RelationEnum'
+import { RelationEnum } from '../../../relations'
 import { capitalize } from '../../../utils'
 import { isArray, isCollection, isModelClass, isNull, isNullish, isPlainObject } from '../../../utils/is'
 

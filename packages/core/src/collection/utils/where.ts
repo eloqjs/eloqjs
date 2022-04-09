@@ -1,5 +1,5 @@
-import { Model, ModelReference } from '../model/Model'
-import { isNumber, isString } from '../utils/is'
+import { Model, ModelReference } from '../../model'
+import { isNumber, isString } from '../../utils/is'
 
 export type Operator = '===' | '==' | '!==' | '!=' | '<>' | '>' | '<' | '>=' | '<=' | 'LIKE'
 

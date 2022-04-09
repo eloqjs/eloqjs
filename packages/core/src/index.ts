@@ -1,11 +1,11 @@
 /**
  * Model
  */
-export type { Attributes, AttributesData } from './model/attributes/Attributes'
-export { DefaultAttributes } from './model/attributes/DefaultAttributes'
 export type {
   Accessor,
   Accessors,
+  Attributes,
+  AttributesData,
   GlobalHook,
   GlobalHooks,
   HookableClosure,
@@ -13,12 +13,29 @@ export type {
   LocalHooks,
   MutationHook,
   Mutator,
-  Mutators
-} from './model/Contracts'
-export { defineFields } from './model/DefineFields'
-export { Field } from './model/field/Field'
+  Mutators,
+  SerializedModel,
+  SerializeModelOptions
+} from './model'
+export { DefaultAttributes, defineFields, Field, Model } from './model'
+
+/**
+ * Collection
+ */
+export { Collection } from './collection/collection'
+
+/**
+ * Relationships
+ */
+export * as Relations from './relations'
+
+/**
+ * Types
+ */
 export type {
+  Data,
   DefaultFactory,
+  Element,
   ExtractModelFields,
   FieldAccessorValue,
   FieldCastValue,
@@ -34,6 +51,8 @@ export type {
   InferFieldCastOrType,
   InferFieldType,
   InferNullishField,
+  Instance,
+  Item,
   ModelAttributes,
   ModelField,
   ModelFields,
@@ -42,7 +61,12 @@ export type {
   ModelProperties,
   NullableField,
   ResolveFields
-} from './model/FieldTypes'
+} from './types'
+
+/**
+ * Plugin
+ */
+export type { CloneCollectionOptions, CollectionOptions, SerializeCollectionOptions, SerializedCollection } from './collection'
 export type {
   CloneModelOptions,
   Fields,
@@ -52,41 +76,14 @@ export type {
   ModelRegistries,
   ModelRegistry,
   ModelSchemas
-} from './model/Model'
-export { Model } from './model/Model'
-export type { SerializedModel, SerializeModelOptions } from './model/Serialize'
-
-/**
- * Collection
- */
-export type {
-  CloneCollectionOptions,
-  CollectionOptions,
-  SerializeCollectionOptions,
-  SerializedCollection
-} from './collection/Collection'
-export { Collection } from './collection/Collection'
-
-/**
- * Relationships
- */
-export * as Relations from './relations'
-
-/**
- * Types
- */
-export type { Element, Instance, Item } from './types'
-
-/**
- * Plugin
- */
+} from './model'
 export type { Plugin, PluginComponents, PluginOptions, use } from './plugins/use'
 
 /**
  * ELOQJS (Default)
  */
-import { Collection } from './collection/Collection'
-import { Model } from './model/Model'
+import { Collection } from './collection/collection'
+import { Model } from './model/model'
 import { use } from './plugins/use'
 import { Relation } from './relations'
 

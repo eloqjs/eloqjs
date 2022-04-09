@@ -1,4 +1,4 @@
-// import { Collection } from '../../../src/collection/Collection'
+// import { Collection } from '../../../src/collection'
 import { Uid } from '../../../src/helpers/uid'
 // import BaseModel from '../../dummy/models/BaseModel'
 // import { assertCollection, assertModel } from '../../Helpers'

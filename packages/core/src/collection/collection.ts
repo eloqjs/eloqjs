@@ -1,7 +1,7 @@
 import { Uid as UidGenerator } from '../helpers/uid'
-import { Model, ModelOptions, ModelReference } from '../model/Model'
-import { SerializedModel } from '../model/Serialize'
-import { Element, Item, ValueOf } from '../types'
+import { Model, ModelOptions, ModelReference } from '../model'
+import { Element, Item } from '../types'
+import { ValueOf } from '../types/utilities'
 import { assert, forceArray, resolveValue } from '../utils'
 import {
   isArray,
@@ -18,37 +18,9 @@ import {
   isString,
   isUndefined
 } from '../utils/is'
-import { sortGreaterOrLessThan, sortNullish } from './Sort'
-import { compareValues, Operator } from './Where'
-
-export interface CollectionOptions {
-  model?: typeof Model
-}
-
-export interface SerializeCollectionOptions {
-  /**
-   * Whether the relationships should be serialized.
-   */
-  relations?: boolean
-}
-
-export interface SerializedCollection {
-  options: CollectionOptions
-  models: SerializedModel[]
-}
-
-export interface CloneCollectionOptions {
-  /**
-   * Whether it should clone deeply. This will clone models.
-   */
-  deep?: boolean
-
-  /**
-   * Level 1 clone models.
-   * Level 2 deep clone models.
-   */
-  deepLevel?: 1 | 2
-}
+import { CloneCollectionOptions, CollectionOptions, SerializeCollectionOptions, SerializedCollection } from './types'
+import { sortGreaterOrLessThan, sortNullish } from './utils/sort'
+import { compareValues, Operator } from './utils/where'
 
 export class Collection<M extends Model = Model> {
   protected static model: typeof Model

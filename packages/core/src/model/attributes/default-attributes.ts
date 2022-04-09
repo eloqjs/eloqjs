@@ -1,4 +1,4 @@
-import { Attributes, AttributesData } from './Attributes'
+import { Attributes, AttributesData } from './attributes'
 
 export class DefaultAttributes implements Attributes {
   protected data: AttributesData = {}
