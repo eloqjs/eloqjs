@@ -4,7 +4,6 @@ import { Collection, SerializedCollection } from '../collection/Collection'
 import * as Relations from '../relations'
 import { Relation } from '../relations'
 import { RelationEnum } from '../relations/RelationEnum'
-import { Map } from '../support/Map'
 import { Uid as UidGenerator } from '../support/Uid'
 import {
   assert,
@@ -188,7 +187,7 @@ abstract class Model {
   /**
    * The collections of the record.
    */
-  private readonly _collections: Map<Collection<this>> = new Map<Collection<this>>()
+  private readonly _collections: Record<string, Collection<this>> = {}
 
   /**
    * The current state of the model's attributes.
@@ -208,7 +207,7 @@ abstract class Model {
   /**
    * The options of the record.
    */
-  private readonly _options: Map<unknown> = new Map<unknown>()
+  private readonly _options: Record<string, unknown> = {}
 
   /**
    * Create a new model instance.
@@ -274,7 +273,7 @@ abstract class Model {
   }
 
   public get $collections(): Collection<this>[] {
-    return Object.values(this._collections.toArray())
+    return Object.values(this._collections)
   }
 
   /**
@@ -557,7 +556,7 @@ abstract class Model {
 
     assert(!isNullish(collection) && !isUndefined(collection.$uid), ['Collection is not valid.'])
 
-    this._collections.set(collection.$uid, collection)
+    this._collections[collection.$uid] = collection
   }
 
   /**
@@ -579,7 +578,7 @@ abstract class Model {
 
     assert(!isNullish(collection) && !isUndefined(collection.$uid), ['Collection is not valid.'])
 
-    this._collections.delete(collection.$uid)
+    delete this._collections[collection.$uid]
   }
 
   /**
@@ -593,7 +592,7 @@ abstract class Model {
     }
 
     for (const key in _options) {
-      this._options.set(key, _options[key])
+      this._options[key] = _options[key]
     }
   }
 
@@ -601,21 +600,21 @@ abstract class Model {
    * Get the model options.
    */
   public $getOptions(): ModelOptions {
-    return this._options.toArray() as unknown as ModelOptions
+    return this._options as ModelOptions
   }
 
   /**
    * Set a model's option.
    */
   public $setOption<K extends keyof ModelOptions>(key: K, value: ValueOf<ModelOptions, K>): void {
-    return this._options.set(key as string, value)
+    this._options[key] = value
   }
 
   /**
    * Get a model's option.
    */
   public $getOption<K extends keyof ModelOptions>(key: K, fallback?: ValueOf<ModelOptions, K>): ValueOf<ModelOptions, K> {
-    return (this._options.get(key as string) as ValueOf<ModelOptions, K>) ?? fallback
+    return (this._options[key] as ValueOf<ModelOptions, K>) ?? fallback
   }
 
   /**
