@@ -147,7 +147,7 @@ export function isEqual(a: unknown, b: unknown): boolean {
  * Gets the size of collection by returning its length for array-like values
  * or the number of own enumerable string keyed properties for objects.
  */
-export function size(collection: unknown[] | Record<string, unknown>): number {
+function size(collection: unknown[] | Record<string, unknown>): number {
   return isArray(collection) ? collection.length : Object.keys(collection).length
 }
 
