@@ -1,4 +1,4 @@
-import { Collection } from '../../../src/collection/Collection'
+import { Collection } from '../../../src/collection'
 import { assertCollection, assertInstanceOf, assertModel } from '../../Helpers'
 import User from './dummy/models/User'
 

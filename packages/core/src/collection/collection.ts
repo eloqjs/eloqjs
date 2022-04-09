@@ -1,9 +1,8 @@
-import { Model, ModelOptions, ModelReference } from '../model/Model'
-import { SerializedModel } from '../model/Serialize'
-import { Uid as UidGenerator } from '../support/Uid'
+import { Uid as UidGenerator } from '../helpers/uid'
+import { ID, Model, ModelOptions, ModelReference } from '../model'
+import { Element, Item } from '../types'
+import { assert, forceArray, resolveValue } from '../utils'
 import {
-  assert,
-  forceArray,
   isArray,
   isCollection,
   isEmpty,
@@ -16,42 +15,12 @@ import {
   isPlainObject,
   isSerializedCollection,
   isString,
-  isUndefined,
-  resolveValue
-} from '../support/Utils'
-import { Element, Item } from '../types/Data'
-import { ValueOf } from '../types/Utilities'
-import { sortGreaterOrLessThan, sortNullish } from './Sort'
-import { compareValues, Operator } from './Where'
-
-export interface CollectionOptions {
-  model?: typeof Model
-}
-
-export interface SerializeCollectionOptions {
-  /**
-   * Whether the relationships should be serialized.
-   */
-  relations?: boolean
-}
-
-export interface SerializedCollection {
-  options: CollectionOptions
-  models: SerializedModel[]
-}
-
-export interface CloneCollectionOptions {
-  /**
-   * Whether it should clone deeply. This will clone models.
-   */
-  deep?: boolean
-
-  /**
-   * Level 1 clone models.
-   * Level 2 deep clone models.
-   */
-  deepLevel?: 1 | 2
-}
+  isUndefined
+} from '../utils/is'
+import { ValueOf } from '../utils/types'
+import { CloneCollectionOptions, CollectionOptions, SerializeCollectionOptions, SerializedCollection } from './types'
+import { sortGreaterOrLessThan, sortNullish } from './utils/sort'
+import { compareValues, Operator } from './utils/where'
 
 export class Collection<M extends Model = Model> {
   protected static model: typeof Model
@@ -113,7 +82,7 @@ export class Collection<M extends Model = Model> {
 
     assert(!!modelConstructor, ['Model type is not defined.'])
 
-    return new modelConstructor(record) as T
+    return new (modelConstructor as any)(record) as T
   }
 
   public [Symbol.iterator](): Iterator<M> {
@@ -134,7 +103,9 @@ export class Collection<M extends Model = Model> {
   /**
    * Get a collection's option.
    */
-  public getOption<K extends keyof CollectionOptions>(key: K, fallback?: ValueOf<CollectionOptions, K>): ValueOf<CollectionOptions, K> {
+  public getOption<K extends keyof CollectionOptions>(key: K): ValueOf<CollectionOptions, K>
+  public getOption<K extends keyof CollectionOptions, F>(key: K, fallback: F): NonNullable<ValueOf<CollectionOptions, K>> | F
+  public getOption(key: string, fallback?: unknown): any {
     return this._options[key] ?? fallback
   }
 
@@ -526,7 +497,11 @@ export class Collection<M extends Model = Model> {
    */
   public median(key: keyof ModelReference<M> | string): number {
     if (this.count() % 2 === 0) {
-      return ((this.models[this.count() / 2 - 1][key as string] as number) + (this.models[this.count() / 2][key as string] as number)) / 2
+      return (
+        ((this.models[this.count() / 2 - 1][key as string] as number) +
+          (this.models[this.count() / 2][key as string] as number)) /
+        2
+      )
     }
 
     return this.models[Math.floor(this.count() / 2)][key as string] as number
@@ -578,7 +553,7 @@ export class Collection<M extends Model = Model> {
   /**
    * Returns an array of primary keys.
    */
-  public modelKeys(): (string | number | undefined)[] {
+  public modelKeys(): ID[] {
     return this.models.map((model) => model.$id)
   }
 
@@ -954,7 +929,7 @@ export class Collection<M extends Model = Model> {
     assert(isModel(model), ['Expected a model, plain object, or array of either.'])
 
     // Fill the model found in the collection by the given attributes.
-    model.$set(record)
+    model.$fill(record)
 
     return model
   }

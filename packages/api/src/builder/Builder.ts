@@ -29,7 +29,12 @@ export class Builder<M extends Model = Model, S extends boolean = false> {
    */
   private readonly _forceSingular: boolean
 
-  public constructor(model: typeof Model, belongsToModel?: typeof Model, belongsToModelId?: string | number, forceSingular?: boolean) {
+  public constructor(
+    model: typeof Model,
+    belongsToModel?: typeof Model,
+    belongsToModelId?: string | number,
+    forceSingular?: boolean
+  ) {
     this.model = model
 
     const resource = belongsToModel ? belongsToModel.getResource() : model.getResource()

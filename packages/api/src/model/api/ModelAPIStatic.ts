@@ -148,9 +148,15 @@ export class ModelAPIStatic<M extends typeof Model = typeof Model> {
   /**
    * @internal
    */
-  public orderBy(attribute: string | string[] | Record<string, 'asc' | 'desc'>, direction?: 'asc' | 'desc'): Builder<InstanceType<M>>
+  public orderBy(
+    attribute: string | string[] | Record<string, 'asc' | 'desc'>,
+    direction?: 'asc' | 'desc'
+  ): Builder<InstanceType<M>>
 
-  public orderBy(attribute: string | string[] | Record<string, 'asc' | 'desc'>, direction?: 'asc' | 'desc'): Builder<InstanceType<M>> {
+  public orderBy(
+    attribute: string | string[] | Record<string, 'asc' | 'desc'>,
+    direction?: 'asc' | 'desc'
+  ): Builder<InstanceType<M>> {
     return this._query().orderBy(attribute, direction)
   }
 
@@ -264,6 +270,6 @@ export class ModelAPIStatic<M extends typeof Model = typeof Model> {
   }
 
   private _instantiate(record: InstanceType<M> | Element): InstanceType<M> {
-    return isModel(record) ? record : (new this.model(record) as InstanceType<M>)
+    return isModel(record) ? record : (this.model.instantiate(record) as InstanceType<M>)
   }
 }

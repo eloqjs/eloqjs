@@ -22,7 +22,10 @@ export interface HttpClientPromise {
    * @param onFulfilled called when/if "promise" resolves
    * @param onRejected called when/if "promise" rejects
    */
-  then<U>(onFulfilled?: (value: HttpClientResponse) => U | Thenable<U>, onRejected?: (error: unknown) => U | Thenable<U>): Promise<U>
+  then<U>(
+    onFulfilled?: (value: HttpClientResponse) => U | Thenable<U>,
+    onRejected?: (error: unknown) => U | Thenable<U>
+  ): Promise<U>
 
   then<U>(onFulfilled?: (value: HttpClientResponse) => U | Thenable<U>, onRejected?: (error: unknown) => void): Promise<U>
 

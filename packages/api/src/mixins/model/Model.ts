@@ -12,7 +12,9 @@ export function Model(model: typeof BaseModel, config: Config): void {
    * Allows you to get the current HTTP client (AxiosHttpClient by default), e.g. to alter its configuration.
    */
   model.getHttpClient = function (): HttpClient {
-    assert(!!this.httpClient, ['The http client instance is not registered. Please register the http client instance to the model.'])
+    assert(!!this.httpClient, [
+      'The http client instance is not registered. Please register the http client instance to the model.'
+    ])
 
     return this.httpClient
   }

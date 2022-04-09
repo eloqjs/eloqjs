@@ -1,4 +1,4 @@
-import { Collection } from '../../../src/collection/Collection'
+import { Collection } from '../../../src/collection'
 import User from './dummy/models/User'
 
 describe('Feature – Collections – Map', () => {

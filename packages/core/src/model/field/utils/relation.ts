@@ -1,9 +1,9 @@
-import { Collection } from '../../../collection/Collection'
-import { Relation } from '../../../relations'
-import { RelationEnum } from '../../../relations/RelationEnum'
-import { capitalize, isArray, isCollection, isModel, isModelClass } from '../../../support/Utils'
-import { Element, Item } from '../../../types/Data'
-import { Model } from '../../Model'
+import { Collection } from '../../../collection'
+import { Relation, RelationEnum } from '../../../relations'
+import { Element, Item } from '../../../types'
+import { capitalize } from '../../../utils'
+import { isArray, isCollection, isModel, isModelClass } from '../../../utils/is'
+import { Model } from '../../model'
 
 type RelationTypeResolver = {
   key: string
@@ -51,7 +51,7 @@ export function mutateHasOne(record: Model | Element, related: typeof Model): It
     return record
   }
 
-  return record ? new related(record) : null
+  return record ? new (related as any)(record) : null
 }
 
 export function mutateHasMany(records: Collection | Element[], related: typeof Model): Collection {

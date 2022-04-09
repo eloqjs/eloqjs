@@ -1,8 +1,12 @@
-import { Collection } from '../collection/Collection'
-import { Model } from '../model/Model'
-import { Item } from '../types/Data'
+import { Collection } from '../collection'
+import { Model } from '../model'
+import { Item } from '../types'
 
-export class Relation<M extends Model = Model, D extends Item<M> | Collection<M> = Item<M> | Collection<M>, S extends boolean = boolean> {
+export class Relation<
+  M extends Model = Model,
+  D extends Item<M> | Collection<M> = Item<M> | Collection<M>,
+  S extends boolean = boolean
+> {
   public data: D
 
   public model: typeof Model

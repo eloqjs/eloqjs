@@ -22,12 +22,16 @@ export class RecordResponse<M extends Model = Model> extends Response {
       return null
     }
 
-    assert(isObject(data), ['Response data must be an object.', `Received ${typeof data}.`, 'See `dataKey` and `dataTransformer` options.'])
+    assert(isObject(data), [
+      'Response data must be an object.',
+      `Received ${typeof data}.`,
+      'See `dataKey` and `dataTransformer` options.'
+    ])
 
     return this._mutate(data)
   }
 
   private _mutate(record: Element): M {
-    return new this.model(record) as M
+    return this.model.instantiate(record) as M
   }
 }

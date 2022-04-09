@@ -1,6 +1,7 @@
-import { RelationEnum } from '../../relations/RelationEnum'
-import { isBoolean, isNull, isNullish, isPlainObject, isString, isUndefined } from '../../support/Utils'
-import { Model } from '../Model'
+import { RelationEnum } from '../../relations'
+import { isBoolean, isNull, isNullish, isPlainObject, isString, isUndefined } from '../../utils/is'
+import { Model } from '../model'
+import { resolveAccessor } from './utils/accessor'
 import { resolveCast } from './utils/cast'
 import { getDefaultValue, resolveDefault } from './utils/default'
 import { resolveMutator } from './utils/mutator'
@@ -24,6 +25,7 @@ export class Field {
   public default?: any
   public validator: (value: any) => boolean = () => true
   public cast: any
+  public accessor: (value: any) => any = (value: any) => value
   public mutator: (value: any) => any = (value: any) => value
   public readOnly: boolean = false
 
@@ -70,6 +72,11 @@ export class Field {
       key: this.key,
       validator: field.validator,
       fallback: this.validator
+    })
+    this.accessor = resolveAccessor({
+      key: this.key,
+      accessor: field.accessor || this.model.accessors()[this.key],
+      fallback: this.mutator
     })
     this.mutator = resolveMutator({
       key: this.key,
@@ -138,5 +145,13 @@ export class Field {
     }
 
     return valid && value
+  }
+
+  public retrieve(value: unknown): unknown {
+    if (this.accessor) {
+      value = this.accessor(value)
+    }
+
+    return value
   }
 }
