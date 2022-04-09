@@ -1,14 +1,13 @@
 import defu from 'defu'
 
 import { Collection, SerializedCollection } from '../collection/Collection'
+import { Uid as UidGenerator } from '../helpers/uid'
 import * as Relations from '../relations'
 import { Relation } from '../relations'
 import { RelationEnum } from '../relations/RelationEnum'
-import { Uid as UidGenerator } from '../support/Uid'
+import { Element, Item, ValueOf } from '../types'
+import { assert, clone, forceArray } from '../utils'
 import {
-  assert,
-  clone,
-  forceArray,
   isArray,
   isEmpty,
   isEmptyString,
@@ -22,9 +21,7 @@ import {
   isPlainObject,
   isString,
   isUndefined
-} from '../support/Utils'
-import { Element, Item } from '../types/Data'
-import { ValueOf } from '../types/Utilities'
+} from '../utils/is'
 import { Attributes } from './attributes/Attributes'
 import { DefaultAttributes } from './attributes/DefaultAttributes'
 import { attributeReviver } from './attributes/utils/attribute-reviver'

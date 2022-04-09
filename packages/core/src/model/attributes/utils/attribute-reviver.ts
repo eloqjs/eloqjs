@@ -1,4 +1,4 @@
-import { isString } from '../../../support/Utils'
+import { isString } from '../../../utils/is'
 
 export function attributeReviver(_key: string, value: unknown): unknown {
   const dateRegex = /^\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\d.\d\d\dZ$/

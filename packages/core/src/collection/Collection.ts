@@ -1,9 +1,9 @@
+import { Uid as UidGenerator } from '../helpers/uid'
 import { Model, ModelOptions, ModelReference } from '../model/Model'
 import { SerializedModel } from '../model/Serialize'
-import { Uid as UidGenerator } from '../support/Uid'
+import { Element, Item, ValueOf } from '../types'
+import { assert, forceArray, resolveValue } from '../utils'
 import {
-  assert,
-  forceArray,
   isArray,
   isCollection,
   isEmpty,
@@ -16,11 +16,8 @@ import {
   isPlainObject,
   isSerializedCollection,
   isString,
-  isUndefined,
-  resolveValue
-} from '../support/Utils'
-import { Element, Item } from '../types/Data'
-import { ValueOf } from '../types/Utilities'
+  isUndefined
+} from '../utils/is'
 import { sortGreaterOrLessThan, sortNullish } from './Sort'
 import { compareValues, Operator } from './Where'
 

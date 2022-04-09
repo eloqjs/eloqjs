@@ -1,5 +1,5 @@
 import { Relation } from '../../../relations'
-import { isCollection, isModel } from '../../../support/Utils'
+import { isCollection, isModel } from '../../../utils/is'
 
 export function isRelationDirty(relation: Relation) {
   if (isCollection(relation.data)) {

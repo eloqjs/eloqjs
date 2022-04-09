@@ -1,6 +1,6 @@
 import { Collection } from '../collection/Collection'
 import { Model } from '../model/Model'
-import { Item } from '../types/Data'
+import { Item } from '../types'
 
 export class Relation<
   M extends Model = Model,

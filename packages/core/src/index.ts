@@ -75,7 +75,7 @@ export * as Relations from './relations'
 /**
  * Types
  */
-export type { Element, Instance, Item } from './types/Data'
+export type { Element, Instance, Item } from './types'
 
 /**
  * Plugin

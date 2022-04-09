@@ -1,4 +1,4 @@
-import { MergeObject } from '../types/Utilities'
+import { MergeObject } from '../types'
 import { ModelFields, ResolveFields } from './FieldTypes'
 
 export function defineFields<T extends ModelFields>(fields: T): T

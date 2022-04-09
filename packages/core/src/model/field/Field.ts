@@ -1,5 +1,5 @@
 import { RelationEnum } from '../../relations/RelationEnum'
-import { isBoolean, isNull, isNullish, isPlainObject, isString, isUndefined } from '../../support/Utils'
+import { isBoolean, isNull, isNullish, isPlainObject, isString, isUndefined } from '../../utils/is'
 import { Model } from '../Model'
 import { resolveAccessor } from './utils/accessor'
 import { resolveCast } from './utils/cast'

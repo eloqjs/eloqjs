@@ -1,7 +1,7 @@
 /**
  * Determine if any of the given attributes were changed.
  */
-import { isEmpty } from '../../../support/Utils'
+import { isEmpty } from '../../../utils/is'
 
 export function hasChanges(data: Record<string, any>, changes: Record<string, any>, attributes: string[] = []): boolean {
   attributes = attributes.filter((attribute) => Object.keys(data).includes(attribute))

@@ -1,6 +1,6 @@
 import { Collection, SerializedCollection } from '../collection/Collection'
-import { isArray, isCollection, isNull, isPlainObject } from '../support/Utils'
-import { Element, Item } from '../types/Data'
+import { Element, Item } from '../types'
+import { isArray, isCollection, isNull, isPlainObject } from '../utils/is'
 import { Model, ModelOptions } from './Model'
 
 export interface SerializeModelOptions {
