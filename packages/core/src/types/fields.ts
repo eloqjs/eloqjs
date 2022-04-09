@@ -1,7 +1,7 @@
 import { Model } from '../model'
 import * as Relations from '../relations'
+import { IfAny, MergeObject } from '../utils/types'
 import { Data } from './data'
-import { IfAny, MergeObject } from './utilities'
 
 export type DefaultFactory<T> = () => T | null | undefined
 

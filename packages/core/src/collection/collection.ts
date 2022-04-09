@@ -1,7 +1,6 @@
 import { Uid as UidGenerator } from '../helpers/uid'
 import { Model, ModelOptions, ModelReference } from '../model'
 import { Element, Item } from '../types'
-import { ValueOf } from '../types/utilities'
 import { assert, forceArray, resolveValue } from '../utils'
 import {
   isArray,
@@ -18,6 +17,7 @@ import {
   isString,
   isUndefined
 } from '../utils/is'
+import { ValueOf } from '../utils/types'
 import { CloneCollectionOptions, CollectionOptions, SerializeCollectionOptions, SerializedCollection } from './types'
 import { sortGreaterOrLessThan, sortNullish } from './utils/sort'
 import { compareValues, Operator } from './utils/where'

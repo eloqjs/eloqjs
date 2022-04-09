@@ -4,7 +4,6 @@ import { Collection, SerializedCollection } from '../collection'
 import { Uid as UidGenerator } from '../helpers/uid'
 import * as Relations from '../relations'
 import { Element, Item, ModelAttributes, ModelInput, ModelKeys, ModelProperties } from '../types'
-import { ValueOf } from '../types/utilities'
 import { assert, clone, forceArray } from '../utils'
 import {
   isArray,
@@ -21,6 +20,7 @@ import {
   isString,
   isUndefined
 } from '../utils/is'
+import { ValueOf } from '../utils/types'
 import { Attributes } from './attributes/attributes'
 import { DefaultAttributes } from './attributes/default-attributes'
 import { attributeReviver } from './attributes/utils/attribute-reviver'

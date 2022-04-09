@@ -1,5 +1,5 @@
 import { ModelFields, ResolveFields } from '../types'
-import { MergeObject } from '../types/utilities'
+import { MergeObject } from '../utils/types'
 
 /**
  * Defines the fields on a model.
