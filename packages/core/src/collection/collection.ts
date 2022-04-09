@@ -1,5 +1,5 @@
 import { Uid as UidGenerator } from '../helpers/uid'
-import { Model, ModelOptions, ModelReference } from '../model'
+import { ID, Model, ModelOptions, ModelReference } from '../model'
 import { Element, Item } from '../types'
 import { assert, forceArray, resolveValue } from '../utils'
 import {
@@ -553,7 +553,7 @@ export class Collection<M extends Model = Model> {
   /**
    * Returns an array of primary keys.
    */
-  public modelKeys(): (string | number | undefined)[] {
+  public modelKeys(): ID[] {
     return this.models.map((model) => model.$id)
   }
 

@@ -90,3 +90,5 @@ export interface CloneModelOptions {
    */
   deep?: boolean
 }
+
+export type ID = string | number | undefined

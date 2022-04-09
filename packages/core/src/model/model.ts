@@ -36,6 +36,7 @@ import {
   CloneModelOptions,
   Fields,
   GetModelAttributesOptions,
+  ID,
   ModelOptions,
   ModelReference,
   ModelRegistries,
@@ -184,7 +185,7 @@ abstract class Model {
   /**
    * Get the model's ID.
    */
-  public get $id(): string | number | undefined {
+  public get $id(): ID {
     return this.$constructor().getIdFromRecord(this)
   }
 
@@ -298,7 +299,7 @@ abstract class Model {
    * not present, or it is invalid primary key value, which is other than
    * `string` or `number`, it's going to return `null`.
    */
-  public static getIdFromRecord<M extends typeof Model>(this: M, record: InstanceType<M> | Element): string | number | undefined {
+  public static getIdFromRecord<M extends typeof Model>(this: M, record: InstanceType<M> | Element): ID {
     // Get the primary key value from attributes.
     const value = isModel(record) ? record._attributes.get(this.primaryKey) : record[this.primaryKey]
 
@@ -308,7 +309,7 @@ abstract class Model {
   /**
    * Get correct index id, which is `string` | `number`, from the given value.
    */
-  public static getIdFromValue(value: unknown): string | number | undefined {
+  public static getIdFromValue(value: unknown): ID {
     if (this.isValidId(value)) {
       return value
     }
@@ -766,7 +767,7 @@ abstract class Model {
   /**
    * Update this model by the given attributes.
    */
-  public $update(attributes?: string | number | undefined, options?: ModelOptions): void
+  public $update(attributes?: ID, options?: ModelOptions): void
   public $update(attributes: ModelInput<this['$modelType']> | this, options?: ModelOptions): void
   public $update(attributes?: this | ModelInput<this['$modelType']> | string | number | null, options?: ModelOptions): void
   public $update(
