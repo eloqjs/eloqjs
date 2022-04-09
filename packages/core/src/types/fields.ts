@@ -109,6 +109,8 @@ export type ModelInput<T extends typeof Model, O = ExtractModelFields<T>> = {
     ? InstanceType<U> | ModelInput<U> | null // HasOne relation
     : [O[K]] extends [HasManyRelation<infer U>]
     ? (InstanceType<U> | ModelInput<U>)[] // HasMany relation
+    : [O[K]] extends [FieldCastValue<any>]
+    ? unknown // If cast is defined, should accept any input value
     : InferFieldType<O[K]> | InferNullishField<O[K]>
 }
 
