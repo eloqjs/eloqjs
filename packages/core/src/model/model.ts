@@ -783,9 +783,8 @@ abstract class Model {
     // The attributes that we passed in the request should now be considered
     // the source of truth, so we should update the reference attributes here.
     if (!attributes || (isObject(attributes) && isEmpty(attributes))) {
-      // We need to sync changes before references
-      this.$syncChanges()
-      this.$syncReference()
+      // Sync changes and reference
+      this.$sync()
 
       // A plain object implies that we want to update the model data.
       // It's not a requirement to respond with a complete dataset,
@@ -793,9 +792,8 @@ abstract class Model {
     } else if (isPlainObject(attributes)) {
       this.$fill(attributes, options)
 
-      // We need to sync changes before references
-      this.$syncChanges()
-      this.$syncReference()
+      // Sync changes and reference
+      this.$sync()
 
       // We also need to sync all relationships that have been modified.
       // To do so, we loop through the attributes.
@@ -1149,6 +1147,25 @@ abstract class Model {
 
   public $getChanges(): Partial<ModelProperties<this['$modelType']>> {
     return this._changes.getAll() as Partial<ModelProperties<this['$modelType']>>
+  }
+
+  /**
+   * Sync the changed attributes and sync the reference attributes with the current.
+   * This is usually only called on save.
+   *
+   * You can also pass one or an array of attributes to sync.
+   */
+  public $sync(attributes?: ModelKeys<this['$modelType']> | ModelKeys<this['$modelType']>[]): this
+  public $sync(attributes?: string | string[]): this
+  public $sync(attributes?: string | string[]): this {
+    // Sync the changed attributes.
+    // We need to sync changes before references as changes use dirty attributes.
+    this.$syncChanges(attributes)
+
+    // Then we sync the reference attributes with the current.
+    this.$syncReference(attributes)
+
+    return this
   }
 
   /**
