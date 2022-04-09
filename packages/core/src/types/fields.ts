@@ -47,6 +47,8 @@ export type FieldAccessorValue<T> = { accessor: (...args: any[]) => T }
 export type HasOneRelation<T extends typeof Model> = { type: T; relation: 'HasOne' }
 export type HasManyRelation<T extends typeof Model> = { type: T; relation: 'HasMany' }
 export type NullableField = { nullable: true }
+// used when we could not infer the type of nullable
+export type NullishField = { nullable: boolean }
 
 export type ExtractModelFields<T extends typeof Model> = ReturnType<T['fields']>
 export type ExtractModelAccessors<T extends typeof Model> = ReturnType<T['accessors']>
@@ -95,6 +97,8 @@ export type InferFieldAccessorOrCastOrType<T> = [T] extends [FieldAccessorValue<
 
 export type InferNullishField<T> = T extends NullableField
   ? null // Nullable field
+  : T extends NullishField
+  ? null | undefined // we could not infer the type of nullable
   : T extends
       | FieldDefaultValue<any>
       // don't mark Boolean fields as undefined
