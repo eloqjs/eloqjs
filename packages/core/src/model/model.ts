@@ -1216,12 +1216,23 @@ abstract class Model {
   /**
    * Sync the changed attributes.
    */
-  public $syncChanges(): this {
+  public $syncChanges(attributes?: ModelKeys<this['$modelType']> | ModelKeys<this['$modelType']>[]): this
+  public $syncChanges(attributes?: string | string[]): this
+  public $syncChanges(attributes?: string | string[]): this {
     // A copy of the state before the changes were synced.
     const before = this._changes.clone().getAll()
 
     // Sync changes
-    this._changes.replace(this.$getDirty())
+    if (isUndefined(attributes)) {
+      this._changes.replace(this.$getDirty())
+    } else {
+      const dirty = this.$getDirty()
+      attributes = forceArray(attributes).filter((attribute) => Object.keys(this._attributes.getAll()).includes(attribute))
+
+      for (const attribute of attributes) {
+        this._changes.set(attribute, dirty[attribute])
+      }
+    }
 
     // A copy of the state after the changes were synced.
     const after = this._changes.clone().getAll()
