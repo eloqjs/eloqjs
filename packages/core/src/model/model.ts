@@ -769,9 +769,9 @@ abstract class Model {
    */
   public $update(attributes?: ID, options?: ModelOptions): void
   public $update(attributes: ModelInput<this['$modelType']> | this, options?: ModelOptions): void
-  public $update(attributes?: this | ModelInput<this['$modelType']> | string | number | null, options?: ModelOptions): void
+  public $update(attributes?: this | ModelInput<this['$modelType']> | ID | null, options?: ModelOptions): void
   public $update(
-    attributes: this | ModelInput<this['$modelType']> | string | number | null | undefined = undefined,
+    attributes: this | ModelInput<this['$modelType']> | ID | null | undefined = undefined,
     options: ModelOptions = {}
   ): void {
     // If the given attributes is a model, then get its attributes.
