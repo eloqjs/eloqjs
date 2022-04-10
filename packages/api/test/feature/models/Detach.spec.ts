@@ -9,7 +9,7 @@ describe('Feature – Models – Detach', () => {
       return [200]
     })
 
-    await new User(Data.User).$detach(new Post(Data.Post))
+    await new User(Data.User).$api().detach(new Post(Data.Post))
   })
 
   it('should create a new record via relation method', async () => {
@@ -30,7 +30,7 @@ describe('Feature – Models – Detach', () => {
 
   it('should throw an error when relationship do not have an ID', () => {
     const error = () => {
-      new User(Data.User).$detach(
+      new User(Data.User).$api().detach(
         new Post({
           title: 'My awesome post!'
         })

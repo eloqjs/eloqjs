@@ -9,7 +9,9 @@ describe('Feature – Models – First', () => {
       return [200, Data.Users]
     })
 
-    const user = await User.first().then((response) => response.data!)
+    const user = await User.api()
+      .first()
+      .then((response) => response.data!)
 
     expect(user).toBeInstanceOf(User)
     assertModel(user, Data.User)
@@ -20,7 +22,9 @@ describe('Feature – Models – First', () => {
       return [200]
     })
 
-    const user = await User.first().then((response) => response!.data)
+    const user = await User.api()
+      .first()
+      .then((response) => response!.data)
 
     expect(user).toBeNull()
   })

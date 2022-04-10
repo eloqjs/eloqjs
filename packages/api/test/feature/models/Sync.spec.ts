@@ -24,7 +24,7 @@ describe('Feature – Models – Sync', () => {
 
     post.title = 'Updated Title'
 
-    await new User(Data.User).$sync(post)
+    await new User(Data.User).$api().sync(post)
 
     expect(post).toBeInstanceOf(Post)
     assertModel(post, expected)
@@ -46,7 +46,7 @@ describe('Feature – Models – Sync', () => {
 
     post.title = 'Updated Title'
 
-    await new User(Data.User).$sync(post)
+    await new User(Data.User).$api().sync(post)
 
     expect(post).toBeInstanceOf(Post)
     assertModel(post, expected)

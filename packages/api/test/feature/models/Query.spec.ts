@@ -9,7 +9,9 @@ describe('Feature – Models – Query', () => {
       return [200, Data.Users]
     })
 
-    const users = await User.all().then((response) => response.data)
+    const users = await User.api()
+      .all()
+      .then((response) => response.data)
 
     assertInstanceOf(users, User)
     assertCollection(users, Data.Users)
@@ -21,7 +23,8 @@ describe('Feature – Models – Query', () => {
     })
 
     const user = await new User()
-      .$query()
+      .$api()
+      .query()
       .find(1)
       .then((response) => response.data!)
 

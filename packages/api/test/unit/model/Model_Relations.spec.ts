@@ -54,9 +54,9 @@ describe('Unit - Model – Relations', () => {
       title: 'My awesome post!'
     })
 
-    expect(() => user.$attach(post)).toThrow(error)
-    expect(() => user.$detach(post)).toThrow(error)
-    expect(() => user.$sync(post)).toThrow(error)
-    expect(() => post.$for(user)).toThrow(error)
+    expect(() => user.$api().attach(post)).toThrow(error)
+    expect(() => user.$api().detach(post)).toThrow(error)
+    expect(() => user.$api().sync(post)).toThrow(error)
+    expect(() => post.$api().for(user)).toThrow(error)
   })
 })

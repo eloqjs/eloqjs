@@ -2,7 +2,7 @@ import { Model as BaseModel } from '@eloqjs/core'
 
 import { Config } from '../../contracts/Config'
 import { HttpClient } from '../../httpclient/HttpClient'
-import * as API from '../../model/api'
+import * as API from '../../model'
 import { assert } from '../../support/Utils'
 
 export function Model(model: typeof BaseModel, config: Config): void {

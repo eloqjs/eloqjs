@@ -22,7 +22,8 @@ describe('Feature – Models – For', () => {
     const post = await new Post({
       title: 'My awesome post!'
     })
-      .$for(user)
+      .$api()
+      .for(user)
       .then((response) => response.data)
 
     expect(post).toBeInstanceOf(Post)
@@ -34,7 +35,9 @@ describe('Feature – Models – For', () => {
       const user = new User({ name: 'John Doe' })
       new Post({
         title: 'My awesome post!'
-      }).$for(user)
+      })
+        .$api()
+        .for(user)
     }
 
     expect(error).toThrow('[ELOQJS] Cannot attach a related model to a parent that has no ID.')
