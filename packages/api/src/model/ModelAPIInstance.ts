@@ -1,12 +1,12 @@
 import { Item, Model } from '@eloqjs/core'
 import defu from 'defu'
 
-import { Builder } from '../../builder/Builder'
-import { HttpClientOptions } from '../../httpclient/HttpClientOptions'
-import { Operation } from '../../operation/Operation'
-import { DeletePromise } from '../../response/DeletePromise'
-import { SavePromise } from '../../response/SavePromise'
-import { assert, isEmpty, isUndefined } from '../../support/Utils'
+import { Builder } from '../builder/Builder'
+import { HttpClientOptions } from '../httpclient/HttpClientOptions'
+import { Operation } from '../operation/Operation'
+import { DeletePromise } from '../response/DeletePromise'
+import { SavePromise } from '../response/SavePromise'
+import { assert, isEmpty, isUndefined } from '../support/Utils'
 import { ModelAPIStatic } from './ModelAPIStatic'
 
 export class ModelAPIInstance<M extends Model = Model> {

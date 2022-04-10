@@ -9,7 +9,7 @@ describe('Feature – Models – Delete', () => {
         return [200]
       })
 
-      await User.delete(1)
+      await User.api().delete(1)
     })
   })
 
@@ -19,12 +19,12 @@ describe('Feature – Models – Delete', () => {
         return [200]
       })
 
-      await new User(Data.User).$delete()
+      await new User(Data.User).$api().delete()
     })
 
     it('should throw an error when the record do not have an ID', () => {
       const error = () => {
-        new User({ name: 'John Doe' }).$delete()
+        new User({ name: 'John Doe' }).$api().delete()
       }
 
       expect(error).toThrow('[ELOQJS] Cannot delete a model with no ID.')

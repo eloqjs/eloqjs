@@ -1,7 +1,7 @@
 import { Collection, Element, Item } from '@eloqjs/core'
 
 import { HttpClient, HttpClientResponse } from '../httpclient'
-import { ModelAPIInstance, ModelAPIStatic } from '../model/api'
+import { ModelAPIInstance, ModelAPIStatic } from '../model'
 import { RelationAPI } from '../relations/api'
 
 declare module '@eloqjs/core' {

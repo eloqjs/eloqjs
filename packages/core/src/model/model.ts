@@ -414,7 +414,7 @@ abstract class Model {
     const fields = this.fields()
     const _fields = {}
 
-    for (const key in this.fields()) {
+    for (const key in fields) {
       _fields[key] = new Field(key, fields[key], this)
     }
 
@@ -769,9 +769,9 @@ abstract class Model {
    */
   public $update(attributes?: ID, options?: ModelOptions): void
   public $update(attributes: ModelInput<this['$modelType']> | this, options?: ModelOptions): void
-  public $update(attributes?: this | ModelInput<this['$modelType']> | string | number | null, options?: ModelOptions): void
+  public $update(attributes?: this | ModelInput<this['$modelType']> | ID | null, options?: ModelOptions): void
   public $update(
-    attributes: this | ModelInput<this['$modelType']> | string | number | null | undefined = undefined,
+    attributes: this | ModelInput<this['$modelType']> | ID | null | undefined = undefined,
     options: ModelOptions = {}
   ): void {
     // If the given attributes is a model, then get its attributes.
@@ -783,9 +783,8 @@ abstract class Model {
     // The attributes that we passed in the request should now be considered
     // the source of truth, so we should update the reference attributes here.
     if (!attributes || (isObject(attributes) && isEmpty(attributes))) {
-      // We need to sync changes before references
-      this.$syncChanges()
-      this.$syncReference()
+      // Sync changes and reference
+      this.$sync()
 
       // A plain object implies that we want to update the model data.
       // It's not a requirement to respond with a complete dataset,
@@ -793,9 +792,8 @@ abstract class Model {
     } else if (isPlainObject(attributes)) {
       this.$fill(attributes, options)
 
-      // We need to sync changes before references
-      this.$syncChanges()
-      this.$syncReference()
+      // Sync changes and reference
+      this.$sync()
 
       // We also need to sync all relationships that have been modified.
       // To do so, we loop through the attributes.
@@ -1152,6 +1150,25 @@ abstract class Model {
   }
 
   /**
+   * Sync the changed attributes and sync the reference attributes with the current.
+   * This is usually only called on save.
+   *
+   * You can also pass one or an array of attributes to sync.
+   */
+  public $sync(attributes?: ModelKeys<this['$modelType']> | ModelKeys<this['$modelType']>[]): this
+  public $sync(attributes?: string | string[]): this
+  public $sync(attributes?: string | string[]): this {
+    // Sync the changed attributes.
+    // We need to sync changes before references as changes use dirty attributes.
+    this.$syncChanges(attributes)
+
+    // Then we sync the reference attributes with the current.
+    this.$syncReference(attributes)
+
+    return this
+  }
+
+  /**
    * Sync the reference attributes with the current.
    */
   public $syncReference(attributes?: ModelKeys<this['$modelType']> | ModelKeys<this['$modelType']>[]): this
@@ -1216,12 +1233,23 @@ abstract class Model {
   /**
    * Sync the changed attributes.
    */
-  public $syncChanges(): this {
+  public $syncChanges(attributes?: ModelKeys<this['$modelType']> | ModelKeys<this['$modelType']>[]): this
+  public $syncChanges(attributes?: string | string[]): this
+  public $syncChanges(attributes?: string | string[]): this {
     // A copy of the state before the changes were synced.
     const before = this._changes.clone().getAll()
 
     // Sync changes
-    this._changes.replace(this.$getDirty())
+    if (isUndefined(attributes)) {
+      this._changes.replace(this.$getDirty())
+    } else {
+      const dirty = this.$getDirty()
+      attributes = forceArray(attributes).filter((attribute) => Object.keys(this._attributes.getAll()).includes(attribute))
+
+      for (const attribute of attributes) {
+        this._changes.set(attribute, dirty[attribute])
+      }
+    }
 
     // A copy of the state after the changes were synced.
     const after = this._changes.clone().getAll()

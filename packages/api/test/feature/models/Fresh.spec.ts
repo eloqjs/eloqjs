@@ -22,7 +22,7 @@ describe('Feature – Models – Fresh', () => {
       return [200, Data.User]
     })
 
-    const user = await new User({ id: 1 }).$fresh()
+    const user = await new User({ id: 1 }).$api().fresh()
 
     expect(user!).toBeInstanceOf(User)
     assertModel(user!, Data.User)
@@ -34,7 +34,7 @@ describe('Feature – Models – Fresh', () => {
     })
 
     const user = new User(Data.User)
-    const fresh = await user.$fresh()
+    const fresh = await user.$api().fresh()
 
     expect(fresh).toEqual(user)
     expect(fresh).not.toBe(user)
@@ -48,8 +48,8 @@ describe('Feature – Models – Fresh', () => {
       return [404]
     })
 
-    const user1 = await new User().$fresh()
-    const user2 = await new User({ id: 1 }).$fresh()
+    const user1 = await new User().$api().fresh()
+    const user2 = await new User({ id: 1 }).$api().fresh()
 
     expect(user1).toBeNull()
     expect(user2).toBeNull()

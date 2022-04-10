@@ -9,7 +9,9 @@ describe('Feature – Models – All', () => {
       return [200, Data.Users]
     })
 
-    const users = await User.all().then((response) => response.data)
+    const users = await User.api()
+      .all()
+      .then((response) => response.data)
 
     assertInstanceOf(users, User)
     assertCollection(users, Data.Users)

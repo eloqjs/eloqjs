@@ -20,7 +20,8 @@ describe('Feature – Models – Attach', () => {
     })
 
     const post = await new User(Data.User)
-      .$attach(
+      .$api()
+      .attach(
         new Post({
           title: 'My awesome post!'
         })

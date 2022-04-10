@@ -1,14 +1,9 @@
 import './types/eloqjs'
 
 /**
- * Model
- */
-export { Model } from './model/Model'
-
-/**
  * API
  */
-export { ModelAPIInstance, ModelAPIStatic } from './model/api'
+export { ModelAPIInstance, ModelAPIStatic } from './model'
 
 /**
  * HTTP Client

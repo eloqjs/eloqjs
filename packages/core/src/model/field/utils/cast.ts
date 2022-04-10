@@ -11,7 +11,7 @@ export function resolveCast({ key, type, cast }: CastResolver): any {
     return cast
   }
 
-  if (isClass(cast)) {
+  if (isClass(cast) || cast === Date) {
     return (value: any) => new cast(value)
   }
 

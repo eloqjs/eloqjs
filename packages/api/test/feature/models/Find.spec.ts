@@ -9,7 +9,9 @@ describe('Feature – Models – Find', () => {
       return [200, Data.User]
     })
 
-    const user = await User.find(1).then((response) => response.data!)
+    const user = await User.api()
+      .find(1)
+      .then((response) => response.data!)
 
     expect(user).toBeInstanceOf(User)
     assertModel(user, Data.User)
@@ -20,7 +22,9 @@ describe('Feature – Models – Find', () => {
       return [200]
     })
 
-    const user = await User.find(1).then((response) => response!.data)
+    const user = await User.api()
+      .find(1)
+      .then((response) => response!.data)
 
     expect(user).toBeNull()
   })

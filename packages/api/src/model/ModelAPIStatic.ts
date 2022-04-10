@@ -1,16 +1,16 @@
 import { Collection, Element, Model } from '@eloqjs/core'
 import defu from 'defu'
 
-import { Builder } from '../../builder/Builder'
-import { HttpClientOptions } from '../../httpclient/HttpClientOptions'
-import { Operation } from '../../operation/Operation'
-import { FilterValue } from '../../query/specs/FilterSpec'
-import { ParamValue } from '../../query/specs/ParamSpec'
-import { CollectionPromise } from '../../response/CollectionPromise'
-import { DeletePromise } from '../../response/DeletePromise'
-import { RecordPromise } from '../../response/RecordPromise'
-import { SavePromise } from '../../response/SavePromise'
-import { isModel, isNumber, isString } from '../../support/Utils'
+import { Builder } from '../builder/Builder'
+import { HttpClientOptions } from '../httpclient/HttpClientOptions'
+import { Operation } from '../operation/Operation'
+import { FilterValue } from '../query/specs/FilterSpec'
+import { ParamValue } from '../query/specs/ParamSpec'
+import { CollectionPromise } from '../response/CollectionPromise'
+import { DeletePromise } from '../response/DeletePromise'
+import { RecordPromise } from '../response/RecordPromise'
+import { SavePromise } from '../response/SavePromise'
+import { isModel, isNumber, isString } from '../support/Utils'
 
 export class ModelAPIStatic<M extends typeof Model = typeof Model> {
   /**
