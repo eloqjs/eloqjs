@@ -3,23 +3,22 @@ import './types/eloqjs'
 /**
  * API
  */
-export { ModelAPIInstance, ModelAPIStatic } from './model'
+export * from './model'
 
 /**
  * HTTP Client
  */
-export type { HttpClient, HttpClientPromise, HttpClientResponse, Thenable } from './httpclient'
-export { AxiosHttpClient, AxiosHttpClientPromise, AxiosHttpClientResponse } from './httpclient'
+export * from './httpclient'
 
 /**
  * Contracts
  */
-export type { Config } from './contracts/Config'
+export * from './contracts/Config'
 
 /**
  * Plugin
  */
-export type { Plugin, PluginComponents, PluginOptions, use } from './plugins/use'
+export * from './plugins/use'
 
 /**
  * ELOQJS API (Default)
