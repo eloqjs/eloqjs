@@ -1,4 +1,4 @@
-import { Collection, Relations } from '../../../src'
+import { Collection, HasMany, HasOne } from '../../../src'
 import BaseModel from '../../dummy/models/BaseModel'
 import { assertCollection } from '../../Helpers'
 import User from './dummy/models/User'
@@ -99,8 +99,8 @@ describe('Feature – Collections – Clone', () => {
 
       id!: number
       name!: string
-      phone!: Relations.HasOne<Phone>
-      posts!: Relations.HasMany<Post>
+      phone!: HasOne<Phone>
+      posts!: HasMany<Post>
 
       static fields() {
         return {

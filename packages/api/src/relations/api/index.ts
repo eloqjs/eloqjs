@@ -1,1 +1,0 @@
-export { RelationAPI } from './RelationAPI'

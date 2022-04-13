@@ -1,4 +1,4 @@
-import { Collection, Model, PluginComponents, Relations } from '@eloqjs/core'
+import { Collection, Model, PluginComponents, Relation } from '@eloqjs/core'
 
 import { Config } from './contracts/Config'
 import { Model as ModelMixin } from './mixins/model/Model'
@@ -13,7 +13,7 @@ export class ELOQJSAPI {
   /**
    * The relation class.
    */
-  public relation: typeof Relations.Relation
+  public relation: typeof Relation
 
   /**
    * The collection class.

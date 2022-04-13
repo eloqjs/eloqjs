@@ -1,4 +1,4 @@
-import { Collection, Relations } from '../../../src'
+import { Collection, HasMany } from '../../../src'
 import BaseModel from '../../dummy/models/BaseModel'
 import { assertInstanceOf, assertModel } from '../../Helpers'
 
@@ -8,7 +8,7 @@ describe('Features – Relations – Has Many', () => {
 
     id!: number
     name!: string
-    posts!: Relations.HasMany<Post>
+    posts!: HasMany<Post>
 
     static fields() {
       return {

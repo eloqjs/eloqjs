@@ -1,4 +1,4 @@
-import { Relations } from '../../../src'
+import { HasOne } from '../../../src'
 import BaseModel from '../../dummy/models/BaseModel'
 import { assertModel } from '../../Helpers'
 
@@ -8,7 +8,7 @@ describe('Features – Relations – Has One', () => {
 
     id!: number
     name!: string
-    phone!: Relations.HasOne<Phone>
+    phone!: HasOne<Phone>
 
     static fields() {
       return {

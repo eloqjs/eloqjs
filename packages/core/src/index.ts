@@ -11,7 +11,7 @@ export * from './collection'
 /**
  * Relationships
  */
-export * as Relations from './relations'
+export * from './relations'
 
 /**
  * Types

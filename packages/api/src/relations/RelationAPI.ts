@@ -1,14 +1,14 @@
 import { Collection, Element, Item, Model } from '@eloqjs/core'
 
-import { Builder } from '../../builder/Builder'
-import { FilterValue } from '../../query/specs/FilterSpec'
-import { ParamValue } from '../../query/specs/ParamSpec'
-import { CollectionPromise } from '../../response/CollectionPromise'
-import { DeletePromise } from '../../response/DeletePromise'
-import { RecordPromise } from '../../response/RecordPromise'
-import { ResponsePromise } from '../../response/ResponsePromise'
-import { SavePromise } from '../../response/SavePromise'
-import { isModel } from '../../support/Utils'
+import { Builder } from '../builder/Builder'
+import { FilterValue } from '../query/specs/FilterSpec'
+import { ParamValue } from '../query/specs/ParamSpec'
+import { CollectionPromise } from '../response/CollectionPromise'
+import { DeletePromise } from '../response/DeletePromise'
+import { RecordPromise } from '../response/RecordPromise'
+import { ResponsePromise } from '../response/ResponsePromise'
+import { SavePromise } from '../response/SavePromise'
+import { isModel } from '../support/Utils'
 
 export class RelationAPI<
   M extends Model = Model,

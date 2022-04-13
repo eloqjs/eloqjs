@@ -2,19 +2,19 @@ import { Collection, Element, Item } from '@eloqjs/core'
 
 import { HttpClient, HttpClientResponse } from '../httpclient'
 import { ModelAPIInstance, ModelAPIStatic } from '../model'
-import { RelationAPI } from '../relations/api'
+import { RelationAPI } from '../relations'
 
 declare module '@eloqjs/core' {
-  namespace Model {
+  class Model {
     /**
      * The http client of the model.
      */
-    export let httpClient: HttpClient | null
+    public static httpClient: HttpClient | null
 
     /**
      * Allows you to get the current HTTP client (AxiosHttpClient by default), e.g. to alter its configuration.
      */
-    export function getHttpClient(): HttpClient
+    public static getHttpClient(): HttpClient
 
     /**
      * Allows you to use any HTTP client library, as long as you write a wrapper for it that implements the interfaces
@@ -22,19 +22,17 @@ declare module '@eloqjs/core' {
      *
      * @param httpClient
      */
-    export function setHttpClient(httpClient: HttpClient): void
+    public static setHttpClient(httpClient: HttpClient): void
 
     /**
      * Get an [Static API]{@link ModelAPIStatic} instance from a static {@link Model}.
      */
-    export function api<M extends typeof Model>(this: M): ModelAPIStatic<M>
-  }
+    public static api<M extends typeof Model>(this: M): ModelAPIStatic<M>
 
-  interface Model {
     /**
      * Get an [Instance API]{@link ModelAPIInstance} instance from a {@link Model} instance.
      */
-    $api<M extends this>(): ModelAPIInstance<M>
+    public $api<M extends this>(): ModelAPIInstance<M>
   }
 
   interface ModelOptions {
@@ -55,21 +53,19 @@ declare module '@eloqjs/core' {
     dataTransformer?: (response: HttpClientResponse) => Element | Element[]
   }
 
-  namespace Relations {
-    interface Relation<
-      M extends Model = Model,
-      D extends Item<M> | Collection<M> = Item<M> | Collection<M>,
-      S extends boolean = boolean
-    > {
-      api(): RelationAPI<M, D, S>
-    }
+  class Relation<
+    M extends Model = Model,
+    D extends Item<M> | Collection<M> = Item<M> | Collection<M>,
+    S extends boolean = boolean
+  > {
+    public api(): RelationAPI<M, D, S>
+  }
 
-    interface HasOne<M extends Model = Model> {
-      api(): RelationAPI<M, Item<M>, true>
-    }
+  interface HasOne<M extends Model = Model> {
+    api(): RelationAPI<M, Item<M>, true>
+  }
 
-    interface HasMany<M extends Model = Model> {
-      api(): RelationAPI<M, Collection<M>, false>
-    }
+  interface HasMany<M extends Model = Model> {
+    api(): RelationAPI<M, Collection<M>, false>
   }
 }

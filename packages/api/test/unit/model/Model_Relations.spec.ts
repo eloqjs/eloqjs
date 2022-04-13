@@ -1,4 +1,4 @@
-import { Relations } from '@eloqjs/core'
+import { HasOne } from '@eloqjs/core'
 
 import BaseModel from '../../dummy/models/BaseModel'
 import Post from '../../feature/models/dummy/models/Post'
@@ -9,7 +9,7 @@ describe('Unit - Model – Relations', () => {
       static entity = 'users'
 
       id!: number
-      profile!: Relations.HasOne<Profile>
+      profile!: HasOne<Profile>
 
       static fields() {
         return {

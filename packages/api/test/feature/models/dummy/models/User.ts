@@ -1,4 +1,4 @@
-import { Relations } from '@eloqjs/core'
+import { HasMany } from '@eloqjs/core'
 
 import BaseModel from '../../../../dummy/models/BaseModel'
 import Post from './Post'
@@ -8,7 +8,7 @@ export default class User extends BaseModel {
 
   id!: number | null
   name!: string
-  posts!: Relations.HasMany<Post>
+  posts!: HasMany<Post>
 
   static fields() {
     return {

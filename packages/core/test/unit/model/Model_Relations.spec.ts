@@ -1,4 +1,4 @@
-import { Collection, Relations } from '../../../src'
+import { Collection, HasMany, HasOne } from '../../../src'
 import BaseModel from '../../dummy/models/BaseModel'
 import { assertInstanceOf } from '../../Helpers'
 
@@ -8,7 +8,7 @@ describe('Unit - Model – Relations', () => {
       static entity = 'users'
 
       id!: number
-      profile!: Relations.HasOne<Profile>
+      profile!: HasOne<Profile>
 
       static fields() {
         return {
@@ -60,7 +60,7 @@ describe('Unit - Model – Relations', () => {
       static entity = 'posts'
 
       id!: number
-      comments!: Relations.HasMany<Comment>
+      comments!: HasMany<Comment>
 
       static fields() {
         return {
@@ -118,7 +118,7 @@ describe('Unit - Model – Relations', () => {
       static entity = 'posts'
 
       id!: number
-      comments!: Relations.HasMany<Comment>
+      comments!: HasMany<Comment>
 
       static fields() {
         return {
@@ -176,7 +176,7 @@ describe('Unit - Model – Relations', () => {
 
       id!: number
       name!: string
-      profile!: Relations.HasOne<Profile>
+      profile!: HasOne<Profile>
 
       static fields() {
         return {
@@ -248,7 +248,7 @@ describe('Unit - Model – Relations', () => {
 
       id!: number
       name!: string
-      profile!: Relations.HasOne<Profile>
+      profile!: HasOne<Profile>
 
       static fields() {
         return {
@@ -318,7 +318,7 @@ describe('Unit - Model – Relations', () => {
 
       id!: number
       title!: string
-      comments!: Relations.HasMany<Comment>
+      comments!: HasMany<Comment>
 
       static fields() {
         return {
@@ -403,7 +403,7 @@ describe('Unit - Model – Relations', () => {
 
       id!: number
       title!: string
-      comments!: Relations.HasMany<Comment>
+      comments!: HasMany<Comment>
 
       static fields() {
         return {
@@ -482,7 +482,7 @@ describe('Unit - Model – Relations', () => {
 
       id!: number
       name!: string
-      profile!: Relations.HasOne<Profile>
+      profile!: HasOne<Profile>
 
       static fields() {
         return {
@@ -554,7 +554,7 @@ describe('Unit - Model – Relations', () => {
 
       id!: number
       title!: string
-      comments!: Relations.HasMany<Comment>
+      comments!: HasMany<Comment>
 
       static fields() {
         return {
