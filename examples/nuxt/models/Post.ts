@@ -1,4 +1,4 @@
-import { Relations } from '@eloqjs/core'
+import { HasOne } from '@eloqjs/core'
 import Model from './Model'
 import User from './User'
 
@@ -10,7 +10,7 @@ export default class Post extends Model {
   image!: string | null
   publishedAt!: string | null
   slug!: string
-  user!: Relations.HasOne<User>
+  user!: HasOne<User>
 
   static entity = 'posts'
 
