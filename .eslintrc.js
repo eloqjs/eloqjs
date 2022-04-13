@@ -33,7 +33,7 @@ module.exports = {
       }
     }
   },
-  ignorePatterns: ['dist'],
+  ignorePatterns: ['packages/**/dist', 'examples'],
   rules: {
     'prettier/prettier': 'error',
 
