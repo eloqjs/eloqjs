@@ -21,6 +21,35 @@ module.exports = {
       label: 'Getting Started',
       collapsed: false,
       items: ['getting-started/installation']
+    },
+    {
+      type: 'category',
+      label: 'Plugins',
+      items: [
+        {
+          type: 'category',
+          label: 'Rest API',
+          items: [
+            {
+              type: 'doc',
+              id: 'plugins/rest-api/introduction',
+              label: 'Introduction'
+            },
+            {
+              type: 'category',
+              label: 'Getting Started',
+              collapsed: false,
+              items: [
+                {
+                  type: 'doc',
+                  id: 'plugins/rest-api/getting-started/installation',
+                  label: 'Installation'
+                }
+              ]
+            }
+          ]
+        }
+      ]
     }
   ]
 }
