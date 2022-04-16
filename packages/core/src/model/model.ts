@@ -819,9 +819,8 @@ abstract class Model {
               const model = relation.data as Item
 
               if (!isNull(model)) {
-                // We need to sync changes before references
-                model.$syncChanges()
-                model.$syncReference()
+                // Sync changes and reference
+                model.$sync()
               }
               break
             }
@@ -858,9 +857,8 @@ abstract class Model {
                   break
                 }
 
-                // We need to sync changes before references
-                model.$syncChanges()
-                model.$syncReference()
+                // Sync changes and reference
+                model.$sync()
               }
               break
             }
@@ -1190,32 +1188,32 @@ abstract class Model {
 
     /*const fields = this.$fields()
 
-    for (const key in fields) {
-      const field = fields[key]
+     for (const key in fields) {
+     const field = fields[key]
 
-      if (field.relation) {
-        const relation = this._relationships.get(key)
+     if (field.relation) {
+     const relation = this._relationships.get(key)
 
-        switch (field.relation) {
-          case Relations.RelationEnum.HAS_ONE: {
-            const model = relation.data as Item
+     switch (field.relation) {
+     case Relations.RelationEnum.HAS_ONE: {
+     const model = relation.data as Item
 
-            if (!isNull(model)) {
-              model.$syncReference()
-            }
-            break
-          }
-          case Relations.RelationEnum.HAS_MANY: {
-            const collection = relation.data as Collection
-            collection.syncReference()
-            break
-          }
-          default: {
-            //
-          }
-        }
-      }
-    }*/
+     if (!isNull(model)) {
+     model.$syncReference()
+     }
+     break
+     }
+     case Relations.RelationEnum.HAS_MANY: {
+     const collection = relation.data as Collection
+     collection.syncReference()
+     break
+     }
+     default: {
+     //
+     }
+     }
+     }
+     }*/
 
     // A copy of the saved state after the attributes were synced.
     const after = this._reference.clone().getAll()
