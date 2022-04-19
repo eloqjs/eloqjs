@@ -9,6 +9,8 @@
 [![Contributions][contributions-src]][contributions-href]
 [![License][license-src]][license-href]
 
+The documentation still in development, but you can [check out the Wiki](https://github.com/eloqjs/eloqjs/wiki) until then.
+
 ## Features
 
 - Coming soon...
