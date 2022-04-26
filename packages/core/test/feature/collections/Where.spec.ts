@@ -219,6 +219,6 @@ describe('Feature – Collections – Where', () => {
     const filtered = collection.where('price', 100)
 
     assertCollection(collection, products)
-    expect(filtered.models).not.toEqual(collection.models)
+    expect(filtered.models).not.toBe(collection.models)
   })
 })
