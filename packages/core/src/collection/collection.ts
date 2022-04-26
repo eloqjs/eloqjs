@@ -317,6 +317,17 @@ export class Collection<M extends Model = Model> {
   }
 
   /**
+   * Returns the collection using the given callback,
+   * keeping only those models that pass a given truth test.
+   *
+   * @param predicate A function that accepts up to three arguments. The filter method calls the predicate function one
+   *   time for each element in the array.
+   */
+  public filter(predicate: (model: M, index: number, array: M[]) => boolean): this {
+    return this._createCollection(this.models.filter(predicate))
+  }
+
+  /**
    * Returns the first model that matches the given criteria.
    * If `predicate` is a `string`, `number` or {@link Model}, `find` will attempt to return a model matching the
    * primary key.
@@ -721,6 +732,17 @@ export class Collection<M extends Model = Model> {
     }
 
     return this.models.reduce(iteratee, initial)
+  }
+
+  /**
+   * Returns the collection using the given callback.
+   * The callback should return true if the item should be removed from the resulting collection.
+   *
+   * @param predicate A function that accepts up to three arguments. The filter method calls the predicate function one
+   *   time for each element in the array.
+   */
+  public reject(predicate: (model: M, index: number, array: M[]) => boolean): this {
+    return this._createCollection(this.models.filter((model, index, array) => !predicate(model, index, array)))
   }
 
   /**
