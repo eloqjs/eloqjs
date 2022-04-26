@@ -638,7 +638,7 @@ abstract class Model {
             _value = (_value.data as Collection).map((model) => model.$getAttributes())
           }
 
-          collection.set(_value as Element | Element[])
+          collection.fill(_value as Element | Element[])
           break
         }
       }
