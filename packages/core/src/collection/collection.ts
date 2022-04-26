@@ -292,11 +292,15 @@ export class Collection<M extends Model = Model> {
   /**
    * Iterates through all models, calling a given callback for each one.
    */
-  public each(callback: (model: M, index: number, array: M[]) => unknown): boolean {
-    return this.models.every((model, index) => {
-      return callback(model, index, this.models) !== false
-    })
-    // return this.models.every(callback)
+  public each(callback: (model: M, index: number, array: M[]) => unknown): this {
+    const { length } = this.models
+    let stop = false
+
+    for (let index = 0; index < length && !stop; index += 1) {
+      stop = callback(this.models[index], index, this.models) === false
+    }
+
+    return this
   }
 
   /**
