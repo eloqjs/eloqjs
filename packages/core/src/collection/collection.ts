@@ -942,6 +942,13 @@ export class Collection<M extends Model = Model> {
   }
 
   /**
+   * Reverses the order of the collection's models.
+   */
+  public reverse(): this {
+    return this._createCollection(([] as M[]).concat(this.models).reverse())
+  }
+
+  /**
    * Serialize given collection POJO.
    */
   public serialize(options: SerializeCollectionOptions = {}): SerializedCollection {
