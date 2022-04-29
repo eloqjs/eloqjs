@@ -1,17 +1,16 @@
 import { Model } from '../model'
 import { isArray, isFunction, isString } from './is'
+import { Variadic } from './types'
 
 /**
  * Variadic helper function.
- *
- * @param data
  */
-export function variadic<T>(data: T | T[]): T {
-  if (isArray(data)) {
-    return data[0]
+export function variadic<T, U = T[]>(data: Variadic<T, U>): U {
+  if (Array.isArray(data) && data.length === 1 && Array.isArray(data[0])) {
+    return data[0] as U
   }
 
-  return data
+  return data as unknown as U
 }
 
 /**
