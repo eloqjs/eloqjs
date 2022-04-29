@@ -17,10 +17,7 @@ describe('Feature – Collections – Where', () => {
   it('should filter the collection by a given key/value pair', () => {
     const filtered = collection.where('price', 100)
 
-    assertCollection(filtered, [
-      { id: 2, name: 'Chair', price: 100, manufacturer: 'Herman Miller' },
-      { id: 4, name: 'Door', price: '100', manufacturer: null }
-    ])
+    assertCollection(filtered, [{ id: 2, name: 'Chair', price: 100, manufacturer: 'Herman Miller' }])
   })
 
   it('should return everything that matches', () => {

@@ -1,7 +1,7 @@
 import { Uid as UidGenerator } from '../helpers/uid'
 import { ID, Model, ModelOptions, ModelReference } from '../model'
 import { Element, Item } from '../types'
-import { assert, forceArray, resolveValue } from '../utils'
+import { assert, forceArray, resolveValue, variadic } from '../utils'
 import {
   isArray,
   isCollection,
@@ -11,13 +11,12 @@ import {
   isNull,
   isNullish,
   isNumber,
-  isObject,
   isPlainObject,
   isSerializedCollection,
   isString,
   isUndefined
 } from '../utils/is'
-import { ValueOf } from '../utils/types'
+import { ValueOf, Variadic } from '../utils/types'
 import { CloneCollectionOptions, CollectionOptions, SerializeCollectionOptions, SerializedCollection } from './types'
 import { sortGreaterOrLessThan, sortNullish } from './utils/sort'
 import { compareValues, Operator } from './utils/where'
@@ -54,6 +53,15 @@ export class Collection<M extends Model = Model> {
    */
   public get length(): number {
     return this.count()
+  }
+
+  /**
+   * Determines whether the given value is the instance of {@link Collection}.
+   *
+   * @param value The value to be checked.
+   */
+  public static isCollection<T extends Model = Model>(value: unknown): value is Collection<T> {
+    return isCollection(value)
   }
 
   /**
@@ -163,18 +171,7 @@ export class Collection<M extends Model = Model> {
    */
   public add(model: M | Element): M
 
-  /**
-   * Add a {@link Model} to this {@link Collection}.
-   *
-   * This method returns a single model if only one was given, but will return
-   * an array of all added models if an array was given.
-   *
-   * @param model Adds a model instance or plain object, or an array of either, to this collection.
-   * A model instance will be created and returned if passed a plain object.
-   *
-   * @returns The added model or array of added models.
-   */
-  public add(model: M | Element | (M | Element)[] | Collection): M | M[] | void {
+  public add(model: M | Element | (M | Element)[] | Collection): M | M[] {
     // If given an array, assume an array of models and add them all.
     if (isCollection(model) || isArray(model)) {
       return model.map((m) => this.add(m)).filter((m): m is M => !!m)
@@ -190,7 +187,7 @@ export class Collection<M extends Model = Model> {
 
     // Make sure we don't add the same model twice.
     if (this._hasModelInRegistry(model)) {
-      return
+      return model
     }
 
     this.models.push(model)
@@ -200,7 +197,18 @@ export class Collection<M extends Model = Model> {
   }
 
   /**
-   * Alias for the "avg" method.
+   * Takes an integer value and returns the model at that index,
+   * allowing for positive and negative integers.
+   * Negative integers count back from the last model in the collection.
+   */
+  public at(index: number): M | undefined {
+    return this.models.at(index)
+  }
+
+  /**
+   * Returns the average of a property of all models in the collection.
+   *
+   * Alias for the [avg() method]{@link Collection.avg}.
    */
   public average(key: keyof ModelReference<M> | string): number {
     return this.avg(key)
@@ -259,6 +267,43 @@ export class Collection<M extends Model = Model> {
   }
 
   /**
+   * Combines two or more arrays.
+   *
+   * This method returns a new collections without modifying any existing collections.
+   *
+   * @param collections Additional collections and/or models to add to the end of the collection.
+   */
+  public concat(...collections: Variadic<M | M[] | Collection<M>>): this {
+    const models = variadic(collections).map((collectionOrModel) =>
+      isCollection(collectionOrModel) ? collectionOrModel.models : collectionOrModel
+    )
+
+    return this._createCollection(this.models.concat(...models))
+  }
+
+  /**
+   * Determines whether this collection contains the given model.
+   *
+   * Alias for the [includes() method]{@link Collection.includes}.
+   *
+   * @returns `true` if the collection contains the given model, `false` otherwise.
+   */
+  public contains(id: NonNullable<ID> | M | (NonNullable<ID> | M)[]): boolean
+
+  /**
+   * Determines whether this collection contains the given model.
+   *
+   * Alias for the [includes() method]{@link Collection.includes}.
+   *
+   * @returns `true` if the collection contains the given model, `false` otherwise.
+   */
+  public contains<V>(key: keyof ModelReference<M> | string, value: V): boolean
+
+  public contains(key: any, value?: unknown): boolean {
+    return this.includes(key, value)
+  }
+
+  /**
    * Returns the number of models in this collection.
    */
   public count(): number {
@@ -290,17 +335,26 @@ export class Collection<M extends Model = Model> {
   }
 
   /**
-   * Iterates through all models, calling a given callback for each one.
+   * Performs the specified action for each model in the collection.
+   *
+   * Alias for the [forEach() method]{@link Collection.forEach}.
+   *
+   * @param callback A function that accepts up to three arguments. forEach calls the callback function one time for
+   *   each model in the collection.
    */
-  public each(callback: (model: M, index: number, array: M[]) => unknown): this {
-    const { length } = this.models
-    let stop = false
+  public each(callback: (model: M, index: number, array: M[]) => void): this {
+    return this.forEach(callback)
+  }
 
-    for (let index = 0; index < length && !stop; index += 1) {
-      stop = callback(this.models[index], index, this.models) === false
-    }
-
-    return this
+  /**
+   * Determines whether all the models of the collection satisfy the specified test.
+   *
+   * @param predicate A function that accepts up to three arguments. The every method calls
+   * the predicate function for each model in the collection until the predicate returns a value
+   * which is coercible to the Boolean value false, or until the end of the collection.
+   */
+  public every(predicate: (value: M, index: number, array: M[]) => unknown): boolean {
+    return this.models.every(predicate)
   }
 
   /**
@@ -348,21 +402,7 @@ export class Collection<M extends Model = Model> {
    */
   public fill(record: M | Element, options?: ModelOptions): M
 
-  /**
-   * Fill a {@link Model} of this {@link Collection} by the model's ID.
-   *
-   * If an ID is not provided, a new model will be added to this collection.
-   *
-   * This method returns a single model if only one was given, but will return
-   * an array of all filled models if an array was given.
-   *
-   * @param record A model instance or plain object, or an array of either, to be filled in this collection.
-   * A model instance will be created and returned if passed a plain object.
-   * @param options
-   *
-   * @returns The filled model or array of filled models.
-   */
-  public fill(record: M | Element | (M | Element)[], options: ModelOptions = {}): M | M[] | void {
+  public fill(record: M | Element | (M | Element)[], options: ModelOptions = {}): M | M[] {
     // If given an array, assume an array of models and add them all.
     if (isArray(record)) {
       return record.map((m) => this.fill(m, options)).filter((m): m is M => !!m)
@@ -400,7 +440,7 @@ export class Collection<M extends Model = Model> {
    * @param predicate A function that accepts up to three arguments. The filter method calls the predicate function one
    *   time for each element in the array.
    */
-  public filter(predicate: (model: M, index: number, array: M[]) => boolean): this {
+  public filter(predicate: (model: M, index: number, array: M[]) => unknown): this {
     return this._createCollection(this.models.filter(predicate))
   }
 
@@ -410,7 +450,7 @@ export class Collection<M extends Model = Model> {
    * primary key.
    * If `predicate` is an array of keys, find will return all models which match the keys.
    */
-  public find(key: string | number): Item<M>
+  public find(id: NonNullable<ID>): Item<M>
 
   /**
    * Returns the first model that matches the given criteria.
@@ -418,37 +458,19 @@ export class Collection<M extends Model = Model> {
    * primary key.
    * If `predicate` is an array of keys, find will return all models which match the keys.
    */
-  public find(keys: (string | number)[]): Item<M>[]
+  public find(ids: NonNullable<ID>[]): Item<M>[]
 
   /**
    * Returns the first model that matches the given criteria.
-   * If `predicate` is a `string`, `number` or {@link Model}, `find` will attempt to return a model matching the
-   * primary key.
-   * If `predicate` is an array of keys, find will return all models which match the keys.
-   */
-  public find(model: M): Item<M>
-
-  /**
-   * Returns the first model that matches the given criteria.
-   * If `predicate` is a `string`, `number` or {@link Model}, `find` will attempt to return a model matching the
+   * If `predicate` is a `string` or `number`, `find` will attempt to return a model matching the
    * primary key.
    * If `predicate` is an array of keys, find will return all models which match the keys.
    */
   public find<T = boolean>(predicate: (model: M) => T): Item<M>
 
-  /**
-   * Returns the first model that matches the given criteria.
-   * If `predicate` is a `string`, `number` or {@link Model}, `find` will attempt to return a model matching the
-   * primary key.
-   * If `predicate` is an array of keys, find will return all models which match the keys.
-   */
-  public find<T = boolean>(predicate: string | number | (string | number)[] | M | ((model: M) => T)): Item<M> | Item<M>[] {
+  public find<T = boolean>(predicate: NonNullable<ID> | NonNullable<ID>[] | ((model: M) => T)): Item<M> | Item<M>[] {
     if (isFunction(predicate)) {
       return this.models.find(predicate) || null
-    }
-
-    if (isModel(predicate)) {
-      return (predicate.$id && this.find(predicate.$id)) || null
     }
 
     if (isArray(predicate)) {
@@ -463,6 +485,42 @@ export class Collection<M extends Model = Model> {
   }
 
   /**
+   * Returns the index of the first model in the collection where predicate is true, and -1
+   * otherwise.
+   *
+   * @param id The ID of the model or a {@link Model} instance.
+   */
+  public findIndex(id: NonNullable<ID> | M): number
+
+  /**
+   * Returns the index of the first model in the collection where predicate is true, and -1
+   * otherwise.
+   *
+   * @param predicate find calls predicate once for each model of the collection, in ascending
+   * order, until it finds one where predicate returns true. If such a model is found,
+   * findIndex immediately returns that model index. Otherwise, findIndex returns -1.
+   */
+  public findIndex(predicate: (model: M, index: number, array: M[]) => unknown): number
+
+  public findIndex(predicate: NonNullable<ID> | M | ((model: M, index: number, array: M[]) => unknown)): number {
+    if (isFunction(predicate)) {
+      return this.models.findIndex(predicate)
+    }
+
+    if (isModel(predicate)) {
+      return this.findIndex((model) => {
+        return model.$uid === predicate.$uid
+      })
+    }
+
+    assert(isString(predicate) || isNumber(predicate), ['Invalid type of `predicate` on `findIndex`.'])
+
+    return this.findIndex((model) => {
+      return model.$id === predicate
+    })
+  }
+
+  /**
    * Returns the first model of this collection.
    */
   public first(): Item<M> {
@@ -471,6 +529,18 @@ export class Collection<M extends Model = Model> {
     }
 
     return null
+  }
+
+  /**
+   * Performs the specified action for each model in the collection.
+   *
+   * @param callback A function that accepts up to three arguments. forEach calls the callback function one time for
+   *   each model in the collection.
+   */
+  public forEach(callback: (model: M, index: number, array: M[]) => void): this {
+    this.models.forEach(callback)
+
+    return this
   }
 
   /**
@@ -510,25 +580,6 @@ export class Collection<M extends Model = Model> {
   }
 
   /**
-   * Determines whether this collection has the given model.
-   *
-   * It also accepts an array of models.
-   *
-   * @returns `true` if the collection contains the given model, `false` otherwise.
-   */
-  public has(model: M | M[]): boolean {
-    const models = forceArray(model)
-
-    for (const record of models) {
-      if (this._indexOf(record) < 0) {
-        return false
-      }
-    }
-
-    return true
-  }
-
-  /**
    * Concatenate values of a given key as a string.
    *
    * @param key - The key of the attributes you wish to join.
@@ -536,6 +587,62 @@ export class Collection<M extends Model = Model> {
    */
   public implode(key: keyof ModelReference<M> | string, glue: string): string {
     return this.pluck(key).join(glue)
+  }
+
+  /**
+   * Determines whether this collection contains the given model.
+   *
+   * @returns `true` if the collection contains the given model, `false` otherwise.
+   */
+  public includes(id: NonNullable<ID> | M | (NonNullable<ID> | M)[]): boolean
+
+  /**
+   * Determines whether this collection contains the given model.
+   *
+   * @returns `true` if the collection contains the given model, `false` otherwise.
+   */
+  public includes<V>(key: keyof ModelReference<M> | string, value: V): boolean
+
+  public includes(key: string | M | NonNullable<ID> | (NonNullable<ID> | M)[], value?: unknown): boolean {
+    if (isArray(key)) {
+      return key.every((model) => this.contains(model))
+    }
+
+    let callback: (model: M, index: number, array: M[]) => boolean
+
+    if (isModel(key)) {
+      callback = (model) => model.$uid === key.$uid
+    } else if (value) {
+      callback = (model) => model[key as string] === value
+    } else {
+      callback = (model) => model.$id === key
+    }
+
+    return this.models.some(callback)
+  }
+
+  /**
+   * Returns the index of the first model in the collection where predicate is true, and -1
+   * otherwise.
+   *
+   * Alias for the [findIndex() method]{@link Collection.findIndex}.
+   *
+   * @param id The ID of the model or a {@link Model} instance.
+   */
+
+  /**
+   * Returns the index of the first model in the collection where predicate is true, and -1
+   *
+   * Alias for the [findIndex() method]{@link Collection.findIndex}.
+   *
+   * @param predicate find calls predicate once for each model of the collection, in ascending
+   * order, until it finds one where predicate returns true. If such a model is found,
+   * findIndex immediately returns that model index. Otherwise, findIndex returns -1.
+   */
+  public indexOf(predicate: (model: M, index: number, array: M[]) => unknown): number
+
+  public indexOf(id: any): number {
+    return this.findIndex(id)
   }
 
   /**
@@ -704,9 +811,6 @@ export class Collection<M extends Model = Model> {
    */
   public pluck<K extends keyof ModelReference<M>>(key: K | string): ValueOf<M, K>[] | unknown[]
 
-  /**
-   * Returns an array that contains the values for a given key for each model in this collection.
-   */
   public pluck<K extends keyof ModelReference<M>>(key: K | string): ValueOf<M, K>[] | unknown[] {
     return this.models.map((model) => model[key as K])
   }
@@ -714,7 +818,7 @@ export class Collection<M extends Model = Model> {
   /**
    * Removes and returns the last model of this collection, if there was one.
    *
-   * @returns {Model|undefined} Removed model or undefined if there were none.
+   * @returns Removed model or null if there were none.
    */
   public pop(): Item<M> {
     if (this.isNotEmpty()) {
@@ -788,20 +892,6 @@ export class Collection<M extends Model = Model> {
    */
   public reduce<U = M>(iteratee: (result: U, model: M, index: number, array: M[]) => U, initial: U): U
 
-  /**
-   * Reduces this collection to a value which is the accumulated result of
-   * running each model through `iteratee`, where each successive invocation
-   * is supplied the return value of the previous.
-   *
-   * If `initial` is not given, the first model of the collection is used
-   * as the initial value.
-   *
-   * @param iteratee Invoked with three arguments: (result, model, index)
-   *
-   * @param [initial] The initial value to use for the `result`.
-   *
-   * @returns The final value of result, after the last iteration.
-   */
   public reduce<U = M>(iteratee: (result: U | undefined, model: M, index: number, array: M[]) => U, initial?: U): U | undefined {
     // Use the first model as the initial value if an initial was not given.
     if (arguments.length === 1) {
@@ -818,7 +908,7 @@ export class Collection<M extends Model = Model> {
    * @param predicate A function that accepts up to three arguments. The filter method calls the predicate function one
    *   time for each element in the array.
    */
-  public reject(predicate: (model: M, index: number, array: M[]) => boolean): this {
+  public reject(predicate: (model: M, index: number, array: M[]) => unknown): this {
     return this._createCollection(this.models.filter((model, index, array) => !predicate(model, index, array)))
   }
 
@@ -832,7 +922,7 @@ export class Collection<M extends Model = Model> {
    *
    * @throws {Error} If the model is an invalid type.
    */
-  public remove(models: (M | Element)[]): M[] | undefined
+  public remove(models: (M | Element)[] | Collection): M[] | undefined
 
   /**
    * Remove the given {@link Model} from this {@link Collection}.
@@ -844,7 +934,7 @@ export class Collection<M extends Model = Model> {
    *
    * @throws {Error} If the model is an invalid type.
    */
-  public remove(predicate: (model: M, index: number, array: M[]) => boolean): M[] | undefined
+  public remove(predicate: (model: M, index: number, array: M[]) => unknown): M[] | undefined
 
   /**
    * Remove the given {@link Model} from this {@link Collection}.
@@ -858,23 +948,13 @@ export class Collection<M extends Model = Model> {
    */
   public remove(model: M | Element): M | undefined
 
-  /**
-   * Remove the given {@link Model} from this {@link Collection}.
-   *
-   * @param model Model to remove, which can be a model instance, an object, a function to filter by,
-   * or an array of model instances and objects to remove multiple.
-   *
-   * @returns The deleted model or an array of models if a filter or array type was given.
-   *
-   * @throws {Error} If the model is an invalid type.
-   */
-  public remove(model: M | Element | (M | Element)[] | ((model: M, index: number, array: M[]) => boolean)): M | M[] | undefined {
+  public remove(model: M | Element | (M | Element)[] | ((model: M, index: number, array: M[]) => unknown)): M | M[] | undefined {
     // Support using a predicate to remove all models it returns true for.
     if (isFunction(model)) {
       return this.remove(this.models.filter(model))
     }
 
-    if (isArray(model)) {
+    if (isCollection(model) || isArray(model)) {
       return model.map((m) => this.remove(m)).filter((m): m is M => !!m)
     }
 
@@ -900,7 +980,7 @@ export class Collection<M extends Model = Model> {
    *
    * @returns The added model or array of added models.
    */
-  public replace(models: (M | Element)[]): M[]
+  public replace(models: (M | Element)[] | Collection<M>): M[]
 
   /**
    * Replaces all models in this collection with those provided. This is
@@ -914,19 +994,7 @@ export class Collection<M extends Model = Model> {
    */
   public replace(model: M | Element): M
 
-  /**
-   * Replaces all models in this collection with those provided. This is
-   * effectively equivalent to `clear` and `add`, and will result in an empty
-   * collection if no models were provided.
-   *
-   * @param models Models to replace the current models with. Can be a model instance or plain object, or an array of
-   * either. A model instance will be created and returned if passed a plain object.
-   *
-   * @returns The added model or array of added models.
-   */
-  public replace(models: M | Element | (M | Element)[]): M | M[] {
-    assert(isObject(models) || isArray(models), ['Expected a model, plain object, or array of either.'])
-
+  public replace(models: M | Element | (M | Element)[] | Collection<M>): M | M[] {
     this.clear()
     return this.add(models)
   }
@@ -1006,16 +1074,78 @@ export class Collection<M extends Model = Model> {
   }
 
   /**
-   * Sorts this collection's models using a custom algorithm.
+   * Skips models until the given callback returns true and
+   * then returns the remaining items in the collection.
+   * You may also pass a simple value to the skipUntil method to skip all items until the given value is found.
    */
-  public sort(callback: (a: M, b: M) => number): this {
-    this.models.sort(callback)
+  public skipUntil(model: M): this
+
+  /**
+   * Skips models until the given callback returns true and
+   * then returns the remaining items in the collection.
+   * You may also pass a simple value to the skipUntil method to skip all items until the given value is found.
+   */
+  public skipUntil(predicate: (model: M, index: number, array: M[]) => unknown): this
+
+  public skipUntil(value: M | ((model: M, index: number, array: M[]) => unknown)): this {
+    let previous: boolean | null = null
+    const callback = isFunction(value) ? value : (model: M) => model.$id === value.$id
+
+    return this.filter((model, index, array) => {
+      if (previous !== true) {
+        previous = !!callback(model, index, array)
+      }
+
+      return previous
+    })
+  }
+
+  /**
+   * Skips models while the given callback returns true and
+   * then returns the remaining models in the collection
+   */
+  public skipWhile(predicate: (model: M, index: number, array: M[]) => unknown): this {
+    let previous: boolean | null = null
+
+    return this.filter((model, index, array) => {
+      if (previous !== true) {
+        previous = !predicate(model, index, array)
+      }
+
+      return previous
+    })
+  }
+
+  /**
+   * Determines whether the specified callback function returns true for any model of the collection.
+   *
+   * @param predicate A function that accepts up to three arguments. The some method calls
+   * the predicate function for each model in the collection until the predicate returns a value
+   * which is coercible to the Boolean value true, or until the end of the collection.
+   */
+  public some(predicate: (value: M, index: number, array: M[]) => unknown): boolean {
+    return this.models.some(predicate)
+  }
+
+  /**
+   * Sorts the collection [in place]{@link https://en.wikipedia.org/wiki/In-place_algorithm}.
+   *
+   * This method mutates the collection and returns a reference to the same collection.
+   *
+   * @param compare Function used to determine the order of the models. It is expected to return
+   * a negative value if the first argument is less than the second argument, zero if they're equal, and a positive
+   * value otherwise.
+   */
+  public sort(compare: (a: M, b: M) => number): this {
+    this.models.sort(compare)
 
     return this
   }
 
   /**
-   * Sorts this collection's models using a comparator.
+   * Sorts the collection [in place]{@link https://en.wikipedia.org/wiki/In-place_algorithm} using a comparator.
+   *
+   * This method mutates the collection and returns a reference to the same collection.
    */
   public sortBy(comparator: keyof ModelReference<M> | string | ((model: M) => string | number)): this {
     this.models.sort((a, b) => {
@@ -1029,7 +1159,8 @@ export class Collection<M extends Model = Model> {
   }
 
   /**
-   * Sorts this collection's models using a comparator, but in the opposite order.
+   * Sorts the collection [in place]{@link https://en.wikipedia.org/wiki/In-place_algorithm} using a comparator, but in
+   * the opposite order.
    */
   public sortByDesc(comparator: keyof ModelReference<M> | string | ((model: M) => string | number)): this {
     this.sortBy(comparator)
@@ -1037,6 +1168,33 @@ export class Collection<M extends Model = Model> {
     this.models.reverse()
 
     return this
+  }
+
+  /**
+   * Removes models from a collection and, if necessary, inserts new models in their place, returning the deleted
+   * models.
+   *
+   * @param start The zero-based location in the collection from which to start removing models.
+   * @param deleteCount The number of models to remove.
+   *
+   * @returns A collection containing the models that were deleted.
+   */
+  public splice(start: number, deleteCount?: number): M[]
+
+  /**
+   * Removes models from a collection and, if necessary, inserts new models in their place, returning the deleted
+   * models.
+   *
+   * @param start The zero-based location in the collection from which to start removing models.
+   * @param deleteCount The number of models to remove.
+   * @param models Models to insert into the collection in place of the deleted models.
+   *
+   * @returns A collection containing the models that were deleted.
+   */
+  public splice(start: number, deleteCount: number, models: M | M[]): M[]
+
+  public splice(start: number, deleteCount?: any, models: M | M[] = []): M[] {
+    return this.models.splice(start, deleteCount, ...forceArray(models))
   }
 
   /**
@@ -1055,9 +1213,6 @@ export class Collection<M extends Model = Model> {
 
   /**
    * Returns the sum of a property of all models in the collection.
-   *
-   * @param {string|string[]|Function} key
-   * @returns {number}
    */
   public sum(key: keyof ModelReference<M> | string | ((model: M) => string | number)): number {
     let total = 0
@@ -1101,11 +1256,67 @@ export class Collection<M extends Model = Model> {
   }
 
   /**
+   * Returns models in the collection until the given callback returns true.
+   * You may also pass a models to the `takeUntil` method to get the models until the given model is found.
+   */
+  public takeUntil(model: M): this
+
+  /**
+   * Returns models in the collection until the given callback returns true.
+   * You may also pass a models to the `takeUntil` method to get the models until the given model is found.
+   */
+  public takeUntil(callback: (model: M, index: number, array: M[]) => unknown): this
+
+  public takeUntil(value: M | ((model: M, index: number, array: M[]) => unknown)): this {
+    let previous: boolean | null = null
+    const callback = isFunction(value) ? value : (model: M) => model.$id === value.$id
+
+    return this.filter((model, index, array) => {
+      if (previous !== false) {
+        previous = !callback(model, index, array)
+      }
+
+      return previous
+    })
+  }
+
+  /**
+   * Returns models in the collection until the given callback returns false.
+   */
+  public takeWhile(predicate: (model: M, index: number, array: M[]) => unknown): this {
+    let previous: boolean | null = null
+
+    return this.filter((model, index, array) => {
+      if (previous !== false) {
+        previous = !!predicate(model, index, array)
+      }
+
+      return previous
+    })
+  }
+
+  /**
+   * Returns an array of the models within this collection.
+   */
+  public toArray(): M[] {
+    return this.models
+  }
+
+  /**
    * @returns A native representation of this collection that will
    * determine the contents of JSON.stringify(collection).
    */
   public toJSON(): SerializedCollection {
     return this.serialize()
+  }
+
+  /**
+   * Inserts new models at the start of the collection, and returns the new length of the collection.
+   *
+   * @param models Models to insert at the start of the collection.
+   */
+  public unshift(models: M | M[]): number {
+    return this.models.unshift(...forceArray(models))
   }
 
   /**
@@ -1138,20 +1349,7 @@ export class Collection<M extends Model = Model> {
    */
   public update(record: M | Element): M
 
-  /**
-   * Update a {@link Model} of this {@link Collection} by the model's ID.
-   *
-   * If an ID is not provided, a new model will be added to this collection.
-   *
-   * This method returns a single model if only one was given, but will return
-   * an array of all updated models if an array was given.
-   *
-   * @param record A model instance or plain object, or an array of either, to be updated in this collection.
-   * A model instance will be created and returned if passed a plain object.
-   *
-   * @returns The updated model or array of updated models.
-   */
-  public update(record: M | Element | (M | Element)[]): M | M[] | void {
+  public update(record: M | Element | (M | Element)[]): M | M[] {
     // If given an array, assume an array of models and add them all.
     if (isArray(record)) {
       return record.map((m) => this.update(m)).filter((m): m is M => !!m)
@@ -1195,6 +1393,8 @@ export class Collection<M extends Model = Model> {
   /**
    * Filters the collection by a given key / value pair.
    */
+  public where<V>(key: keyof ModelReference<M> | string, operator?: V | Operator, value?: V): this
+
   public where<V>(key: keyof ModelReference<M> | string, operator?: V | Operator, value?: V): this {
     const collection = this.clone()
 
@@ -1228,8 +1428,6 @@ export class Collection<M extends Model = Model> {
 
   /**
    * Called when a model has been removed from this collection.
-   *
-   * @param {Model} model
    */
   protected onRemove(model: Model): void {
     model.$unregisterCollection(this)
@@ -1238,8 +1436,6 @@ export class Collection<M extends Model = Model> {
 
   /**
    * Called when a model has been added to this collection.
-   *
-   * @param {Model} model
    */
   protected onAdd(model: Model): void {
     model.$registerCollection(this)
@@ -1249,7 +1445,7 @@ export class Collection<M extends Model = Model> {
   /**
    * Return the zero-based index of the given model in this collection.
    *
-   * @returns {number} the index of a model in this collection, or -1 if not found.
+   * @returns The index of a model in this collection, or -1 if not found.
    */
   private _indexOf(model: Model): number {
     if (!this._hasModelInRegistry(model)) {
@@ -1261,15 +1457,13 @@ export class Collection<M extends Model = Model> {
 
   /**
    * Remove a model from the model registry.
-   *
-   * @param {Model} model
    */
   private _removeModelFromRegistry(model: Model): void {
     this._registry[model.$uid] = false
   }
 
   /**
-   * @returns {Boolean} true if this collection has the model in its registry.
+   * @returns true if this collection has the model in its registry.
    */
   private _hasModelInRegistry(model: Model): boolean {
     return !!this._registry[model.$uid]
@@ -1277,8 +1471,6 @@ export class Collection<M extends Model = Model> {
 
   /**
    * Add a model from the model registry.
-   *
-   * @param {Model} model
    */
   private _addModelToRegistry(model: Model): void {
     this._registry[model.$uid] = true
@@ -1287,9 +1479,7 @@ export class Collection<M extends Model = Model> {
   /**
    * Remove a model at a given index.
    *
-   * @param {number} index
-
-   * @returns {Model} The model that was removed, or `undefined` if invalid.
+   * @returns The model that was removed, or `undefined` if invalid.
    * @throws {Error} If a model could not be found at the given index.
    */
   private _removeModelAtIndex(index: number): M | undefined {
@@ -1308,10 +1498,6 @@ export class Collection<M extends Model = Model> {
 
   /**
    * Remove a {@link Model} from this collection.
-   *
-   * @param {Model} model
-   *
-   * @returns {Model}
    */
   private _removeModel(model: M): M | undefined {
     return this._removeModelAtIndex(this._indexOf(model))
