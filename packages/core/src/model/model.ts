@@ -27,7 +27,6 @@ import { attributeReviver } from './attributes/utils/attribute-reviver'
 import { hasChanges } from './attributes/utils/has-changes'
 import { isRelationDirty } from './attributes/utils/is-relationship-dirty'
 import { Field } from './field/field'
-import { mutateHasOne } from './field/utils/relation'
 import * as Serialize from './serialize'
 import { isSerializedModel, SerializedModel } from './serialize'
 import * as Contracts from './types'
@@ -612,53 +611,19 @@ abstract class Model {
     const previous = this._attributes.get(attribute)
     const field = this.$getField(attribute)
 
-    // If we have a relationship that was previous defined, we need to access it and set the given attribute,
-    // so we don't generate a new model instance.
-    if (field.relation && previous instanceof Relations.Relation) {
-      switch (field.relation) {
-        // It's the "Has One" relation, so we access the model and set the attribute.
-        case Relations.RelationEnum.HAS_ONE: {
-          const model = previous.data as Item
+    // Resolve the value
+    value = field.make(value, this)
 
-          if (isNull(model)) {
-            previous.data = mutateHasOne(value as Element, previous.model)
-          } else {
-            model.$fill((value || {}) as Element)
-          }
-
-          break
-        }
-        // It's the "Has Many" relation, so we access the collection and loop through its models,
-        // then set attributes of each one of them.
-        case Relations.RelationEnum.HAS_MANY: {
-          const collection = previous.data as Collection
-          let _value: unknown = value
-
-          if (_value instanceof Relations.Relation) {
-            _value = (_value.data as Collection).map((model) => model.$getAttributes())
-          }
-
-          collection.fill(_value as Element | Element[])
-          break
-        }
+    // Set the attribute value.
+    if (!this._reference.has(attribute)) {
+      if (isArray(value) || isPlainObject(value)) {
+        this._reference.set(attribute, clone(value, attributeReviver))
+      } else {
+        this._reference.set(attribute, value)
       }
-
-      // Otherwise, we just resolve the value
-    } else {
-      // Resolve the value
-      value = field.make(value, this)
-
-      // Set the attribute value.
-      if (!this._reference.has(attribute)) {
-        if (isArray(value) || isPlainObject(value)) {
-          this._reference.set(attribute, clone(value, attributeReviver))
-        } else {
-          this._reference.set(attribute, value)
-        }
-      }
-
-      this._attributes.set(attribute, value)
     }
+
+    this._attributes.set(attribute, value)
 
     // TODO: Deep equality comparison
     // Only consider a change if the attribute was already defined.
@@ -794,77 +759,6 @@ abstract class Model {
 
       // Sync changes and reference
       this.$sync()
-
-      // We also need to sync all relationships that have been modified.
-      // To do so, we loop through the attributes.
-      const fields = this.$fields()
-
-      for (const key in fields) {
-        if (!(key in attributes)) {
-          continue
-        }
-
-        // Get the field by attribute's key
-        const field = fields[key]
-
-        // Then, we check if the field is a relationship.
-        if (field.relation) {
-          // If so, we get the relationship.
-          const relation = this._attributes.get(key)
-
-          // Now we switch between the different types of relations.
-          switch (field.relation) {
-            // It's the "Has One" relation, so we access the model and sync it.
-            case Relations.RelationEnum.HAS_ONE: {
-              const model = relation.data as Item
-
-              if (!isNull(model)) {
-                // Sync changes and reference
-                model.$sync()
-              }
-              break
-            }
-            // It's the "Has Many" relation, so we access the collection and loop through its models,
-            // then sync each one of them.
-            case Relations.RelationEnum.HAS_MANY: {
-              const collection = relation.data as Collection
-              let attribute = attributes[key]
-
-              // If the given value was a relation, then get its collection
-              if (attribute instanceof Relations.Relation) {
-                attribute = attribute.data
-              }
-
-              for (const record of attribute as Element[] | Collection) {
-                // Get the ID from model or record
-                const id = this.$constructor().getIdFromRecord(record)
-
-                // If we don't have an ID, we can't compare the model
-                if (isUndefined(id)) {
-                  break
-                }
-
-                // Retrieve a model from the collection based on the given ID
-                const model = collection.find(id)
-
-                // If we couldn't retrieve a model from the collection
-                if (isNull(model)) {
-                  break
-                }
-
-                // At this point, `model` should be an instance of Model.
-                if (!isModel(model)) {
-                  break
-                }
-
-                // Sync changes and reference
-                model.$sync()
-              }
-              break
-            }
-          }
-        }
-      }
 
       // There is some data, but it's not an object, so we can assume that the
       // response only returned an ID for this model.
