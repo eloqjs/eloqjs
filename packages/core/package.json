@@ -15,27 +15,25 @@
   "author": "João Pedro Antunes Silva",
   "exports": {
     ".": {
-      "require": "./dist/index.js",
-      "import": "./dist/index.es.js"
+      "require": "./dist/index.cjs",
+      "import": "./dist/index.mjs"
     },
     "./package.json": "./package.json"
   },
-  "main": "./dist/index.js",
-  "module": "./dist/index.es.js",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
   "files": [
     "dist"
   ],
   "scripts": {
-    "build": "yarn run clean && yarn run compile",
-    "clean": "rimraf -rf ./dist",
-    "compile": "siroc build",
+    "build": "unbuild",
     "coverage": "jest --collect-coverage",
     "lint": "eslint --ext .ts,.js .",
     "lint:fix": "yarn lint --fix",
     "test": "jest",
     "test:watch": "jest --watch",
-    "watch": "yarn run compile --watch"
+    "stub": "unbuild --stub"
   },
   "dependencies": {
     "defu": "^5.0.1"
