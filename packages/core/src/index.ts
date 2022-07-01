@@ -26,14 +26,8 @@ export * from './plugins/use'
 /**
  * ELOQJS (Default)
  */
-import { Collection } from './collection'
-import { Model } from './model'
 import { use } from './plugins/use'
-import { Relation } from './relations'
 
 export default {
-  use,
-  Model,
-  Collection,
-  Relation
+  use
 }
