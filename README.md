@@ -1,4 +1,4 @@
-# eloqjs
+# ELOQJS
 
 [![npm version][npm-version-src]][npm-version-href]
 [![npm downloads][npm-downloads-src]][npm-downloads-href]
@@ -9,7 +9,9 @@
 [![Contributions][contributions-src]][contributions-href]
 [![License][license-src]][license-href]
 
-The documentation still in development, but you can [check out the Wiki](https://github.com/eloqjs/eloqjs/wiki) until then.
+ELOQJS is a framework-agnostic ORM ecosystem for your frontend. Supercharge your records with full-featured models and collections. Build requests to your API using a query builder. And more to come!
+
+> :warning: The documentation still in development, but you can [check out the Wiki](https://github.com/eloqjs/eloqjs/wiki) until then.
 
 ## Features
 
