@@ -15,10 +15,12 @@
   "author": "João Pedro Antunes Silva",
   "exports": {
     ".": {
+      "types": "./dist/index.d.ts",
       "require": "./dist/index.cjs",
       "import": "./dist/index.mjs"
     },
     "./httpclient/axios": {
+      "types": "./dist/httpclient/axios.d.ts",
       "require": "./dist/httpclient/axios.cjs",
       "import": "./dist/httpclient/axios.mjs"
     },
