@@ -1,5 +1,5 @@
 /* eslint-disable import/no-extraneous-dependencies */
-const { pathsToModuleNameMapper } = require('ts-jest/utils')
+const { pathsToModuleNameMapper } = require('ts-jest')
 // Load the config which holds the path aliases.
 const { compilerOptions } = require('../../tsconfig.json')
 
